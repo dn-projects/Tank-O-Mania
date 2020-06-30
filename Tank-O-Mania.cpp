@@ -8,6 +8,7 @@
 #include <math.h>
 #include "FreeType.h"
 #include "OBB.h"
+#include "Image_Loading/nvImage.h"
 
 using namespace freetype;
 
@@ -37,7 +38,6 @@ float number;
 
 /**************************** variables for transformation matrix ****************************/
 float squareTransformationMatrix[16];
-float triangleTransformationMatrix[16];
 
 
 
@@ -97,32 +97,77 @@ void processKeys();			//called in winmain to process keyboard controls
 
 
 
+// This stores a handle to the texture
+GLuint myTexture = 0;
+
+GLuint loadPNG(char* name)
+{
+	// Texture loading object
+	nv::Image img;
+
+	GLuint myTextureID;
+
+	// Return true on success
+	if (img.loadImageFromFile(name))
+	{
+		glGenTextures(1, &myTextureID);
+		glBindTexture(GL_TEXTURE_2D, myTextureID);
+		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+		glTexImage2D(GL_TEXTURE_2D, 0, img.getInternalFormat(), img.getWidth(), img.getHeight(), 0, img.getFormat(), img.getType(), img.getLevel(0));
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16.0f);
+	}
+
+	else
+		MessageBox(NULL, "Failed to load texture", "End of the world", MB_OK | MB_ICONINFORMATION);
+
+	return myTextureID;
+}
+
+
+void init()
+{
+	glClearColor(0.0, 0.0, 0.0, 0.0);						//sets the clear colour to yellow
+														//glClear(GL_COLOR_BUFFER_BIT) in the display function
+														//will clear the buffer to this colour.
+
+	our_font.init("arialbd.TTF", 22);                   //Build the freetype font
+
+
+	glClearColor(0.0, 0.0, 0.0, 0.0);
+
+	//char png1[] = "grass.png";x
+	char png1[] = "tankBlue.png";
+
+	myTexture = loadPNG(png1);
+
+
+}
 
 
 
 /*************    START OF OPENGL FUNCTIONS   ****************/
 void display()
-{
-	glClear(GL_COLOR_BUFFER_BIT);
+{	
+		glClear(GL_COLOR_BUFFER_BIT);
 
-	glLoadIdentity();
+		glLoadIdentity();
 
+		
 
-
-
-	// white axis lines
-	glLineWidth(1.5);
-	glColor3f(1.0, 1.0, 1.0);
-	glBegin(GL_LINES);
-	glVertex2f(-20, 0);
-	glVertex2f(20, 0);
-	glVertex2f(0, 20);
-	glVertex2f(0, -20);
-	glEnd();
-
-
-
-
+		glEnable(GL_TEXTURE_2D);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+		glBindTexture(GL_TEXTURE_2D, myTexture);
+		glBegin(GL_POLYGON);
+		glTexCoord2f(0, 0); glVertex2f(-1, -1);
+		glTexCoord2f(0, 1); glVertex2f(-1, 1);
+		glTexCoord2f(1, 1); glVertex2f( 1, 1);
+		glTexCoord2f(1, 0); glVertex2f( 1, -1);
+		glEnd();
+		glDisable(GL_TEXTURE_2D);
 
 
 
@@ -144,14 +189,6 @@ void display()
 	glVertex2f(4, -4);
 	glEnd();
 
-	// square centre point
-	//glColor3f(0.0,1.0,1.0);
-	//glPointSize(20.0);
-	//glBegin(GL_POINTS);
-	//	glVertex2f(0,0);
-	//glEnd();
-	//glPointSize(1.0);
-
 	// square bounding box
 	glColor3f(red, green, blue);
 	glBegin(GL_LINE_LOOP);
@@ -167,53 +204,10 @@ void display()
 
 
 
-
-
-
-
-
-
-	// triangle
-	glPushMatrix();
-
-	// triangle transformation
-	glTranslatef(triangleXTransform, triangleYTransform, 0.0);
-
-	// triangle color
-	glColor3f(0, 1, 0);
-
-	// triangle initialisation
-	glBegin(GL_TRIANGLES);
-	glVertex2f(-4, -4);
-	glVertex2f(4, -4);
-	glVertex2f(0, 5.65f);
-	glEnd();
-
-	// triangle centre point
-	//glColor3f(0.0,0.0,1.0);
-	//glPointSize(20.0);
-	//glBegin(GL_POINTS);
-	//	glVertex2f(0,0);
-	//glEnd();
-	//glPointSize(1.0);
-
-	// triangle bounding box
-	glColor3f(1, 1, 1);
-	glBegin(GL_LINE_LOOP);
-	glVertex2f(-4, -4);
-	glVertex2f(4, -4);
-	glVertex2f(4, 5.65F);
-	glVertex2f(-4, 5.65F);
-	glEnd();
-
-	glGetFloatv(GL_MODELVIEW_MATRIX, triangleTransformationMatrix);
-
-	glPopMatrix();
-
 	glFlush();
 
 	square.transformPoints(squareTransformationMatrix);
-	triangle.transformPoints(triangleTransformationMatrix);
+
 
 	if (square.SAT2D(triangle))
 		glColor3f(1.0, 0.0, 1.0);
@@ -394,14 +388,7 @@ void reshape(int width, int height)		// Resize the OpenGL window
 	glLoadIdentity();									// Reset The Modelview Matrix
 }
 
-void init()
-{
-	glClearColor(0.0, 0.0, 0.0, 0.0);						//sets the clear colour to yellow
-														//glClear(GL_COLOR_BUFFER_BIT) in the display function
-														//will clear the buffer to this colour.
 
-	our_font.init("arialbd.TTF", 22);                   //Build the freetype font
-}
 
 void processKeys()
 {

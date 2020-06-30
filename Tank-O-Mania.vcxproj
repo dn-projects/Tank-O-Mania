@@ -169,6 +169,9 @@
     <Font Include="MEgalopolisExtra.otf" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\Downloads\labsheet4OpenGL(2) (2)\labsheet4OpenGL\texturemapping\libpng13.dll" />
+    <None Include="..\..\Downloads\labsheet4OpenGL(2) (2)\labsheet4OpenGL\texturemapping\nvImage.dll" />
+    <None Include="..\..\Downloads\labsheet4OpenGL(2) (2)\labsheet4OpenGL\texturemapping\zlib1.dll" />
     <None Include="FreeType-6.dll" />
     <None Include="glew32.dll" />
     <None Include="Zlib.dll" />

@@ -69,5 +69,14 @@
     <None Include="glew32.dll">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="..\..\Downloads\labsheet4OpenGL(2) (2)\labsheet4OpenGL\texturemapping\zlib1.dll">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\Downloads\labsheet4OpenGL(2) (2)\labsheet4OpenGL\texturemapping\libpng13.dll">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\Downloads\labsheet4OpenGL(2) (2)\labsheet4OpenGL\texturemapping\nvImage.dll">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
