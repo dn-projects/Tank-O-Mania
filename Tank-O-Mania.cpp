@@ -9,6 +9,8 @@
 #include "FreeType.h"
 #include "OBB.h"
 #include "Image_Loading/nvImage.h"
+#include <iostream>
+
 
 using namespace freetype;
 
@@ -19,7 +21,7 @@ bool LeftPressed = false;
 int screenWidth = 480, screenHeight = 480;
 bool keys[256];
 float spin = 0;
-
+POINT p;
 
 
 OBB square, triangle;
@@ -70,8 +72,10 @@ float blue = 0.0;
 
 
 /**************************** variables for arrow key transformation ****************************/
-float triangleXTransform = 0;
-float triangleYTransform = 0;	// transform triangle x and y by arrrow key transformation
+float tank1XMovement = 0;
+float tank1YMovement = 0;	// transform triangle x and y by arrrow key transformation
+float tank1Angle = 0.0;
+float tank1Velocity = 0;
 
 float squareXTransform = 0;
 float squareYTransform = 0; // transform square x and y by arrrow key transformation
@@ -87,6 +91,8 @@ void shapesCollison();
 void printFunctions();
 void AABBCollision();
 
+void drawDots();
+void moveCamera();
 
 
 /**************************** OPENGL FUNCTION PROTOTYPES ****************************/
@@ -98,7 +104,10 @@ void processKeys();			//called in winmain to process keyboard controls
 
 
 // This stores a handle to the texture
-GLuint myTexture = 0;
+GLuint track1;
+GLuint tank1Tracks;
+GLuint tank1Body;
+GLuint tank1Barrel;
 
 GLuint loadPNG(char* name)
 {
@@ -116,8 +125,8 @@ GLuint loadPNG(char* name)
 		glTexImage2D(GL_TEXTURE_2D, 0, img.getInternalFormat(), img.getWidth(), img.getHeight(), 0, img.getFormat(), img.getType(), img.getLevel(0));
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16.0f);
 	}
 
@@ -130,6 +139,9 @@ GLuint loadPNG(char* name)
 
 void init()
 {
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
 	glClearColor(0.0, 0.0, 0.0, 0.0);						//sets the clear colour to yellow
 														//glClear(GL_COLOR_BUFFER_BIT) in the display function
 														//will clear the buffer to this colour.
@@ -139,12 +151,20 @@ void init()
 
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 
-	//char png1[] = "grass.png";x
-	char png1[] = "tankBlue.png";
+	char png1[] = "PNG/Environment/grass.png";
+	char png2[] = "PNG/Tanks/tracksSmall.png";
+	char png3[] = "PNG/Tanks/tankBlue_outline.png";
+	char png4[] = "PNG/Tanks/barrelBlue.png";
 
-	myTexture = loadPNG(png1);
+	track1 = loadPNG(png1);
+
+	tank1Tracks = loadPNG(png2);
+	tank1Body   = loadPNG(png3);
+	tank1Barrel = loadPNG(png4);
 
 
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 }
 
 
@@ -152,57 +172,205 @@ void init()
 /*************    START OF OPENGL FUNCTIONS   ****************/
 void display()
 {	
+
 		glClear(GL_COLOR_BUFFER_BIT);
 
+	glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
+		// white axis lines
+		//glLineWidth(1.5);
+		//glColor3f(1.0, 1.0, 1.0);
+		//	glBegin(GL_LINES);
+		//		glVertex2f(-3000, 3000);
+		//		glVertex2f(3000, 3000);
+		//		glVertex2f(3000, 3000);
+		//		glVertex2f(3000, -3000);
+		//	glEnd();
+		
+		glPushMatrix();
+			glEnable(GL_TEXTURE_2D);
+			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+			glBindTexture(GL_TEXTURE_2D, track1);
+				glBegin(GL_POLYGON);
+					glTexCoord2f(0, 0); glVertex2f(-3000, -3000);
+					glTexCoord2f(0, 1); glVertex2f(-3000,  3000);
+					glTexCoord2f(1, 1); glVertex2f( 3000,  3000);
+					glTexCoord2f(1, 0); glVertex2f( 3000, -3000);
+				glEnd();
+			glDisable(GL_TEXTURE_2D);
+		glPopMatrix();
+
+
+		glPushMatrix();
+		glEnable(GL_TEXTURE_2D);
+		    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+			glBindTexture(GL_TEXTURE_2D, tank1Tracks);
+			glTranslatef(tank1XMovement, tank1YMovement, 0.0);
+			glRotatef(tank1Angle, 0, 0, 1);
+			glColor3f(1,1,1);
+			glBegin(GL_POLYGON);
+			glTexCoord2f(0,0);	glVertex2f(-36, -52);
+			glTexCoord2f(0,1);	glVertex2f(-36,  52);
+			glTexCoord2f(1,1);	glVertex2f( 36,  52);
+			glTexCoord2f(1,0);	glVertex2f( 36, -52);
+			glEnd();
+			glDisable(GL_TEXTURE_2D);
+		glPopMatrix();
+
+		glPushMatrix();
+			glEnable(GL_TEXTURE_2D);
+			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+			glBindTexture(GL_TEXTURE_2D, tank1Body);
+			glTranslatef(tank1XMovement, tank1YMovement, 0.0);
+			glRotatef(tank1Angle, 0, 0, 1);
+			glColor3f(1, 1, 1);
+			glBegin(GL_POLYGON);
+				glTexCoord2f(0, 0);	glVertex2f(-33, -41);
+				glTexCoord2f(0, 1);	glVertex2f(-33, 41);
+				glTexCoord2f(1, 1);	glVertex2f(33, 41);
+				glTexCoord2f(1, 0);	glVertex2f(33, -41);
+			glEnd();
+			glDisable(GL_TEXTURE_2D);
+		glPopMatrix();
+
+		glPushMatrix();
+			glEnable(GL_TEXTURE_2D);
+			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+			glBindTexture(GL_TEXTURE_2D, tank1Barrel);
+			glTranslatef(tank1XMovement, tank1YMovement, 0.0);
+			glRotatef(tank1Angle, 0, 0, 1);
+			glColor3f(1, 1, 1);
+			glBegin(GL_POLYGON);
+				glTexCoord2f(0, 0);	glVertex2f(-8,   0);
+				glTexCoord2f(0, 1);	glVertex2f(-8,  80);
+				glTexCoord2f(1, 1);	glVertex2f( 8,  80);
+				glTexCoord2f(1, 0);	glVertex2f( 8,   0);
+			glEnd();
+			glDisable(GL_TEXTURE_2D);
+		glPopMatrix();
+
+
+
+
+
+		//update the position of the user controlled object.
+		tank1XMovement += tank1Velocity * cosf((90 + tank1Angle) * (PI / 180.0f));
+		tank1YMovement += tank1Velocity * sinf((90 + tank1Angle) * (PI / 180.0f));
+
+		// hard map		
+		glPushMatrix();
+			glColor3f(1,1,1);
+			glBegin(GL_LINE_STRIP);
+				glVertex2f(0, 0);
+				glVertex2f(0, 1200);
+				glVertex2f(1000, 1200);
+				glVertex2f(1000, 0);
+				glVertex2f(1900, 0);
+				glVertex2f(1900, 2500);
+				glVertex2f(2500, 2500);
+				glVertex2f(2500, -2500);
+				glVertex2f(-2500, -2500);
+				glVertex2f(-2500, -1800);
+				glVertex2f(-1400, -1800);
+				glVertex2f(-1400, -1100);
+				glVertex2f(-2500, -1100);
+				glVertex2f(-2500, 2500);
+				glVertex2f(200, 2500);
+				glVertex2f(200, 2000);
+				glVertex2f(-1800, 2000);
+				glVertex2f(-1800, 500);
+				glVertex2f(-1200, 500);
+				glVertex2f(-1200, -400);
+				glVertex2f(-600, -400);
+				glVertex2f(-600, -1500);
+				glVertex2f(900, -1500);
+				glVertex2f(900, -800);
+				glVertex2f(0, -800);
+				glVertex2f(0, 0);
+			glEnd();
+		glPopMatrix();
 		
 
-		glEnable(GL_TEXTURE_2D);
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-		glBindTexture(GL_TEXTURE_2D, myTexture);
-		glBegin(GL_POLYGON);
-		glTexCoord2f(0, 0); glVertex2f(-1, -1);
-		glTexCoord2f(0, 1); glVertex2f(-1, 1);
-		glTexCoord2f(1, 1); glVertex2f( 1, 1);
-		glTexCoord2f(1, 0); glVertex2f( 1, -1);
-		glEnd();
-		glDisable(GL_TEXTURE_2D);
+		// medium map
+		/*
+		glPushMatrix();
+			glColor3f(1,1,1);
+			glBegin(GL_LINE_STRIP);
+				glVertex2f(0, 0);
+				glVertex2f(0, 2500);
+				glVertex2f(-2500, 2500);
+				glVertex2f(-2500, 1900);
+				glVertex2f(-1500, 1900);
+				glVertex2f(-1500, -1900);
+				glVertex2f(-2200, -1900);
+				glVertex2f(-2200, -2500);
+				glVertex2f(2500, -2500);
+				glVertex2f(2500, 2100);
+				glVertex2f(1800, 2100);
+				glVertex2f(1800, -1000);
+				glVertex2f(1000, -1000);
+				glVertex2f(1000, -500);
+				glVertex2f(0, -500);
+				glVertex2f(0, 0);
+			glEnd();
+		glPopMatrix();
+		*/
+		
+		// easy map
+		/*
+		glPushMatrix();
+		glColor3f(1, 1, 1);
+			glBegin(GL_LINE_STRIP);
+				glVertex2f(0, 0);
+				glVertex2f(0, 500);
+				glVertex2f(-2000, 500);
+				glVertex2f(-2000, -2000);
+				glVertex2f(2000, -2000);
+				glVertex2f(2000, 2000);
+				glVertex2f(1000, 2000);
+				glVertex2f(1000, -1000);
+				glVertex2f(0, -1000);
+				glVertex2f(0, 0);
+			glEnd();
+		glPopMatrix();
+		*/
+		
 
+		/*
+		for (int i = 64; i < 2000; i+=64)
+		{
+			glPushMatrix();
+			glEnable(GL_TEXTURE_2D);
+			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+			glBindTexture(GL_TEXTURE_2D, track2);
+			glBegin(GL_POLYGON);
+			glTexCoord2f(0, 0); glVertex2f(i, i);
+			glTexCoord2f(0, 1); glVertex2f(64 + i, i);
+			glTexCoord2f(1, 1); glVertex2f(64 + i, 64 + i);
+			glTexCoord2f(1, 0); glVertex2f(i, 64 + i);
+			glEnd();
+			glDisable(GL_TEXTURE_2D);
+			glPopMatrix();
+		}
+		
 
-
-	// square
-	glPushMatrix();
-
-	// square transformation 
-	glTranslatef(squareXTransform, squareYTransform, 0);
-	//glRotatef(spin, 0.0, 0.0, 1.0);
-
-	// square color
-	glColor3f(1.0, 0.0, 0.0);
-
-	// square initalisation
-	glBegin(GL_POLYGON);
-	glVertex2f(-4, -4);
-	glVertex2f(-4, 4);
-	glVertex2f(4, 4);
-	glVertex2f(4, -4);
-	glEnd();
-
-	// square bounding box
-	glColor3f(red, green, blue);
-	glBegin(GL_LINE_LOOP);
-	glVertex2f(-4, -4);
-	glVertex2f(-4, 4);
-	glVertex2f(4, 4);
-	glVertex2f(4, -4);
-	glEnd();
-
-	glGetFloatv(GL_MODELVIEW_MATRIX, squareTransformationMatrix);
-
-	glPopMatrix();
-
-
+		for (int i = 64; i > -640; i-=64)
+		{
+			glPushMatrix();
+			glEnable(GL_TEXTURE_2D);
+			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+			glBindTexture(GL_TEXTURE_2D, track2);
+			glBegin(GL_POLYGON);
+				glTexCoord2f(0, 0); glVertex2f(i, i);
+				glTexCoord2f(0, 1); glVertex2f(i - 64, i);
+				glTexCoord2f(1, 1); glVertex2f(i - 64, i - 64);
+				glTexCoord2f(1, 0); glVertex2f(i, i - 64);
+			glEnd();
+			glDisable(GL_TEXTURE_2D);
+			glPopMatrix();
+		}
+		*/
 
 	glFlush();
 
@@ -224,16 +392,46 @@ void display()
 	shapesCollison();
 	AABBCollision();
 
+	drawDots();
+	moveCamera();
+
 
 	spin += 0.05f;
 	if (spin > 360)
 		spin = 0;
 }
 
+void moveCamera() 
+{
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+		gluOrtho2D((tank1XMovement - screenWidth / 0.5), (tank1XMovement + screenWidth / 0.5), (tank1YMovement - screenHeight / 0.5), (tank1YMovement + screenHeight / 0.5));
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+}
+
+void drawDots()
+{
+	float rgb = 0.0;
+
+	for (int i = 20; i < 500; i += 30)
+	{
+		glPushMatrix();
+			glColor3f(1.0, rgb, rgb);
+			glPointSize(5.0);
+			glBegin(GL_POINTS);
+				glVertex2f(20, i);
+			glEnd();
+		glPopMatrix();
+
+		rgb += 0.03;
+	}
+}
+
 void printFunctions()
 {
-	print(our_font, 20, 95, "squareMaxY: %7.2f", squareMaxY);
-	//print(our_font, 20, 65, "squareMinY: %7.2f", squareMinY);
+	//print(our_font, 20, 95, "p.x: %7.2f", p.x);
+	//print(our_font, 20, 65, "p.y: %7.2f", p.y);
 	//print(our_font, 20, 35, "squareMaxX: %7.2f", squareMaxX);
 	//print(our_font, 20, 5,  "squareMinX: %7.2f", squareMinX);
 }
@@ -316,7 +514,7 @@ void shapesCollison()
 
 void circleCollison()
 {
-	float localNum = (((squareXTransform - triangleXTransform) * (squareXTransform - triangleXTransform)) + (squareYTransform - (triangleYTransform)) * (squareYTransform - (triangleYTransform)));
+	float localNum = (((squareXTransform - tank1XMovement) * (squareXTransform - tank1XMovement)) + (squareYTransform - (tank1YMovement)) * (squareYTransform - (tank1YMovement)));
 
 	if (localNum < ((4 + 4) * (4 + 4)))
 	{
@@ -346,7 +544,7 @@ void changeLineColor()
 	//glEnd();
 	//end of code for drawing a line...
 
-	number = (((squareXTransform - triangleXTransform) * (squareXTransform - triangleXTransform)) + (squareYTransform - (triangleYTransform + 5.65f)) * (squareYTransform - (triangleYTransform + 5.65f)));
+	number = (((squareXTransform - tank1XMovement) * (squareXTransform - tank1XMovement)) + (squareYTransform - (tank1YMovement + 5.65f)) * (squareYTransform - (tank1YMovement + 5.65f)));
 
 	if (number < 30 || number < -30)
 	{
@@ -374,15 +572,16 @@ void drawCircle(float x, float y, float radius)
 
 void reshape(int width, int height)		// Resize the OpenGL window
 {
-	screenWidth = width; screenHeight = height;           // to ensure the mouse coordinates match 
+	screenWidth = width; screenHeight = height;         // to ensure the mouse coordinates match 
 														// we will use these values to set the coordinate system
 
-	glViewport(0, 0, width, height);						// Reset The Current Viewport
+	glViewport(0, 0, width, height);					// Reset The Current Viewport
 
 	glMatrixMode(GL_PROJECTION);						// Select The Projection Matrix
 	glLoadIdentity();									// Reset The Projection Matrix
 
-	gluOrtho2D(-20, 20, -20, 20);           // set the coordinate system for the window
+	//gluOrtho2D(-4000, 4000, -4000, 4000);             // View whole map 
+	//gluOrtho2D(-300, 300, -300, 300);
 
 	glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
 	glLoadIdentity();									// Reset The Modelview Matrix
@@ -394,38 +593,21 @@ void processKeys()
 {
 	if (keys[VK_LEFT])
 	{
-		triangleXTransform -= 0.05f;
+		tank1Angle += 0.4;
 	}
 	if (keys[VK_RIGHT])
 	{
-		triangleXTransform += 0.05f;
+		tank1Angle -= 0.4;
 	}
 	if (keys[VK_UP])
 	{
-		triangleYTransform += 0.05f;
+		tank1Velocity += 0.001f;
 	}
 	if (keys[VK_DOWN])
 	{
-		triangleYTransform -= 0.05f;
+		//tank1Velocity -= 0.0001f;
+		tank1Velocity = 0;
 	}
-
-	if (keys[0x41])
-	{
-		squareXTransform -= 0.05f;
-	}
-	if (keys[0x44])
-	{
-		squareXTransform += 0.05f;
-	}
-	if (keys[0x57])
-	{
-		squareYTransform += 0.05f;
-	}
-	if (keys[0x53])
-	{
-		squareYTransform -= 0.05f;
-	}
-
 }
 
 
@@ -442,16 +624,18 @@ void processKeys()
 #pragma region WIN32 FUNCTIONS
 
 //WIN32 functions
-LRESULT	CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);	// Declaration For WndProc
-void KillGLWindow();									// releases and destroys the window
+LRESULT	CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);	 // Declaration For WndProc
+void KillGLWindow();									 // releases and destroys the window
 bool CreateGLWindow(char* title, int width, int height); //creates the window
-int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int);  // Win32 main function
+int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int);    // Win32 main function
+void trackMousePos();                                    // tracks mouse position on window
 
 //win32 global variabless
 HDC			hDC = NULL;		// Private GDI Device Context
 HGLRC		hRC = NULL;		// Permanent Rendering Context
-HWND		hWnd = NULL;		// Holds Our Window Handle
+HWND		hWnd = NULL;	// Holds Our Window Handle
 HINSTANCE	hInstance;		// Holds The Instance Of The Application
+                 // cursor position   
 
 int WINAPI WinMain(HINSTANCE	hInstance,			// Instance
 	HINSTANCE	hPrevInstance,		// Previous Instance
@@ -558,6 +742,22 @@ LRESULT CALLBACK WndProc(HWND	hWnd,			// Handle For This Window
 
 	// Pass All Unhandled Messages To DefWindowProc
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
+}
+
+void trackMousePos()
+{
+	if (GetCursorPos(&p))
+	{
+		print(our_font, 20, 95, "p.x: %7.2f", p.x);
+		print(our_font, 20, 65, "p.y: %7.2f", p.y);
+	}
+
+	//if (ScreenToClient(hWnd, &p))
+	//{
+	//	print(our_font, 20, 95, "p.x: %7.2f", p.x);
+	//	print(our_font, 20, 65, "p.y: %7.2f", p.y);
+	//	std::cout << p.x;
+	//}
 }
 
 void KillGLWindow()								// Properly Kill The Window
