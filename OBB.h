@@ -5,6 +5,13 @@
 // Polygon objects
 const int NUMVERTS = 4;
 
+class Vertex
+{
+public:
+	float x;
+	float y;
+};
+
 class Point
 {
 public:

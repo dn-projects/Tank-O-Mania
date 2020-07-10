@@ -21,10 +21,12 @@ bool LeftPressed = false;
 int screenWidth = 480, screenHeight = 480;
 bool keys[256];
 float spin = 0;
+float speed = 0;
 POINT p;
 
 
 OBB square, triangle;
+
 
 
 
@@ -72,8 +74,8 @@ float blue = 0.0;
 
 
 /**************************** variables for arrow key transformation ****************************/
-float tank1XMovement = 0;
-float tank1YMovement = 0;	// transform triangle x and y by arrrow key transformation
+float tank1XMovement = -1200;
+float tank1YMovement =     0;	// transform triangle x and y by arrrow key transformation
 float tank1Angle = 0.0;
 float tank1Velocity = 0;
 
@@ -83,7 +85,7 @@ float squareYTransform = 0; // transform square x and y by arrrow key transforma
 
 
 /**************************** functions ****************************/
-void drawCircle(float x, float y, float radius); //prototype the draw function
+void drawCircle(float x, float y, float radius, float angle); //prototype the draw function
 void changeLineColor();
 void spiningSquareCorner();
 void circleCollison();
@@ -93,7 +95,7 @@ void AABBCollision();
 
 void drawDots();
 void moveCamera();
-
+bool outsideObject(Vertex P, Vertex V[], int n);
 
 /**************************** OPENGL FUNCTION PROTOTYPES ****************************/
 void display();				//draws everything to the screen
@@ -257,7 +259,82 @@ void display()
 		//update the position of the user controlled object.
 		tank1XMovement += tank1Velocity * cosf((90 + tank1Angle) * (PI / 180.0f));
 		tank1YMovement += tank1Velocity * sinf((90 + tank1Angle) * (PI / 180.0f));
+		
+		int i = 200;
+		/*
+		glPushMatrix();
+		glColor3f(1, 1, 1);
+		glBegin(GL_LINE_LOOP);
+			glVertex2f(-50 + i, 0);
+			glVertex2f(-50 + i, 1500);
+			glVertex2f(500 + i, 2000);
+			glVertex2f(1000 + i, 2100);
+			glVertex2f(1300 + i, 1300);
+			glVertex2f(1300 + i, 0);
+			glVertex2f(-50 + i, 0);
+		glEnd();
+		glPopMatrix();
+		*/
 
+		glPushMatrix();
+		glColor3f(1, 1, 1);
+		glBegin(GL_LINE_LOOP);
+			glVertex2f(1000, 1000);
+			glVertex2f(1000, -1000);
+			glVertex2f(-1000, -1000);
+			glVertex2f(-1000, 1000);
+		glEnd();
+		glPopMatrix();
+		
+		glPushMatrix();
+		glColor3f(1, 1, 1);
+		glBegin(GL_LINE_LOOP);
+			glVertex2f(1500, 1500);
+			glVertex2f(1500, -1500);
+			glVertex2f(-1500, -1500);
+			glVertex2f(-1500, 1500);
+		glEnd();
+		glPopMatrix();
+
+
+		//Vertex v2[] = { {-50 + i,0}, {-50 + i, 1500}, {500 + i,2000}, {1000 + i, 2100}, {1300 + i,1300}, {1300 + i, 0}, {0 + i, 0} };
+		Vertex v2[] = { {-1000, -1000}, {-1000, 1000}, {1000, 1000}, {1000, -1000} };
+		Vertex p2 = { tank1XMovement, tank1YMovement };
+	    int n2 = sizeof(v2) / sizeof(v2[0]);
+
+		/*
+		glPushMatrix();
+			glColor3f(1,1,1);
+			glBegin(GL_LINE_LOOP);
+			glVertex2f(100 + i, 100);
+			glVertex2f(100 + i, 1100);
+			glVertex2f(600 + i, 1600);
+			glVertex2f(900 + i, 1900);
+			glVertex2f(1100 + i, 1100);
+			glVertex2f(1100 + i, 100);
+			glVertex2f(100 + i, 100);
+			glEnd();
+		glPopMatrix();
+		*/
+
+		//Vertex v[] = { {100 + i,100}, {100 + i,1100}, {600 + i,1600}, {900 + i, 1900}, {1100 + i,1100}, {1100 + i,100}, {100 + i,100} };
+		Vertex v[] = { {-1500, -1500}, {-1500, 1500}, {1500, 1500}, {1500, -1500} };
+		Vertex p = {tank1XMovement, tank1YMovement};
+		int n = sizeof(v) / sizeof(v[0]);
+
+		if (!outsideObject(p, v, n) && outsideObject(p2, v2, n2))
+		{
+			speed = 1.5f;
+			print(our_font, 20, 35, "Inside");
+		}
+		else
+		{
+
+			speed = 0.5f;
+			print(our_font, 20, 35, "Outside");
+		}
+
+		/*
 		// hard map		
 		glPushMatrix();
 			glColor3f(1,1,1);
@@ -290,7 +367,9 @@ void display()
 				glVertex2f(0, 0);
 			glEnd();
 		glPopMatrix();
+		*/
 		
+		//drawCircle(0, 0, 2000, 179);
 
 		// medium map
 		/*
@@ -324,10 +403,28 @@ void display()
 			glBegin(GL_LINE_STRIP);
 				glVertex2f(0, 0);
 				glVertex2f(0, 500);
+				for (float i = 0; i < 180; i += 5)
+				{
+					float xcoord = -1000 + 1000 * cosf(i * (PI / 180.0f));
+					float ycoord = 500 + 1000 * sinf(i * (PI / 180.0f));
+					glVertex2f(xcoord, ycoord);
+				}
 				glVertex2f(-2000, 500);
-				glVertex2f(-2000, -2000);
+				glVertex2f(-2000, -1800);
+				for (float i = 0; i < 90; i += 5)
+				{
+					float xcoord = -1800 - 200 * cosf(i * (PI / 180.0f));
+					float ycoord = -1800 - 200 * sinf(i * (PI / 180.0f));
+					glVertex2f(xcoord, ycoord);
+				}
 				glVertex2f(2000, -2000);
-				glVertex2f(2000, 2000);
+				glVertex2f(2000, 1800);
+				for (float i = 0; i < 90; i += 5)
+				{
+					float xcoord = 1800 + 200 * cosf(i * (PI / 180.0f));
+					float ycoord = 1800 + 200 * sinf(i * (PI / 180.0f));
+					glVertex2f(xcoord, ycoord);
+				}
 				glVertex2f(1000, 2000);
 				glVertex2f(1000, -1000);
 				glVertex2f(0, -1000);
@@ -391,14 +488,34 @@ void display()
 	printFunctions();
 	shapesCollison();
 	AABBCollision();
-
-	drawDots();
-	moveCamera();
+	
+	//drawDots();
+    moveCamera();
 
 
 	spin += 0.05f;
 	if (spin > 360)
 		spin = 0;
+}
+
+
+
+bool outsideObject(Vertex P, Vertex V[], int n)
+{
+	int cn = 0; // the crossing number counter
+	// loop through all edges of the polygon
+	for (int i = 0; i < n; i++) // edge from V[i] to V[i+1]
+	{
+		if (((V[i].y <= P.y) && (V[i + 1].y > P.y)) //upward crossing
+			|| ((V[i].y > P.y) && (V[i + 1].y <= P.y)))//downward crossing
+		{
+			//compute the actual edge-ray intersect x-coordinate
+			float vt = (float)(P.y - V[i].y) / (V[i + 1].y - V[i].y);
+			if (P.x < V[i].x + vt * (V[i + 1].x - V[i].x))
+				++cn; // a valid crossing
+		}
+	}
+	return (cn % 2 == 0); // true if even (out), and false if odd (in)	
 }
 
 void moveCamera() 
@@ -430,10 +547,10 @@ void drawDots()
 
 void printFunctions()
 {
-	//print(our_font, 20, 95, "p.x: %7.2f", p.x);
-	//print(our_font, 20, 65, "p.y: %7.2f", p.y);
+	print(our_font, 20, 95, "tank1XMovement: %7.2f", tank1XMovement);
+	print(our_font, 20, 65, "tank1YMovement: %7.2f", tank1YMovement);
 	//print(our_font, 20, 35, "squareMaxX: %7.2f", squareMaxX);
-	//print(our_font, 20, 5,  "squareMinX: %7.2f", squareMinX);
+	print(our_font, 20, 5,  "speed: %7.2f", speed);
 }
 
 void AABBCollision()
@@ -558,10 +675,10 @@ void changeLineColor()
 	}
 }
 
-void drawCircle(float x, float y, float radius)
+void drawCircle(float x, float y, float radius, float angle)
 {
 	glBegin(GL_LINE_LOOP);
-	for (float i = 0; i < 360; i += 5)
+	for (float i = 0; i < angle; i += 5)
 	{
 		float xcoord = x + radius * cosf(i * (PI / 180.0f));
 		float ycoord = y + radius * sinf(i * (PI / 180.0f));
@@ -587,26 +704,26 @@ void reshape(int width, int height)		// Resize the OpenGL window
 	glLoadIdentity();									// Reset The Modelview Matrix
 }
 
-
-
 void processKeys()
 {
 	if (keys[VK_LEFT])
 	{
-		tank1Angle += 0.4;
+		tank1Angle += 0.2;
 	}
 	if (keys[VK_RIGHT])
 	{
-		tank1Angle -= 0.4;
+		tank1Angle -= 0.2;
 	}
 	if (keys[VK_UP])
 	{
-		tank1Velocity += 0.001f;
+		//tank1Velocity += speed;
+		tank1Velocity = speed;
 	}
 	if (keys[VK_DOWN])
 	{
 		//tank1Velocity -= 0.0001f;
-		tank1Velocity = 0;
+		//tank1Velocity = 0;
+		tank1Velocity = -speed;
 	}
 }
 
