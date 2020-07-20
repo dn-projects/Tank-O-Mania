@@ -1,16 +1,4 @@
-
-//includes areas for keyboard control, mouse control, resizing the window
-//and draws a spinning rectangle
-#include <windows.h>		// Header File For Windows
-#include "glew.h"
-#include <gl\gl.h>			// Header File For The OpenGL32 Library
-#include <gl\glu.h>			// Header File For The GLu32 Library
-#include <math.h>
-#include "FreeType.h"
-#include "OBB.h"
-#include "Image_Loading/nvImage.h"
-#include <iostream>
-
+#include "UserTank.h"
 
 using namespace freetype;
 
@@ -20,7 +8,9 @@ int	mouse_x = 0, mouse_y = 0;
 bool LeftPressed = false;
 int screenWidth = 480, screenHeight = 480;
 bool keys[256];
-float spin = 0;
+
+UserTank userTank = UserTank();
+
 
 
 float speed = 0.05f;                                    // speed used as variable for tank1 speed
@@ -32,7 +22,7 @@ float tank1YMovement = 0;	                        // used to track transformatio
 float tank1Angle = 0.0;
 float tank1Velocity = 0;
 
-float tank1Matrix[16];
+//float tank1Matrix[16];
 float squareMatrix[16];
 
 float squareXTransform = 0;
@@ -45,6 +35,7 @@ POINT p;
 
 OBB tank1OBB;
 OBB squareOBB;
+
 
 
 
@@ -87,7 +78,6 @@ float blue = 0.0;
 /**************************** function declarations ****************************/
 void drawCircle(float x, float y, float radius, float angle); //prototype the draw function
 void changeLineColor();
-void spiningSquareCorner();
 void circleCollison();
 void shapesCollison();
 void printFunctions();
@@ -95,7 +85,7 @@ void drawEasyMap();
 void drawMediumMap();
 void drawHardMap();
 
-void drawTank1Sprite();
+void drawUserTank();
 void moveTank1Sprite();
 
 void moveCamera();
@@ -111,9 +101,6 @@ void processKeys();			//called in winmain to process keyboard controls
 
 // This stores a handle to the texture
 GLuint track1;
-GLuint tank1Tracks;
-GLuint tank1Body;
-GLuint tank1Barrel;
 
 GLuint loadPNG(char* name)
 {
@@ -154,31 +141,13 @@ void init()
 
 	our_font.init("arialbd.TTF", 22);                   //Build the freetype font
 
-
-	glClearColor(0.0, 0.0, 0.0, 0.0);
+	userTank.fillTexture();
 
 	char png1[] = "PNG/Environment/grass.png";
-	char png2[] = "PNG/Tanks/tracksSmall.png";
-	char png3[] = "PNG/Tanks/tankBlue_outline.png";
-	char png4[] = "PNG/Tanks/barrelBlue.png";
+
 
 	track1 = loadPNG(png1);
-
-	tank1Tracks = loadPNG(png2);
-	tank1Body   = loadPNG(png3);
-	tank1Barrel = loadPNG(png4);
-
-	tank1OBB.vertOriginal[0].x = -18;
-	tank1OBB.vertOriginal[0].y = -26;
-
-	tank1OBB.vertOriginal[1].x = -18;
-	tank1OBB.vertOriginal[1].y = 26;
-
-	tank1OBB.vertOriginal[2].x = 18;
-	tank1OBB.vertOriginal[2].y = 26;
-
-	tank1OBB.vertOriginal[3].x = 18;
-	tank1OBB.vertOriginal[3].y = -26;
+	
 
 	squareOBB.vertOriginal[0].x = 100;
 	squareOBB.vertOriginal[0].y = -900;
@@ -208,7 +177,7 @@ void display()
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
-	
+		
 		
 		// glPushMatrix - draws the whole map size 6000x6000 and texture maps green to it
 		glPushMatrix();
@@ -362,12 +331,11 @@ void display()
 
 	glFlush();
 
-	tank1OBB.transformPoints(tank1Matrix);
 	squareOBB.transformPoints(squareMatrix);
 
 	float tempX = 0.0f;
 
-	if (tank1OBB.SAT2D(squareOBB))
+	if (userTank.tankOBB.SAT2D(squareOBB))
 	{
 		print(our_font, 20, 95, "COllision!");
 
@@ -394,15 +362,13 @@ void display()
 	//drawMediumMap();
 	//drawHardMap();
 
-	drawTank1Sprite();
+	drawUserTank();
     moveTank1Sprite();
 	
     moveCamera();
 
 
-	spin += 0.05f;
-	if (spin > 360)
-		spin = 0;
+
 }
 
 void drawHardMap()
@@ -520,59 +486,16 @@ void moveTank1Sprite()
 	tank1YMovement += tank1Velocity * sinf((90 + tank1Angle) * (PI / 180.0f));
 }
 
-void drawTank1Sprite()
+void drawUserTank()
 {
-	// glPushMatrix - draws the tank tracks and applies movement to tracks
-	glPushMatrix();
-	glEnable(GL_TEXTURE_2D);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-	glBindTexture(GL_TEXTURE_2D, tank1Tracks);
-	glTranslatef(tank1XMovement, tank1YMovement, 0.0);
-	glRotatef(tank1Angle, 0, 0, 1);
-	glGetFloatv(GL_MODELVIEW_MATRIX, tank1Matrix);
-	glColor3f(1, 1, 1);
-	glBegin(GL_POLYGON);
-	glTexCoord2f(0, 0);	glVertex2f(-18, -26);
-	glTexCoord2f(0, 1);	glVertex2f(-18, 26);
-	glTexCoord2f(1, 1);	glVertex2f(18, 26);
-	glTexCoord2f(1, 0);	glVertex2f(18, -26);
-	glEnd();
-	glDisable(GL_TEXTURE_2D);
-	glPopMatrix();
+	userTank.x = tank1XMovement;
+	userTank.y = tank1YMovement;
+	userTank.direction = tank1Angle;
 
-	// glPushMatrix - draws the tank body and applies movement to body
-	glPushMatrix();
-	glEnable(GL_TEXTURE_2D);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-	glBindTexture(GL_TEXTURE_2D, tank1Body);
-	glTranslatef(tank1XMovement, tank1YMovement, 0.0);
-	glRotatef(tank1Angle, 0, 0, 1);
-	glColor3f(1, 1, 1);
-	glBegin(GL_POLYGON);
-	glTexCoord2f(0, 0);	glVertex2f(-15, -20);
-	glTexCoord2f(0, 1);	glVertex2f(-15, 20);
-	glTexCoord2f(1, 1);	glVertex2f(15, 20);
-	glTexCoord2f(1, 0);	glVertex2f(15, -20);
-	glEnd();
-	glDisable(GL_TEXTURE_2D);
-	glPopMatrix();
-
-	// glPushMatrix - draws the tank barrel and applies movement to barrel
-	glPushMatrix();
-	glEnable(GL_TEXTURE_2D);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-	glBindTexture(GL_TEXTURE_2D, tank1Barrel);
-	glTranslatef(tank1XMovement, tank1YMovement, 0.0);
-	glRotatef(tank1Angle, 0, 0, 1);
-	glColor3f(1, 1, 1);
-	glBegin(GL_POLYGON);
-	glTexCoord2f(0, 0);	glVertex2f(-4, 0);
-	glTexCoord2f(0, 1);	glVertex2f(-4, 40);
-	glTexCoord2f(1, 1);	glVertex2f(4, 40);
-	glTexCoord2f(1, 0);	glVertex2f(4, 0);
-	glEnd();
-	glDisable(GL_TEXTURE_2D);
-	glPopMatrix();
+	userTank.tankOBB.transformPoints(userTank.matrix);
+	
+	userTank.drawTank();
+	userTank.setOBBPoints();
 }
 
 bool outsideObject(Point P, Point V[], int n)
@@ -673,12 +596,6 @@ void circleCollison()
 		green = 1.0;
 		red = 0.0;
 	}
-}
-
-void spiningSquareCorner()
-{
-	squareX = 4 * cos(spin * (PI / 180.0f)) + 4 * sin(spin * (PI / 180.0f)) + squareXTransform;
-	squareY = 4 * sin(spin * (PI / 180.0f)) - 4 * cos(spin * (PI / 180.0f)) + squareYTransform;
 }
 
 void changeLineColor()
