@@ -156,12 +156,14 @@
     <ClInclude Include="OBB.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Tank-O-Mania.h" />
+    <ClInclude Include="Track.h" />
     <ClInclude Include="UserTank.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FreeType.cpp" />
     <ClCompile Include="OBB.cpp" />
     <ClCompile Include="Tank-O-Mania.cpp" />
+    <ClCompile Include="Track.cpp" />
     <ClCompile Include="UserTank.cpp" />
   </ItemGroup>
   <ItemGroup>

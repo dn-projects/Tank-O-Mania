@@ -36,6 +36,9 @@
     <ClInclude Include="UserTank.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Track.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Tank-O-Mania.cpp">
@@ -48,6 +51,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="UserTank.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Track.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

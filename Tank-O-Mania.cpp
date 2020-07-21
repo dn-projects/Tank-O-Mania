@@ -1,4 +1,5 @@
 #include "UserTank.h"
+#include "Track.h"
 
 using namespace freetype;
 
@@ -9,6 +10,7 @@ bool LeftPressed = false;
 int screenWidth = 480, screenHeight = 480;
 bool keys[256];
 
+Track track = Track();
 UserTank userTank = UserTank();
 
 
@@ -100,7 +102,7 @@ void processKeys();			//called in winmain to process keyboard controls
 
 
 // This stores a handle to the texture
-GLuint track1;
+
 
 GLuint loadPNG(char* name)
 {
@@ -141,12 +143,10 @@ void init()
 
 	our_font.init("arialbd.TTF", 22);                   //Build the freetype font
 
-	userTank.fillTexture();
+	userTank.loadTexture();
+	track.loadTexture();
 
-	char png1[] = "PNG/Environment/grass.png";
 
-
-	track1 = loadPNG(png1);
 	
 
 	squareOBB.vertOriginal[0].x = 100;
@@ -177,21 +177,18 @@ void display()
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
+
+
+
+
+
+
+
+		track.drawTrack();
+
 		
 		
-		// glPushMatrix - draws the whole map size 6000x6000 and texture maps green to it
-		glPushMatrix();
-			glEnable(GL_TEXTURE_2D);
-			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-			glBindTexture(GL_TEXTURE_2D, track1);
-				glBegin(GL_POLYGON);
-					glTexCoord2f(0, 0); glVertex2f(-3000, -3000);
-					glTexCoord2f(0, 1); glVertex2f(-3000,  3000);
-					glTexCoord2f(1, 1); glVertex2f( 3000,  3000);
-					glTexCoord2f(1, 0); glVertex2f( 3000, -3000);
-				glEnd();
-			glDisable(GL_TEXTURE_2D);
-		glPopMatrix();
+
 
 
 
@@ -352,7 +349,7 @@ void display()
 	
     squareOBB.drawOBB();
 	tank1OBB.drawOBB();
-	print(our_font, 20, 95, "temp: %7.2f", tempX);
+
 
 
 	/**************************** methods ****************************/
@@ -361,6 +358,8 @@ void display()
 	drawEasyMap();
 	//drawMediumMap();
 	//drawHardMap();
+
+	
 
 	drawUserTank();
     moveTank1Sprite();
@@ -716,7 +715,6 @@ LRESULT	CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);	 // Declaration For WndPro
 void KillGLWindow();									 // releases and destroys the window
 bool CreateGLWindow(char* title, int width, int height); //creates the window
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int);    // Win32 main function
-void trackMousePos();                                    // tracks mouse position on window
 
 //win32 global variabless
 HDC			hDC = NULL;		// Private GDI Device Context
@@ -830,22 +828,6 @@ LRESULT CALLBACK WndProc(HWND	hWnd,			// Handle For This Window
 
 	// Pass All Unhandled Messages To DefWindowProc
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
-}
-
-void trackMousePos()
-{
-	if (GetCursorPos(&p))
-	{
-		print(our_font, 20, 95, "p.x: %7.2f", p.x);
-		print(our_font, 20, 65, "p.y: %7.2f", p.y);
-	}
-
-	//if (ScreenToClient(hWnd, &p))
-	//{
-	//	print(our_font, 20, 95, "p.x: %7.2f", p.x);
-	//	print(our_font, 20, 65, "p.y: %7.2f", p.y);
-	//	std::cout << p.x;
-	//}
 }
 
 void KillGLWindow()								// Properly Kill The Window
@@ -1010,14 +992,3 @@ bool CreateGLWindow(char* title, int width, int height)
 	return true;									// Success
 }
 #pragma endregion
-
-
-
-
-/*double resultingPoint[2];
-double point[3] = {-4,-4,0};
-resultingPoint[0] = matrix[0]*point[0] + matrix[4]*point[1] + matrix[8]*point[2] + matrix[12];
-resultingPoint[1] = matrix[1]*point[0] + matrix[5]*point[1] + matrix[9]*point[2] + matrix[13];
-
-double matrix[16];
-glGetDoublev(GL_MODELVIEW_MATRIX, matrix);*/

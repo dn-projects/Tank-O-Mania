@@ -27,7 +27,7 @@ GLuint loadTankPNG(char* name)
 	return myTextureID;
 }
 
-void UserTank::fillTexture()
+void UserTank::loadTexture()
 {
 	char tracksPNG[] = "PNG/Tanks/tracksSmall.png";
 	char bodyPNG[] = "PNG/Tanks/tankBlue_outline.png";

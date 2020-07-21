@@ -9,28 +9,19 @@
 #include "FreeType.h"
 #include <iostream>
 
-class UserTank
+class Track
 {
 
 private:
 
 public:
 
-	OBB   tankOBB;
-	GLuint tracks;
-	GLuint body;
-	GLuint barrel;
-	float x = 0;
-	float y = 0;
-	float v = 0;
-	float matrix[16];
-	float direction = 0;
-	
-	UserTank() { }
+	GLuint background;
+
+	Track() { }
 
 	void loadTexture();
 
-	void drawTank();
-
-	void setOBBPoints();
+	void drawTrack();
 };
+
