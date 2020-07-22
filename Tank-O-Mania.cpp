@@ -12,7 +12,7 @@ int screenWidth = 480, screenHeight = 480;
 bool keys[256];
 
 Track track = Track();
-UserTank userTank = UserTank(p);
+UserTank userTank = UserTank();
 
 
 
@@ -26,24 +26,9 @@ float tank1Angle = 0.0;
 float tank1Velocity = 0;
 
 //float tank1Matrix[16];
-float squareMatrix[16];
 
 float squareXTransform = 0;
 float squareYTransform = 0; // transform square x and y by arrrow key transformation
-
-
-
-
-
-
-OBB tank1OBB;
-OBB squareOBB;
-
-
-
-
-
-
 
 
 /**************************** variables for spining points ****************************/
@@ -73,20 +58,11 @@ float green = 0.0;
 float blue = 0.0;
 
 
-
-
-
-
-
 /**************************** function declarations ****************************/
 void drawCircle(float x, float y, float radius, float angle); //prototype the draw function
 void changeLineColor();
 void circleCollison();
-void shapesCollison();
 void printFunctions();
-void drawEasyMap();
-void drawMediumMap();
-void drawHardMap();
 
 void drawUserTank();
 void moveTank1Sprite();
@@ -101,10 +77,6 @@ void display();				//draws everything to the screen
 void reshape(int width, int height);//called when the window is resized
 void init();				//called in winmain when the program starts.
 void processKeys();			//called in winmain to process keyboard controls
-
-
-
-// This stores a handle to the texture
 
 
 GLuint loadPNG(char* name)
@@ -134,44 +106,25 @@ GLuint loadPNG(char* name)
 	return myTextureID;
 }
 
-
 void init()
 {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	glClearColor(0.0, 0.0, 0.0, 0.0);						//sets the clear colour to yellow
-														//glClear(GL_COLOR_BUFFER_BIT) in the display function
-														//will clear the buffer to this colour.
+	glClearColor(0.0, 0.0, 0.0, 0.0);     // glClear(GL_COLOR_BUFFER_BIT) in 
+	                                      // the display function will clear 
+	                                      // the buffer to this colour.
 
-	our_font.init("arialbd.TTF", 22);                   //Build the freetype font
+	our_font.init("arialbd.TTF", 22);     //Build the freetype font
 
-	userTank.loadTexture();
 	track.loadTexture();
 
 
-	
-
-	squareOBB.vertOriginal[0].x = 100;
-	squareOBB.vertOriginal[0].y = -900;
-
-	squareOBB.vertOriginal[1].x = 100;
-	squareOBB.vertOriginal[1].y = 600;
-
-	squareOBB.vertOriginal[2].x = 200;
-	squareOBB.vertOriginal[2].y = 600;
-
-	squareOBB.vertOriginal[3].x = 200;
-	squareOBB.vertOriginal[3].y = -900;
-
-
-
+	userTank.loadTexture();
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 }
-
-
 
 /*************    START OF OPENGL FUNCTIONS   ****************/
 void display()
@@ -182,35 +135,8 @@ void display()
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
-
-
-
-
-
-
-
-		track.drawTrack();
-
-		
-		
-
-
-
-
-		glPushMatrix();
-		glColor3f(1.0, 1.0, 1.0);
-			glBegin(GL_LINE_STRIP);
-				glVertex2f(-25, -25);
-				glVertex2f(-25, 25);
-				glVertex2f(25, 25);
-				glVertex2f(25, -25);
-			glEnd();
-			glGetFloatv(GL_MODELVIEW_MATRIX, squareMatrix);
-			glPopMatrix();
-
-
-
-
+		track.drawTrackBackground();
+		track.drawEasyTrack();
 
 		
 		int i = 200;
@@ -290,12 +216,6 @@ void display()
 		
 		//drawCircle(0, 0, 2000, 179);
 
-
-		
-	
-		
-		
-
 		/*
 		for (int i = 64; i < 2000; i+=64)
 		{
@@ -333,149 +253,31 @@ void display()
 
 	glFlush();
 
-	squareOBB.transformPoints(squareMatrix);
-
 	float tempX = 0.0f;
 
-	if (userTank.tankOBB.SAT2D(squareOBB))
+	if (userTank.tankOBB.SAT2D(track.trackOBB))
 	{
 		print(our_font, 20, 95, "COllision!");
 
-		tank1Velocity * (-1);
-
-		/*tank1Angle = tank1Angle + 180;
- 
+		tank1Angle = tank1Angle + 180;
 		for(int i = 0; i < 100 ; i++)
 		{
 			tank1XMovement += tank1Velocity * cosf((90 + tank1Angle) * (PI / 180.0f));
 			tank1YMovement += tank1Velocity * sinf((90 + tank1Angle) * (PI / 180.0f));
 		} 
-		tank1Angle = tank1Angle + 180;	*/
+		//tank1Angle = tank1Angle + 180;
 	}
-
-	
-    squareOBB.drawOBB();
-	tank1OBB.drawOBB();
-
-
 
 	/**************************** methods ****************************/
 	printFunctions();
-	shapesCollison();
-	drawEasyMap();
-	//drawMediumMap();
-	//drawHardMap();
 
 	
 
 	drawUserTank();
     moveTank1Sprite();
 	
-    //moveCamera();
+    moveCamera();
 
-}
-
-
-
-void drawHardMap()
-{
-	// hard map
-	glPushMatrix();
-		glColor3f(1,1,1);
-		glBegin(GL_LINE_STRIP);
-			glVertex2f(0, 0);
-			glVertex2f(0, 1200);
-			glVertex2f(1000, 1200);
-			glVertex2f(1000, 0);
-			glVertex2f(1900, 0);
-			glVertex2f(1900, 2500);
-			glVertex2f(2500, 2500);
-			glVertex2f(2500, -2500);
-			glVertex2f(-2500, -2500);
-			glVertex2f(-2500, -1800);
-			glVertex2f(-1400, -1800);
-			glVertex2f(-1400, -1100);
-			glVertex2f(-2500, -1100);
-			glVertex2f(-2500, 2500);
-			glVertex2f(200, 2500);
-			glVertex2f(200, 2000);
-			glVertex2f(-1800, 2000);
-			glVertex2f(-1800, 500);
-			glVertex2f(-1200, 500);
-			glVertex2f(-1200, -400);
-			glVertex2f(-600, -400);
-			glVertex2f(-600, -1500);
-			glVertex2f(900, -1500);
-			glVertex2f(900, -800);
-			glVertex2f(0, -800);
-			glVertex2f(0, 0);
-		glEnd();
-	glPopMatrix();
-}
-
-void drawMediumMap()
-{
-	// medium map
-	glPushMatrix();
-		glColor3f(1,1,1);
-		glBegin(GL_LINE_STRIP);
-			glVertex2f(0, 0);
-			glVertex2f(0, 2500);
-			glVertex2f(-2500, 2500);
-			glVertex2f(-2500, 1900);
-			glVertex2f(-1500, 1900);
-			glVertex2f(-1500, -1900);
-			glVertex2f(-2200, -1900);
-			glVertex2f(-2200, -2500);
-			glVertex2f(2500, -2500);
-			glVertex2f(2500, 2100);
-			glVertex2f(1800, 2100);
-			glVertex2f(1800, -1000);
-			glVertex2f(1000, -1000);
-			glVertex2f(1000, -500);
-			glVertex2f(0, -500);
-			glVertex2f(0, 0);
-		glEnd();
-	glPopMatrix();	
-}
-
-void drawEasyMap()
-{
-
-
-	// left line
-	glPushMatrix();
-	glColor3f(1, 0, 0);
-		glBegin(GL_LINE_STRIP);
-			glVertex2f(0, 0);
-			glVertex2f(0, 500);
-			glVertex2f(-2000, 500);
-			glVertex2f(-2000, -2000);
-			glVertex2f(2000, -2000);
-			glVertex2f(2000, 2000);
-			glVertex2f(1000, 2000);
-			glVertex2f(1000, -1000);
-			glVertex2f(0, -1000);
-			glVertex2f(0, 0);
-		glEnd();
-	glPopMatrix();
-	
-	// right line
-	glPushMatrix();
-	glColor3f(1, 0, 0);
-		glBegin(GL_LINE_STRIP);
-			glVertex2f(100, 0);
-			glVertex2f(100, 600);
-			glVertex2f(-2100, 600);
-			glVertex2f(-2100, -2100);
-			glVertex2f(2100, -2100);
-			glVertex2f(2100, 2100);
-			glVertex2f(900, 2100);
-			glVertex2f(900, -900);
-			glVertex2f(100, -900);
-			glVertex2f(100, 0);
-		glEnd();
-	glPopMatrix();
 }
 
 void moveTank1Sprite()
@@ -492,6 +294,9 @@ void drawUserTank()
 	userTank.direction = tank1Angle;
 
 	userTank.tankOBB.transformPoints(userTank.matrix);
+
+	track.trackOBB.transformPoints(track.matrix);
+	track.drawTrackOBB(100, -900, 100, 1000);
 	
 	userTank.drawTank();
 	userTank.setOBBPoints();
@@ -530,55 +335,6 @@ void printFunctions()
 	//print(our_font, 20, 65, "tank1YMovement: %7.2f", tank1YMovement);
 	//print(our_font, 20, 35, "squareMaxX: %7.2f", squareMaxX);
 	//print(our_font, 20, 5,  "speed: %7.2f", speed);
-}
-
-void shapesCollison()
-{
-	//determine the new min and max coordinates
-	//float xmin = xnew1;
-	//float xmax = xnew1;
-	//float ymin = ynew1;
-	//float ymax = ynew1;
-
-	//if (xnew2 < xmin)
-	//	xmin = xnew2;
-	//if (xnew2 > xmax)
-	//	xmax = xnew2;
-	//if (xnew3 < xmin)
-	//	xmin = xnew3;
-	//if (xnew3 > xmax)
-	//	xmax = xnew3;
-	//if (xnew4 < xmin)
-	//	xmin = xnew4;
-	//if (xnew4 > xmax)
-	//	xmax = xnew4;
-
-	//if (ynew2 < ymin)
-	//	ymin = ynew2;
-	//if (ynew2 > ymax)
-	//	ymax = ynew2;
-	//if (ynew3 < ymin)
-	//	ymin = ynew3;
-	//if (ynew3 > ymax)
-	//	ymax = ynew3;
-	//if (ynew4 < ymin)
-	//	ymin = ynew4;
-	//if (ynew4 > ymax)
-	//	ymax = ynew4;
-
-	//if (xGreenMin < xmax &&
-	//	xGreenMax > xmin &&
-	//	yGreenMin < ymax &&
-	//	yGreenMax > ymin)
-	//{
-	//	green = 1.0;
-	//	red = 0.0;
-	//}
-	//else
-	//{
-	//	red = 0.0;
-	//	green = 1.0;
-	//}
 }
 
 void circleCollison()
@@ -643,7 +399,7 @@ void reshape(int width, int height)		// Resize the OpenGL window
 	glMatrixMode(GL_PROJECTION);						// Select The Projection Matrix
 	glLoadIdentity();									// Reset The Projection Matrix
 
-	gluOrtho2D(-4000, 4000, -4000, 4000);             // View whole map 
+	//gluOrtho2D(-4000, 4000, -4000, 4000);             // View whole map 
 
 	glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
 	glLoadIdentity();									// Reset The Modelview Matrix
@@ -1026,8 +782,8 @@ void printCursor()
 		print(our_font, 0, 125, "p.y: %ld", p.y);
 		print(our_font, 0, 65, "angle: %f", (atan2(p.y, p.x) * 180 / PI));
 
-		userTank.point.x = p.x;
-		userTank.point.y = p.y;
+		//userTank.point.x = p.x;
+		//userTank.point.y = p.y;
 	}
 
 	if (ScreenToClient(hWnd, &p))

@@ -36,7 +36,7 @@ void Track::loadTexture()
 	road = loadTrackPNG(roadPNG);
 }
 
-void Track::drawTrack()
+void Track::drawTrackBackground()
 {
 	// glPushMatrix - draws the whole map size 6000x6000 
 	//and texture maps green to it
@@ -65,5 +65,133 @@ void Track::drawTrack()
 	glTexCoord2f(2, 0); glVertex2f(100, -1000);
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+}
+
+void Track::drawEasyTrack()
+{
+	// left line
+	glPushMatrix();
+	glColor3f(1, 0, 0);
+	glBegin(GL_LINE_STRIP);
+	glVertex2f(0, 0);
+	glVertex2f(0, 500);
+	glVertex2f(-2000, 500);
+	glVertex2f(-2000, -2000);
+	glVertex2f(2000, -2000);
+	glVertex2f(2000, 2000);
+	glVertex2f(1000, 2000);
+	glVertex2f(1000, -1000);
+	glVertex2f(0, -1000);
+	glVertex2f(0, 0);
+	glEnd();
+	glPopMatrix();
+
+	// right line
+	glPushMatrix();
+	glColor3f(1, 0, 0);
+	glBegin(GL_LINE_STRIP);
+	glVertex2f(100, 0);
+	glVertex2f(100, 600);
+	glVertex2f(-2100, 600);
+	glVertex2f(-2100, -2100);
+	glVertex2f(2100, -2100);
+	glVertex2f(2100, 2100);
+	glVertex2f(900, 2100);
+	glVertex2f(900, -900);
+	glVertex2f(100, -900);
+	glVertex2f(100, 0);
+	glEnd();
+	glPopMatrix();
+}
+
+void Track::drawTrackOBB(float x,
+	                               float y,
+	                               float width,
+	                               float height)
+{
+	glPushMatrix();
+	glColor3f(1,1,1);
+	glBegin(GL_LINE_STRIP);
+		glVertex2f(x         ,y);
+		glVertex2f(x         ,y + height);
+		glVertex2f(x + width ,y + height);
+		glVertex2f(x + width ,y);
+	glEnd();
+	glGetFloatv(GL_MODELVIEW_MATRIX, matrix);
+	glPopMatrix();
+
+	trackOBB.vertOriginal[0].x = x;
+	trackOBB.vertOriginal[0].y = y;
+
+	trackOBB.vertOriginal[1].x = x;
+	trackOBB.vertOriginal[1].y = y + height;
+
+	trackOBB.vertOriginal[2].x = x + width;
+	trackOBB.vertOriginal[2].y = y + height;
+
+	trackOBB.vertOriginal[3].x = x + width;
+	trackOBB.vertOriginal[3].y = y;
+}
+
+void Track::drawIntermediateTrack()
+{
+	// medium map
+	glPushMatrix();
+	glColor3f(1, 1, 1);
+	glBegin(GL_LINE_STRIP);
+	glVertex2f(0, 0);
+	glVertex2f(0, 2500);
+	glVertex2f(-2500, 2500);
+	glVertex2f(-2500, 1900);
+	glVertex2f(-1500, 1900);
+	glVertex2f(-1500, -1900);
+	glVertex2f(-2200, -1900);
+	glVertex2f(-2200, -2500);
+	glVertex2f(2500, -2500);
+	glVertex2f(2500, 2100);
+	glVertex2f(1800, 2100);
+	glVertex2f(1800, -1000);
+	glVertex2f(1000, -1000);
+	glVertex2f(1000, -500);
+	glVertex2f(0, -500);
+	glVertex2f(0, 0);
+	glEnd();
+	glPopMatrix();
+}
+
+void Track::drawHardTrack()
+{
+	// hard map
+	glPushMatrix();
+	glColor3f(1, 1, 1);
+	glBegin(GL_LINE_STRIP);
+	glVertex2f(0, 0);
+	glVertex2f(0, 1200);
+	glVertex2f(1000, 1200);
+	glVertex2f(1000, 0);
+	glVertex2f(1900, 0);
+	glVertex2f(1900, 2500);
+	glVertex2f(2500, 2500);
+	glVertex2f(2500, -2500);
+	glVertex2f(-2500, -2500);
+	glVertex2f(-2500, -1800);
+	glVertex2f(-1400, -1800);
+	glVertex2f(-1400, -1100);
+	glVertex2f(-2500, -1100);
+	glVertex2f(-2500, 2500);
+	glVertex2f(200, 2500);
+	glVertex2f(200, 2000);
+	glVertex2f(-1800, 2000);
+	glVertex2f(-1800, 500);
+	glVertex2f(-1200, 500);
+	glVertex2f(-1200, -400);
+	glVertex2f(-600, -400);
+	glVertex2f(-600, -1500);
+	glVertex2f(900, -1500);
+	glVertex2f(900, -800);
+	glVertex2f(0, -800);
+	glVertex2f(0, 0);
+	glEnd();
 	glPopMatrix();
 }

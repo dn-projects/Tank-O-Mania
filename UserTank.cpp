@@ -84,7 +84,7 @@ void UserTank::drawTank()
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 	glBindTexture(GL_TEXTURE_2D, barrel);
 	glTranslatef(x, y, 0.0);
-	glRotatef((atan2(point.y, point.x) * 180 / PI),0,0,1);
+	//glRotatef((atan2(point.y, point.x) * 180 / PI),0,0,1);
 	glRotatef(direction, 0, 0, 1);
 	glColor3f(1, 1, 1);
 	glBegin(GL_POLYGON);

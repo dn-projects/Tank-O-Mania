@@ -18,7 +18,7 @@ private:
 
 public:
 
-	POINT point;
+	//POINT point;
 	OBB   tankOBB;
 	GLuint tracks;
 	GLuint body;
@@ -29,7 +29,7 @@ public:
 	float matrix[16];
 	float direction = 0;
 	
-	UserTank(POINT p) { point = p; }
+	UserTank() { }
 
 	void loadTexture();
 

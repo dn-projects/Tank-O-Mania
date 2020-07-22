@@ -18,11 +18,22 @@ public:
 
 	GLuint background;
 	GLuint road;
+	OBB trackOBB;
+	float matrix[16];
 
 	Track() { }
 
 	void loadTexture();
 
-	void drawTrack();
+	void drawTrackBackground();
+
+	void drawEasyTrack();
+
+	void drawTrackOBB(float x,     float y, 
+		             float width, float height);
+
+	void drawIntermediateTrack();
+
+	void drawHardTrack();
 };
 
