@@ -29,23 +29,40 @@ GLuint loadTrackPNG(char* name)
 
 void Track::loadTexture()
 {
-	char backgroundPNG[] = "PNG/Environment/grass.png";
+	char backgroundPNG[] = "PNG/Environment/sand.png";
+	char roadPNG[] = "PNG/Environment/dirt.png";
 
 	background = loadTrackPNG(backgroundPNG);
+	road = loadTrackPNG(roadPNG);
 }
 
 void Track::drawTrack()
 {
-	// glPushMatrix - draws the whole map size 6000x6000 and texture maps green to it
+	// glPushMatrix - draws the whole map size 6000x6000 
+	//and texture maps green to it
 	glPushMatrix();
 	glEnable(GL_TEXTURE_2D);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPEAT);
 	glBindTexture(GL_TEXTURE_2D, background);
 	glBegin(GL_POLYGON);
 	glTexCoord2f(0, 0); glVertex2f(-3000, -3000);
-	glTexCoord2f(0, 1); glVertex2f(-3000, 3000);
-	glTexCoord2f(1, 1); glVertex2f(3000, 3000);
-	glTexCoord2f(1, 0); glVertex2f(3000, -3000);
+	glTexCoord2f(0, 60); glVertex2f(-3000, 3000);
+	glTexCoord2f(60, 60); glVertex2f(3000, 3000);
+	glTexCoord2f(60, 0); glVertex2f(3000, -3000);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+
+
+	glPushMatrix();
+	glEnable(GL_TEXTURE_2D);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPEAT);
+	glBindTexture(GL_TEXTURE_2D, road);
+	glBegin(GL_POLYGON);
+	glTexCoord2f(0, 0); glVertex2f(-0, -1000);
+	glTexCoord2f(0, 30); glVertex2f(0, 600);
+	glTexCoord2f(2, 30); glVertex2f(100, 600);
+	glTexCoord2f(2, 0); glVertex2f(100, -1000);
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
 	glPopMatrix();

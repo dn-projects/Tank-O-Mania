@@ -13,9 +13,12 @@ class UserTank
 {
 
 private:
+	
+	const float PI = 3.1415926535897932384626433832795f;
 
 public:
 
+	POINT point;
 	OBB   tankOBB;
 	GLuint tracks;
 	GLuint body;
@@ -26,7 +29,7 @@ public:
 	float matrix[16];
 	float direction = 0;
 	
-	UserTank() { }
+	UserTank(POINT p) { point = p; }
 
 	void loadTexture();
 

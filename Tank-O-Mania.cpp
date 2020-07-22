@@ -5,17 +5,18 @@ using namespace freetype;
 
 const float PI = 3.1415926535897932384626433832795f;
 
+POINT p;
 int	mouse_x = 0, mouse_y = 0;
 bool LeftPressed = false;
 int screenWidth = 480, screenHeight = 480;
 bool keys[256];
 
 Track track = Track();
-UserTank userTank = UserTank();
+UserTank userTank = UserTank(p);
 
 
 
-float speed = 0.05f;                                    // speed used as variable for tank1 speed
+float speed = 0.1f;                                    // speed used as variable for tank1 speed
 font_data our_font;                                 // font used to print message on display
 float timer;                                        // timer used as game timer to calculate maths with time
 
@@ -32,7 +33,7 @@ float squareYTransform = 0; // transform square x and y by arrrow key transforma
 
 
 
-POINT p;
+
 
 
 OBB tank1OBB;
@@ -90,6 +91,8 @@ void drawHardMap();
 void drawUserTank();
 void moveTank1Sprite();
 
+
+void printCursor();
 void moveCamera();
 bool outsideObject(Point P, Point V[], int n);
 
@@ -160,6 +163,8 @@ void init()
 
 	squareOBB.vertOriginal[3].x = 200;
 	squareOBB.vertOriginal[3].y = -900;
+
+
 
 
 	glMatrixMode(GL_MODELVIEW);
@@ -336,14 +341,16 @@ void display()
 	{
 		print(our_font, 20, 95, "COllision!");
 
-		tank1Angle = tank1Angle + 180;
+		tank1Velocity * (-1);
+
+		/*tank1Angle = tank1Angle + 180;
  
 		for(int i = 0; i < 100 ; i++)
 		{
 			tank1XMovement += tank1Velocity * cosf((90 + tank1Angle) * (PI / 180.0f));
 			tank1YMovement += tank1Velocity * sinf((90 + tank1Angle) * (PI / 180.0f));
 		} 
-		tank1Angle = tank1Angle + 180;	
+		tank1Angle = tank1Angle + 180;	*/
 	}
 
 	
@@ -364,11 +371,11 @@ void display()
 	drawUserTank();
     moveTank1Sprite();
 	
-    moveCamera();
-
-
+    //moveCamera();
 
 }
+
+
 
 void drawHardMap()
 {
@@ -434,17 +441,9 @@ void drawMediumMap()
 
 void drawEasyMap()
 {
-	glPushMatrix();
-		glColor3f(1,1,1);
-		glBegin(GL_POLYGON);
-			glVertex2f(100, -900);
-			glVertex2f(100, 600);
-			glVertex2f(200, 600);
-			glVertex2f(200, -900);
-		glEnd();
-	glPopMatrix();
 
-	// easy map
+
+	// left line
 	glPushMatrix();
 	glColor3f(1, 0, 0);
 		glBegin(GL_LINE_STRIP);
@@ -461,6 +460,7 @@ void drawEasyMap()
 		glEnd();
 	glPopMatrix();
 	
+	// right line
 	glPushMatrix();
 	glColor3f(1, 0, 0);
 		glBegin(GL_LINE_STRIP);
@@ -643,7 +643,7 @@ void reshape(int width, int height)		// Resize the OpenGL window
 	glMatrixMode(GL_PROJECTION);						// Select The Projection Matrix
 	glLoadIdentity();									// Reset The Projection Matrix
 
-	//gluOrtho2D(-4000, 4000, -4000, 4000);             // View whole map 
+	gluOrtho2D(-4000, 4000, -4000, 4000);             // View whole map 
 
 	glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
 	glLoadIdentity();									// Reset The Modelview Matrix
@@ -716,12 +716,13 @@ void KillGLWindow();									 // releases and destroys the window
 bool CreateGLWindow(char* title, int width, int height); //creates the window
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int);    // Win32 main function
 
+
 //win32 global variabless
 HDC			hDC = NULL;		// Private GDI Device Context
 HGLRC		hRC = NULL;		// Permanent Rendering Context
 HWND		hWnd = NULL;	// Holds Our Window Handle
 HINSTANCE	hInstance;		// Holds The Instance Of The Application
-                 // cursor position   
+ 
 
 int WINAPI WinMain(HINSTANCE	hInstance,			// Instance
 	HINSTANCE	hPrevInstance,		// Previous Instance
@@ -733,11 +734,15 @@ int WINAPI WinMain(HINSTANCE	hInstance,			// Instance
 
 	char title[] = "Tank-O-Mania";
 
+
+
 	// Create Our OpenGL Window
 	if (!CreateGLWindow(title, screenWidth, screenHeight))
 	{
-		return 0;									// Quit If Window Was Not Created
+		return 0;								// Quit If Window Was Not Created
 	}
+	
+	
 
 	while (!done)									// Loop That Runs While done=FALSE
 	{
@@ -776,6 +781,8 @@ LRESULT CALLBACK WndProc(HWND	hWnd,			// Handle For This Window
 	WPARAM	wParam,			// Additional Message Information
 	LPARAM	lParam)			// Additional Message Information
 {
+ 
+
 	switch (uMsg)									// Check For Windows Messages
 	{
 	case WM_CLOSE:								// Did We Receive A Close Message?
@@ -985,10 +992,49 @@ bool CreateGLWindow(char* title, int width, int height)
 	ShowWindow(hWnd, SW_SHOW);						// Show The Window
 	SetForegroundWindow(hWnd);						// Slightly Higher Priority
 	SetFocus(hWnd);									// Sets Keyboard Focus To The Window
-	reshape(width, height);					// Set Up Our Perspective GL Screen
+	reshape(width, height);					        // Set Up Our Perspective GL Screen
+
 
 	init();
 
 	return true;									// Success
+}
+
+void printCursor()
+{
+	if (GetClientRect)
+	{
+	
+	}
+
+	//ShowCursor(FALSE);//hides the cursor
+
+	if (GetCursorPos(&p))
+	{
+		/*glPushMatrix();
+		glRotatef((atan2(p.x,p.y) * 180 / PI),0,0,1);
+		glBegin(GL_POLYGON);
+		glVertex2f(0,0);
+		glVertex2f(0,50);
+		glVertex2f(50,50);
+		glVertex2f(50,0);
+		glEnd();
+		glPopMatrix();*/
+
+		//cursor position now in p.x and p.y
+		print(our_font, 0, 95, "p.x: %ld", p.x);
+		print(our_font, 0, 125, "p.y: %ld", p.y);
+		print(our_font, 0, 65, "angle: %f", (atan2(p.y, p.x) * 180 / PI));
+
+		userTank.point.x = p.x;
+		userTank.point.y = p.y;
+	}
+
+	if (ScreenToClient(hWnd, &p))
+	{
+		//cursor position now in p.x and p.y
+		print(our_font, 0, 35, "client p.x: %ld", p.x);
+		print(our_font, 0, 5, "client p.y: %ld", p.y);
+	}
 }
 #pragma endregion

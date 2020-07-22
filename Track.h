@@ -17,6 +17,7 @@ private:
 public:
 
 	GLuint background;
+	GLuint road;
 
 	Track() { }
 

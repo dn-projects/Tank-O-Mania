@@ -40,7 +40,8 @@ void UserTank::loadTexture()
 
 void UserTank::drawTank()
 {
-	// glPushMatrix - draws the tank tracks and applies movement to tracks
+	// glPushMatrix - draws the tank tracks and applies 
+	//movement to tracks
 	glPushMatrix();
 	glEnable(GL_TEXTURE_2D);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
@@ -58,7 +59,8 @@ void UserTank::drawTank()
 	glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
 
-	// glPushMatrix - draws the tank body and applies movement to body
+	// glPushMatrix - draws the tank body and applies 
+	//movement to body
 	glPushMatrix();
 	glEnable(GL_TEXTURE_2D);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
@@ -75,12 +77,14 @@ void UserTank::drawTank()
 	glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
 
-	// glPushMatrix - draws the tank barrel and applies movement to barrel
+	// glPushMatrix - draws the tank barrel and applies 
+	//movement to barrel
 	glPushMatrix();
 	glEnable(GL_TEXTURE_2D);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 	glBindTexture(GL_TEXTURE_2D, barrel);
 	glTranslatef(x, y, 0.0);
+	glRotatef((atan2(point.y, point.x) * 180 / PI),0,0,1);
 	glRotatef(direction, 0, 0, 1);
 	glColor3f(1, 1, 1);
 	glBegin(GL_POLYGON);
