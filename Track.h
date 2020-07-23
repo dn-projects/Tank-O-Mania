@@ -16,8 +16,9 @@ private:
 
 public:
 
-	GLuint background;
-	GLuint road;
+	GLuint road1;
+	GLuint road2;
+	GLuint realisticGrass1;
 	OBB trackOBB;
 	float matrix[16];
 

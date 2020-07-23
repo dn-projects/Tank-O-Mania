@@ -14,9 +14,9 @@ bool keys[256];
 Track track = Track();
 UserTank userTank = UserTank();
 
+float pointTicker = 0.0;
 
-
-float speed = 0.1f;                                    // speed used as variable for tank1 speed
+float speed = 0.0005f;                                    // speed used as variable for tank1 speed
 font_data our_font;                                 // font used to print message on display
 float timer;                                        // timer used as game timer to calculate maths with time
 
@@ -66,6 +66,8 @@ void printFunctions();
 
 void drawUserTank();
 void moveTank1Sprite();
+
+void doMath();
 
 
 void printCursor();
@@ -136,7 +138,7 @@ void display()
 		glLoadIdentity();
 
 		track.drawTrackBackground();
-		track.drawEasyTrack();
+		//track.drawEasyTrack();
 
 		
 		int i = 200;
@@ -260,7 +262,7 @@ void display()
 		print(our_font, 20, 95, "COllision!");
 
 		tank1Angle = tank1Angle + 180;
-		for(int i = 0; i < 100 ; i++)
+		for(int i = 0; i < 200 ; i++)
 		{
 			tank1XMovement += tank1Velocity * cosf((90 + tank1Angle) * (PI / 180.0f));
 			tank1YMovement += tank1Velocity * sinf((90 + tank1Angle) * (PI / 180.0f));
@@ -268,8 +270,12 @@ void display()
 		//tank1Angle = tank1Angle + 180;
 	}
 
+	
+
 	/**************************** methods ****************************/
 	printFunctions();
+
+	doMath();
 
 	
 
@@ -278,6 +284,46 @@ void display()
 	
     moveCamera();
 
+}
+
+void doMath()
+{
+	float x1 = 0.0;
+	float y1 = 0.0;
+
+	float x2 = -400.0;
+	float y2 = 0.0;
+
+	float x3 = 0.0;
+	float y3 = 20;
+
+
+	float x2i = x2 * pointTicker;
+	float y2i = y2 * pointTicker;
+
+	float px = x1 + x2i;
+	float py = y1 + y2i;
+
+	// re write angle to be x3 - x2 etc (look at post it notes)
+	float angle = (0 * 550)-(-400 * 1000);
+
+	print(our_font, 5, 100, "px %7.2f", px);
+	print(our_font, 5, 70, "py %7.2f", py);
+	print(our_font, 5, 40, "rotation %7.2f", angle);
+
+
+	glPushMatrix();
+		glColor3f(1, 1, 1);
+		glRotatef(angle, 0, 0, 1);
+		glTranslatef(px, py, 0);
+		glBegin(GL_TRIANGLES);
+			glVertex2f(-10, -10);
+			glVertex2f( 0, 20);
+			glVertex2f(10, -10);
+		glEnd();
+	glPopMatrix();
+	
+	pointTicker += 0.00005;
 }
 
 void moveTank1Sprite()
@@ -324,14 +370,25 @@ void moveCamera()
 {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-		gluOrtho2D((tank1XMovement - screenWidth / 2), (tank1XMovement + screenWidth / 2), (tank1YMovement - screenHeight / 2), (tank1YMovement + screenHeight / 2));
+		glPushMatrix();
+		glColor3f(1,1,1);
+		glLineWidth(100);
+			glBegin(GL_LINE_LOOP);
+				glVertex2f(-1,-1);
+				glVertex2f(-1, 1);
+				glVertex2f(1,1);
+				glVertex2f(1,-1);
+			glEnd();
+		glPopMatrix();
+		print(our_font, 5, 10, "Tank speed: %7.2f", tank1Velocity);
+		gluOrtho2D((tank1XMovement - screenWidth / 4), (tank1XMovement + screenWidth / 4), (tank1YMovement - screenHeight / 4), (tank1YMovement + screenHeight / 4));
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 }
 
 void printFunctions()
 {	
-	print(our_font, 0, 65, "%7.2f", tank1Velocity);
+	
 	//print(our_font, 20, 65, "tank1YMovement: %7.2f", tank1YMovement);
 	//print(our_font, 20, 35, "squareMaxX: %7.2f", squareMaxX);
 	//print(our_font, 20, 5,  "speed: %7.2f", speed);
@@ -417,14 +474,21 @@ void processKeys()
 	}
 	if (keys[VK_UP])
 	{
-		//tank1Velocity += speed;
-		tank1Velocity = speed;
+		if (tank1Velocity > 1.5)
+		{
+			tank1Velocity = tank1Velocity;
+		}
+		else
+		{
+			tank1Velocity += speed;
+		}
+		//tank1Velocity = speed;
 	}
 	if (keys[VK_DOWN])
 	{
 		//tank1Velocity -= 0.0001f;
 		//tank1Velocity = 0;
-		tank1Velocity = -speed;
+		tank1Velocity -= speed;
 	}
 }
 

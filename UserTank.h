@@ -20,9 +20,7 @@ public:
 
 	//POINT point;
 	OBB   tankOBB;
-	GLuint tracks;
-	GLuint body;
-	GLuint barrel;
+	GLuint realisticTank1;
 	float x = 0;
 	float y = 0;
 	float v = 0;

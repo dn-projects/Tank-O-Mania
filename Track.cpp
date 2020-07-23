@@ -29,21 +29,23 @@ GLuint loadTrackPNG(char* name)
 
 void Track::loadTexture()
 {
-	char backgroundPNG[] = "PNG/Environment/sand.png";
-	char roadPNG[] = "PNG/Environment/dirt.png";
+	char road1PNG[] = "PNG/Environment/realisticRoad1.png";
+	char road2PNG[] = "PNG/Environment/realisticRoad3.png";
+	char realisticGrass1PNG[] = "PNG/Environment/realisticGrass1.png";
 
-	background = loadTrackPNG(backgroundPNG);
-	road = loadTrackPNG(roadPNG);
+	road1 = loadTrackPNG(road1PNG);
+	road2 = loadTrackPNG(road2PNG);
+	realisticGrass1 = loadTrackPNG(realisticGrass1PNG);
 }
 
 void Track::drawTrackBackground()
 {
 	// glPushMatrix - draws the whole map size 6000x6000 
-	//and texture maps green to it
+	//and texture maps the realistic grass to it
 	glPushMatrix();
 	glEnable(GL_TEXTURE_2D);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPEAT);
-	glBindTexture(GL_TEXTURE_2D, background);
+	glBindTexture(GL_TEXTURE_2D, realisticGrass1);
 	glBegin(GL_POLYGON);
 	glTexCoord2f(0, 0); glVertex2f(-3000, -3000);
 	glTexCoord2f(0, 60); glVertex2f(-3000, 3000);
@@ -53,19 +55,60 @@ void Track::drawTrackBackground()
 	glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
 
-
+	// draws road 01
+	// road width is 300 and height is 1400
 	glPushMatrix();
 	glEnable(GL_TEXTURE_2D);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPEAT);
-	glBindTexture(GL_TEXTURE_2D, road);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBindTexture(GL_TEXTURE_2D, road1);
 	glBegin(GL_POLYGON);
-	glTexCoord2f(0, 0); glVertex2f(-0, -1000);
-	glTexCoord2f(0, 30); glVertex2f(0, 600);
-	glTexCoord2f(2, 30); glVertex2f(100, 600);
-	glTexCoord2f(2, 0); glVertex2f(100, -1000);
+	glTexCoord2f(0, 0); glVertex2f(-150, -900);
+	glTexCoord2f(0, 3); glVertex2f(-150, 500);
+	glTexCoord2f(1, 3); glVertex2f(150, 500);
+	glTexCoord2f(1, 0); glVertex2f(150, -900);
 	glEnd();
+	glDisable(GL_BLEND);
 	glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
+
+	// draws road 01
+	// road width is 300 and height is 1400
+	glPushMatrix();
+	glEnable(GL_TEXTURE_2D);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPEAT);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBindTexture(GL_TEXTURE_2D, road2);
+	glBegin(GL_POLYGON);
+	glTexCoord2f(0, 0); glVertex2f(-150, 500);
+	glTexCoord2f(0, 1); glVertex2f(-148, 750);
+	glTexCoord2f(1, 1); glVertex2f(150, 750);
+	glTexCoord2f(1, 0); glVertex2f(148, 500);
+	glEnd();
+	glDisable(GL_BLEND);
+	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+
+	// draws road 02
+	//glPushMatrix();
+	//glEnable(GL_TEXTURE_2D);
+	//glBindTexture(GL_TEXTURE_2D, road);
+	////glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPEAT);
+	//glEnable(GL_BLEND);
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glTranslatef(75,550, 0);
+	//glRotatef(45, 0, 0, 1);
+	//glBegin(GL_POLYGON);
+	//glTexCoord2f(0, 0); glVertex2f(-100,-50);
+	//glTexCoord2f(0, 1); glVertex2f(-100, 50);
+	//glTexCoord2f(1, 1); glVertex2f(50, 50);
+	//glTexCoord2f(1, 0); glVertex2f(50, -50);
+	//glEnd();
+	//glDisable(GL_BLEND);
+	//glDisable(GL_TEXTURE_2D);
+	//glPopMatrix();
 }
 
 void Track::drawEasyTrack()
@@ -106,9 +149,9 @@ void Track::drawEasyTrack()
 }
 
 void Track::drawTrackOBB(float x,
-	                               float y,
-	                               float width,
-	                               float height)
+	                     float y,
+	                     float width,
+	                     float height)
 {
 	glPushMatrix();
 	glColor3f(1,1,1);
