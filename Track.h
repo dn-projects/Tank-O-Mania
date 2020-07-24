@@ -18,6 +18,7 @@ public:
 
 	GLuint road1;
 	GLuint road2;
+	GLuint road3;
 	GLuint realisticGrass1;
 	OBB trackOBB;
 	float matrix[16];

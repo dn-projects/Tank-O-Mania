@@ -20,7 +20,8 @@ public:
 
 	//POINT point;
 	OBB   tankOBB;
-	GLuint realisticTank1;
+	GLuint userTankBody;
+	GLuint userTankBarrel;
 	float x = 0;
 	float y = 0;
 	float v = 0;

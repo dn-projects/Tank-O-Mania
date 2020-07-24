@@ -138,7 +138,7 @@ void display()
 		glLoadIdentity();
 
 		track.drawTrackBackground();
-		//track.drawEasyTrack();
+		track.drawEasyTrack();
 
 		
 		int i = 200;
@@ -183,37 +183,33 @@ void display()
 		//Vertex p2 = { tank1XMovement, tank1YMovement };
 	    //int n2 = sizeof(v2) / sizeof(v2[0]);
 
-		/*
+		
 		glPushMatrix();
-			glColor3f(1,1,1);
+			glColor3f(0,0,1);
 			glBegin(GL_LINE_LOOP);
-			glVertex2f(100 + i, 100);
-			glVertex2f(100 + i, 1100);
-			glVertex2f(600 + i, 1600);
-			glVertex2f(900 + i, 1900);
-			glVertex2f(1100 + i, 1100);
-			glVertex2f(1100 + i, 100);
-			glVertex2f(100 + i, 100);
+			glVertex2f(-80, -900);
+			glVertex2f(-80,  500);
+			glVertex2f( 80,  500);
+			glVertex2f( 80, -900);
 			glEnd();
 		glPopMatrix();
-		*/
+		
 
 		//Vertex v[] = { {100 + i,100}, {100 + i,1100}, {600 + i,1600}, {900 + i, 1900}, {1100 + i,1100}, {1100 + i,100}, {100 + i,100} };
-		//Vertex v[] = { {-1500, -1500}, {-1500, 1500}, {1500, 1500}, {1500, -1500} };
-		//Vertex p = {tank1XMovement, tank1YMovement};
-		//int n = sizeof(v) / sizeof(v[0]);
+		Point v[] = { {-100, -900}, {-100, 500}, {100, 500}, {100, -900} };
+		Point p = {tank1XMovement, tank1YMovement};
+		int n = sizeof(v) / sizeof(v[0]);
 
-		//if (!outsideObject(p, v, n) && outsideObject(p2, v2, n2))
-		//{
+		if (!outsideObject(p, v, n))
+		{
 			//speed = 1.5f;
-			//print(our_font, 20, 35, "Inside");
-		//}
-		//else
-		//{
-
+			print(our_font, 20, 150, "Inside");
+		}
+		else
+		{
 			//speed = 1.5f;
-			//print(our_font, 20, 35, "Outside");
-		//}
+			print(our_font, 20, 150, "Outside");
+		}
 
 		
 		//drawCircle(0, 0, 2000, 179);
@@ -257,18 +253,18 @@ void display()
 
 	float tempX = 0.0f;
 
-	if (userTank.tankOBB.SAT2D(track.trackOBB))
-	{
-		print(our_font, 20, 95, "COllision!");
+	//if (userTank.tankOBB.SAT2D(track.trackOBB))
+	//{
+	//	print(our_font, 20, 95, "COllision!");
 
-		tank1Angle = tank1Angle + 180;
-		for(int i = 0; i < 200 ; i++)
-		{
-			tank1XMovement += tank1Velocity * cosf((90 + tank1Angle) * (PI / 180.0f));
-			tank1YMovement += tank1Velocity * sinf((90 + tank1Angle) * (PI / 180.0f));
-		} 
-		//tank1Angle = tank1Angle + 180;
-	}
+	//	tank1Angle = tank1Angle + 180;
+	//	for(int i = 0; i < 200 ; i++)
+	//	{
+	//		tank1XMovement += tank1Velocity * cosf((90 + tank1Angle) * (PI / 180.0f));
+	//		tank1YMovement += tank1Velocity * sinf((90 + tank1Angle) * (PI / 180.0f));
+	//	} 
+	//	//tank1Angle = tank1Angle + 180;
+	//}
 
 	
 
@@ -488,7 +484,8 @@ void processKeys()
 	{
 		//tank1Velocity -= 0.0001f;
 		//tank1Velocity = 0;
-		tank1Velocity -= speed;
+		float downSpeed = tank1Velocity > 0 ? speed * 6 : speed / 4;
+		tank1Velocity -= downSpeed;
 	}
 }
 
