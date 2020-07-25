@@ -7,7 +7,11 @@
 #include "OBB.h"
 #include "Image_Loading/nvImage.h"
 #include "FreeType.h"
+#include "Asset.h"
 #include <iostream>
+#include <vector>
+
+using namespace std;
 
 class Track
 {
@@ -16,12 +20,10 @@ private:
 
 public:
 
-	GLuint road1;
-	GLuint road2;
-	GLuint road3;
-	GLuint realisticGrass1;
+	GLuint background;
 	OBB trackOBB;
 	float matrix[16];
+	std::vector<Asset> mapAssets;
 
 	Track() { }
 
@@ -37,5 +39,8 @@ public:
 	void drawIntermediateTrack();
 
 	void drawHardTrack();
+
+	
+	void drawMapAssets();
 };
 

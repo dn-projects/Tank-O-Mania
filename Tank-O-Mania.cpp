@@ -1,5 +1,9 @@
 #include "UserTank.h"
 #include "Track.h"
+#include "Asset.h"
+#include <vector>
+
+using namespace std;
 
 using namespace freetype;
 
@@ -13,6 +17,8 @@ bool keys[256];
 
 Track track = Track();
 UserTank userTank = UserTank();
+
+std::vector<Point> pointsForAi;
 
 float pointTicker = 0.0;
 
@@ -81,6 +87,7 @@ void init();				//called in winmain when the program starts.
 void processKeys();			//called in winmain to process keyboard controls
 
 
+
 GLuint loadPNG(char* name)
 {
 	// Texture loading object
@@ -118,27 +125,54 @@ void init()
 	                                      // the buffer to this colour.
 
 	our_font.init("arialbd.TTF", 22);     //Build the freetype font
+	
+
 
 	track.loadTexture();
+	track.drawTrackBackground();
 
+
+	Point p1 = {-80,-40};
+	Point p2 = {0,60};
+	Point p3 = {80,40};
+	Point p4 = {0,0};
+	
+
+	pointsForAi.push_back(p1);
+	pointsForAi.push_back(p2);
+	pointsForAi.push_back(p3);
+	pointsForAi.push_back(p4);
 
 	userTank.loadTexture();
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+	
 }
+
+int oldTimeSinceStart = 0;
+
+
+
+
 
 /*************    START OF OPENGL FUNCTIONS   ****************/
 void display()
 {	
+	//int timeSinceStart = glutGet(GLUT_ELAPSED_TIME);
+	//int deltaTime = timeSinceStart - oldTimeSinceStart;
+	//oldTimeSinceStart = timeSinceStart;
 
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
-		track.drawTrackBackground();
-		track.drawEasyTrack();
+
+
+
+		//track.drawEasyTrack();
+
 
 		
 		int i = 200;
@@ -264,62 +298,74 @@ void display()
 	//		tank1YMovement += tank1Velocity * sinf((90 + tank1Angle) * (PI / 180.0f));
 	//	} 
 	//	//tank1Angle = tank1Angle + 180;
-	//}
+	//}	
+
+
+	
+
 
 	
 
 	/**************************** methods ****************************/
 	printFunctions();
 
-	doMath();
+	//doMath();
 
-	
+	track.drawMapAssets();
 
 	drawUserTank();
     moveTank1Sprite();
 	
-    moveCamera();
+    //moveCamera();
 
 }
 
 void doMath()
 {
-	float x1 = 0.0;
-	float y1 = 0.0;
+	float i = 0;
+	float px;
+	float py;
 
-	float x2 = -400.0;
-	float y2 = 0.0;
+	do
+	{
+		float x1 = 0.0;
+		float y1 = 0.0;
 
-	float x3 = 0.0;
-	float y3 = 20;
+		float x2 = -80.0;
+		float y2 = 100.0;
 
-
-	float x2i = x2 * pointTicker;
-	float y2i = y2 * pointTicker;
-
-	float px = x1 + x2i;
-	float py = y1 + y2i;
-
-	// re write angle to be x3 - x2 etc (look at post it notes)
-	float angle = (0 * 550)-(-400 * 1000);
-
-	print(our_font, 5, 100, "px %7.2f", px);
-	print(our_font, 5, 70, "py %7.2f", py);
-	print(our_font, 5, 40, "rotation %7.2f", angle);
+		//float x3 = 0.0;
+		//float y3 = 20;
 
 
-	glPushMatrix();
+		float x2i = pointsForAi[i].x * pointTicker;
+		float y2i = pointsForAi[i].y * pointTicker;
+
+		px = x1 + x2i;
+		py = y1 + y2i;
+
+		// re write angle to be x3 - x2 etc (look at post it notes)
+		//float angle = (0 * 550)-(-400 * 1000);
+
+		print(our_font, 5, 100, "px %7.2f", px);
+		print(our_font, 5, 70, "py %7.2f", py);
+		//print(our_font, 5, 40, "rotation %7.2f", angle);
+
+
+		glPushMatrix();
 		glColor3f(1, 1, 1);
-		glRotatef(angle, 0, 0, 1);
+		//glRotatef(angle, 0, 0, 1);
 		glTranslatef(px, py, 0);
 		glBegin(GL_TRIANGLES);
-			glVertex2f(-10, -10);
-			glVertex2f( 0, 20);
-			glVertex2f(10, -10);
+		glVertex2f(-10, -10);
+		glVertex2f(0, 20);
+		glVertex2f(10, -10);
 		glEnd();
-	glPopMatrix();
+		glPopMatrix();
+
+		pointTicker += 0.0005;
+	} while (pointsForAi[i].x >= px && pointsForAi[i].y >= py);
 	
-	pointTicker += 0.00005;
 }
 
 void moveTank1Sprite()
@@ -384,7 +430,6 @@ void moveCamera()
 
 void printFunctions()
 {	
-	
 	//print(our_font, 20, 65, "tank1YMovement: %7.2f", tank1YMovement);
 	//print(our_font, 20, 35, "squareMaxX: %7.2f", squareMaxX);
 	//print(our_font, 20, 5,  "speed: %7.2f", speed);
@@ -452,7 +497,7 @@ void reshape(int width, int height)		// Resize the OpenGL window
 	glMatrixMode(GL_PROJECTION);						// Select The Projection Matrix
 	glLoadIdentity();									// Reset The Projection Matrix
 
-	//gluOrtho2D(-4000, 4000, -4000, 4000);             // View whole map 
+	gluOrtho2D(-4000, 4000, -4000, 4000);             // View whole map 
 
 	glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
 	glLoadIdentity();									// Reset The Modelview Matrix

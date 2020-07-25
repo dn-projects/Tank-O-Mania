@@ -150,6 +150,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Asset.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="FreeType.h" />
     <ClInclude Include="glew.h" />
@@ -160,6 +161,7 @@
     <ClInclude Include="UserTank.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Asset.cpp" />
     <ClCompile Include="FreeType.cpp" />
     <ClCompile Include="OBB.cpp" />
     <ClCompile Include="Tank-O-Mania.cpp" />

@@ -29,8 +29,8 @@ GLuint loadTankPNG(char* name)
 
 void UserTank::loadTexture()
 {
-	char userTankBodyPNG[] = "PNG/Retina/towerDefense_tile268.png";
-	char userTankBarrelPNG[] = "PNG/Retina/towerDefense_tile291.png";
+	char userTankBodyPNG[] = "PNG/Assets/towerDefense_tile268.png";
+	char userTankBarrelPNG[] = "PNG/Assets/towerDefense_tile291.png";
 
 	userTankBody = loadTankPNG(userTankBodyPNG);
 	userTankBarrel = loadTankPNG(userTankBarrelPNG);
