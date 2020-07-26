@@ -38,121 +38,42 @@ void Track::loadTexture()
 	int x = -1920;
 	int y = 1920;
 	string row;
-	//vector<Asset> mapAssets;
-	if (inFile.is_open()) {
-		//cout << "test" << endl;
-		//Read until no more lines in text file to read
+	if (inFile.is_open()) 
+	{
 		while (getline(inFile, row))
-			//while (inFile >> row)
 		{
 			istringstream ss(row);
 			string token;
 
-			//Separate string based on commas and white spaces
 			while (getline(ss, token, ' '))
 			{
 				Asset asset = Asset();
 				asset.x = x;
 				asset.y = y;
 				asset.applyTexture(stoi(token));
-				//Push each token to the vector
 				mapAssets.push_back(asset);
 				x += 128;
 
 			}
-
 			x = -1920;
 			y -= 128;
-
 		}
 	}
 }
 
-
-
-
-
-/*char backgroundPNG[] = "PNG/Assets/towerDefense_tile098.png";
-
-background = loadTrackPNG(backgroundPNG);
-for (int i = -64; i < 640; i += 128)
+void Track::drawMapAssets()
 {
-	char png[] = "PNG/Assets/towerDefense_tile257.png";
-	Asset asset = Asset();
-	asset.x = -64;
-	asset.y = i;
-	asset.applyTexture(png);
-	mapAssets.push_back(asset);
-
-	char png1[] = "PNG/Assets/grassLeft1.png";
-	Asset asset2 = Asset();
-	asset2.x = -192;
-	asset2.y = i;
-	asset2.applyTexture(png1);
-	mapAssets.push_back(asset2);
-
-	char png2[] = "PNG/Assets/grassRight1.png";
-	Asset asset3 = Asset();
-	asset3.x = 64;
-	asset3.y = i;
-	asset3.applyTexture(png2);
-	mapAssets.push_back(asset3);
-}*/
-
-
-void Track::drawTrackBackground()
-{
-	// glPushMatrix - draws the whole map size 6000x6000 
-	//and texture maps the realistic grass to it
-	glPushMatrix();
-	glEnable(GL_TEXTURE_2D);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPEAT);
-	glBindTexture(GL_TEXTURE_2D, background);
-	glBegin(GL_POLYGON);
-	glTexCoord2f(0, 0); glVertex2f(-3000, -3000);
-	glTexCoord2f(0, 80); glVertex2f(-3000, 3000);
-	glTexCoord2f(80, 80); glVertex2f(3000, 3000);
-	glTexCoord2f(80, 0); glVertex2f(3000, -3000);
-	glEnd();
-	glDisable(GL_TEXTURE_2D);
-	glPopMatrix();
-}
-
-void Track::drawEasyTrack()
-{
-	// left line
-	glPushMatrix();
-	glColor3f(1, 0, 0);
-	glBegin(GL_LINE_STRIP);
-	glVertex2f(0, 0);
-	glVertex2f(0, 500);
-	glVertex2f(-2000, 500);
-	glVertex2f(-2000, -2000);
-	glVertex2f(2000, -2000);
-	glVertex2f(2000, 2000);
-	glVertex2f(1000, 2000);
-	glVertex2f(1000, -1000);
-	glVertex2f(0, -1000);
-	glVertex2f(0, 0);
-	glEnd();
-	glPopMatrix();
-
-	// right line
-	glPushMatrix();
-	glColor3f(1, 0, 0);
-	glBegin(GL_LINE_STRIP);
-	glVertex2f(100, 0);
-	glVertex2f(100, 750);
-	glVertex2f(-2100, 750);
-	glVertex2f(-2100, -2100);
-	glVertex2f(2100, -2100);
-	glVertex2f(2100, 2100);
-	glVertex2f(900, 2100);
-	glVertex2f(900, -900);
-	glVertex2f(100, -900);
-	glVertex2f(100, 0);
-	glEnd();
-	glPopMatrix();
+	for (Asset asset : mapAssets) 
+	{
+		asset.drawAsset();
+		glPushMatrix();
+		glColor3f(1, 1, 1);
+		glPointSize(2.0);
+		glBegin(GL_POINTS);
+		glVertex2f(asset.x, asset.y);
+		glEnd();
+		glPopMatrix();
+	}
 }
 
 void Track::drawTrackOBB(float x,
@@ -171,7 +92,7 @@ void Track::drawTrackOBB(float x,
 	glGetFloatv(GL_MODELVIEW_MATRIX, matrix);
 	glPopMatrix();
 
-	trackOBB.vertOriginal[0].x = x;
+	trackOBB.vertOriginal[0].x = x; 
 	trackOBB.vertOriginal[0].y = y;
 
 	trackOBB.vertOriginal[1].x = x;
@@ -244,13 +165,4 @@ void Track::drawHardTrack()
 	glVertex2f(0, 0);
 	glEnd();
 	glPopMatrix();
-}
-
-
-void Track::drawMapAssets()
-{
-	for (Asset asset : mapAssets) {
-		asset.drawAsset();
-	}
-
 }

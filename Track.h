@@ -20,18 +20,15 @@ private:
 
 public:
 
-	GLuint background;
 	OBB trackOBB;
+	GLuint background;
 	float matrix[16];
-	std::vector<Asset> mapAssets;
+	vector<Asset> mapAssets;
+	vector<OBB> mapOBBs;
 
 	Track() { }
 
 	void loadTexture();
-
-	void drawTrackBackground();
-
-	void drawEasyTrack();
 
 	void drawTrackOBB(float x,     float y, 
 		             float width, float height);

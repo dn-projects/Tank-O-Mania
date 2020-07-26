@@ -22,7 +22,8 @@ std::vector<Point> pointsForAi;
 
 float pointTicker = 0.0;
 
-float speed = 0.0005f;                                    // speed used as variable for tank1 speed
+float speed = 1.0f; // for testing
+//float speed = 0.0005f;                                    // speed used as variable for tank1 speed
 font_data our_font;                                 // font used to print message on display
 float timer;                                        // timer used as game timer to calculate maths with time
 
@@ -71,7 +72,6 @@ void circleCollison();
 void printFunctions();
 
 void drawUserTank();
-void moveTank1Sprite();
 
 void doMath();
 
@@ -126,23 +126,7 @@ void init()
 
 	our_font.init("arialbd.TTF", 22);     //Build the freetype font
 	
-
-
 	track.loadTexture();
-	track.drawTrackBackground();
-
-
-	Point p1 = {-80,-40};
-	Point p2 = {0,60};
-	Point p3 = {80,40};
-	Point p4 = {0,0};
-	
-
-	pointsForAi.push_back(p1);
-	pointsForAi.push_back(p2);
-	pointsForAi.push_back(p3);
-	pointsForAi.push_back(p4);
-
 	userTank.loadTexture();
 
 	glMatrixMode(GL_MODELVIEW);
@@ -163,129 +147,27 @@ void display()
 	//int deltaTime = timeSinceStart - oldTimeSinceStart;
 	//oldTimeSinceStart = timeSinceStart;
 
-		glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT);
 
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	//Vertex v[] = { {100 + i,100}, {100 + i,1100}, {600 + i,1600}, {900 + i, 1900}, {1100 + i,1100}, {1100 + i,100}, {100 + i,100} };
+	//Point v[] = { {-100, -900}, {-100, 500}, {100, 500}, {100, -900} };
+	//Point p = {tank1XMovement, tank1YMovement};
+	//int n = sizeof(v) / sizeof(v[0]);
+	//if (!outsideObject(p, v, n))
+	//{
+		//speed = 1.5f;
+		//print(our_font, 20, 150, "Inside");
+	//}
+	//else
+	//{
+		//speed = 1.5f;
+		//print(our_font, 20, 150, "Outside");
+	//}
 
 
-
-
-		//track.drawEasyTrack();
-
-
-		
-		int i = 200;
-		/*
-		glPushMatrix();
-		glColor3f(1, 1, 1);
-		glBegin(GL_LINE_LOOP);
-			glVertex2f(-50 + i, 0);
-			glVertex2f(-50 + i, 1500);
-			glVertex2f(500 + i, 2000);
-			glVertex2f(1000 + i, 2100);
-			glVertex2f(1300 + i, 1300);
-			glVertex2f(1300 + i, 0);
-			glVertex2f(-50 + i, 0);
-		glEnd();
-		glPopMatrix();
-		
-
-		glPushMatrix();
-		glColor3f(1, 1, 1);
-		glBegin(GL_LINE_LOOP);
-			glVertex2f(1000, 1000);
-			glVertex2f(1000, -1000);
-			glVertex2f(-1000, -1000);
-			glVertex2f(-1000, 1000);
-		glEnd();
-		glPopMatrix();
-		
-		glPushMatrix();
-		glColor3f(1, 1, 1);
-		glBegin(GL_LINE_LOOP);
-			glVertex2f(1500, 1500);
-			glVertex2f(1500, -1500);
-			glVertex2f(-1500, -1500);
-			glVertex2f(-1500, 1500);
-		glEnd();
-		glPopMatrix();
-		*/
-
-		//Vertex v2[] = { {-50 + i,0}, {-50 + i, 1500}, {500 + i,2000}, {1000 + i, 2100}, {1300 + i,1300}, {1300 + i, 0}, {0 + i, 0} };
-		//Vertex v2[] = { {-1000, -1000}, {-1000, 1000}, {1000, 1000}, {1000, -1000} };
-		//Vertex p2 = { tank1XMovement, tank1YMovement };
-	    //int n2 = sizeof(v2) / sizeof(v2[0]);
-
-		
-		glPushMatrix();
-			glColor3f(0,0,1);
-			glBegin(GL_LINE_LOOP);
-			glVertex2f(-80, -900);
-			glVertex2f(-80,  500);
-			glVertex2f( 80,  500);
-			glVertex2f( 80, -900);
-			glEnd();
-		glPopMatrix();
-		
-
-		//Vertex v[] = { {100 + i,100}, {100 + i,1100}, {600 + i,1600}, {900 + i, 1900}, {1100 + i,1100}, {1100 + i,100}, {100 + i,100} };
-		Point v[] = { {-100, -900}, {-100, 500}, {100, 500}, {100, -900} };
-		Point p = {tank1XMovement, tank1YMovement};
-		int n = sizeof(v) / sizeof(v[0]);
-
-		if (!outsideObject(p, v, n))
-		{
-			//speed = 1.5f;
-			print(our_font, 20, 150, "Inside");
-		}
-		else
-		{
-			//speed = 1.5f;
-			print(our_font, 20, 150, "Outside");
-		}
-
-		
-		//drawCircle(0, 0, 2000, 179);
-
-		/*
-		for (int i = 64; i < 2000; i+=64)
-		{
-			glPushMatrix();
-			glEnable(GL_TEXTURE_2D);
-			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-			glBindTexture(GL_TEXTURE_2D, track2);
-			glBegin(GL_POLYGON);
-			glTexCoord2f(0, 0); glVertex2f(i, i);
-			glTexCoord2f(0, 1); glVertex2f(64 + i, i);
-			glTexCoord2f(1, 1); glVertex2f(64 + i, 64 + i);
-			glTexCoord2f(1, 0); glVertex2f(i, 64 + i);
-			glEnd();
-			glDisable(GL_TEXTURE_2D);
-			glPopMatrix();
-		}
-		
-
-		for (int i = 64; i > -640; i-=64)
-		{
-			glPushMatrix();
-			glEnable(GL_TEXTURE_2D);
-			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-			glBindTexture(GL_TEXTURE_2D, track2);
-			glBegin(GL_POLYGON);
-				glTexCoord2f(0, 0); glVertex2f(i, i);
-				glTexCoord2f(0, 1); glVertex2f(i - 64, i);
-				glTexCoord2f(1, 1); glVertex2f(i - 64, i - 64);
-				glTexCoord2f(1, 0); glVertex2f(i, i - 64);
-			glEnd();
-			glDisable(GL_TEXTURE_2D);
-			glPopMatrix();
-		}
-		*/
-
-	glFlush();
-
-	float tempX = 0.0f;
 
 	//if (userTank.tankOBB.SAT2D(track.trackOBB))
 	//{
@@ -300,24 +182,109 @@ void display()
 	//	//tank1Angle = tank1Angle + 180;
 	//}	
 
-
 	
 
-
-	
-
+	glFlush();
 	/**************************** methods ****************************/
-	printFunctions();
-
-	//doMath();
-
-	track.drawMapAssets();
-
-	drawUserTank();
-    moveTank1Sprite();
 	
+	
+	printFunctions();
+	//doMath();
+	track.drawMapAssets();
+	drawUserTank();
     //moveCamera();
 
+	// changed speed, removed limiter, changed angle
+
+	glPushMatrix();
+	glColor3f(0, 0, 1);
+	glPointSize(5.0);
+	glBegin(GL_QUADS);
+	glVertex2f(-1040, -1168);
+	glVertex2f(-1040, 1168);
+	glVertex2f(-112, 1168);
+	glVertex2f(-112, -1168);
+	glEnd();
+	glPopMatrix();
+
+	glPushMatrix();
+	glColor3f(0, 1, 0);
+	glPointSize(5.0);
+	glBegin(GL_QUADS);
+	glVertex2f(-112, -1168);
+	glVertex2f(-112, -482);
+	glVertex2f(1265, -482);
+	glVertex2f(1265, -1168);
+	glEnd();
+	glPopMatrix();
+
+	glPushMatrix();
+	glColor3f(1, 0, 0);
+	glPointSize(5.0);
+	glBegin(GL_QUADS);
+	glVertex2f(1265, -1168);	
+	glVertex2f(1265, 910);	
+	glVertex2f(1420, 910);	
+	glVertex2f(1420, -1168);	
+	glEnd();
+	glPopMatrix();
+
+	glPushMatrix();
+	glColor3f(0, 0, 1);
+	glPointSize(5.0);
+	glBegin(GL_QUADS);
+	glVertex2f(-1920, -1920);
+	glVertex2f(-1920, 2048);
+	glVertex2f(-1392, 2048);
+	glVertex2f(-1392, -1920);
+
+	glPushMatrix();
+	glColor3f(0, 1, 0);
+	glPointSize(5.0);
+	glBegin(GL_QUADS);
+	glVertex2f(-1920, -1920);
+	glVertex2f(-1920, -1520);
+	glVertex2f(1920, -1520);
+	glVertex2f(1920, -1920);
+
+	glPushMatrix();
+	glColor3f(1, 0, 0);
+	glPointSize(5.0);
+	glBegin(GL_QUADS);
+	glVertex2f(-1920, 1520);
+	glVertex2f(-1920, 2048);
+	glVertex2f(1920, 2048);
+	glVertex2f(1920, 1520);
+
+	glPushMatrix();
+	glColor3f(0, 0, 1);
+	glPointSize(5.0);
+	glBegin(GL_QUADS);
+	glVertex2f(1772, -1920);
+	glVertex2f(1772, 2048);
+	glVertex2f(1920, 2048);
+	glVertex2f(1920, -1920);
+
+	glPushMatrix();
+	glColor3f(1, 1, 1);
+	glPointSize(5.0);
+	glBegin(GL_QUADS);
+	glVertex2f(240, -130);
+	glVertex2f(240, 1520);
+	glVertex2f(913, 1520);
+	glVertex2f(913, -130);
+
+	glPushMatrix();
+	glColor3f(0, 1, 0);
+	glPointSize(5.0);
+	glBegin(GL_QUADS);
+	glVertex2f(913, 1264);
+	glVertex2f(913, 1520);
+	glVertex2f(1920, 1520);
+	glVertex2f(1920, 1264);
+
+	glEnd();
+	glPopMatrix();
 }
 
 void doMath()
@@ -368,24 +335,15 @@ void doMath()
 	
 }
 
-void moveTank1Sprite()
-{
-	//update the position of the user controlled object.
+void drawUserTank()
+{	
 	tank1XMovement += tank1Velocity * cosf((90 + tank1Angle) * (PI / 180.0f));
 	tank1YMovement += tank1Velocity * sinf((90 + tank1Angle) * (PI / 180.0f));
-}
-
-void drawUserTank()
-{
+	
 	userTank.x = tank1XMovement;
 	userTank.y = tank1YMovement;
 	userTank.direction = tank1Angle;
-
 	userTank.tankOBB.transformPoints(userTank.matrix);
-
-	track.trackOBB.transformPoints(track.matrix);
-	track.drawTrackOBB(100, -900, 100, 1000);
-	
 	userTank.drawTank();
 	userTank.setOBBPoints();
 }
@@ -507,22 +465,24 @@ void processKeys()
 {
 	if (keys[VK_LEFT])
 	{
-		tank1Angle += 0.4;
+		//tank1Angle += 0.4;
+		tank1Angle += 1;
 	}
 	if (keys[VK_RIGHT])
 	{
-		tank1Angle -= 0.4;
+		//tank1Angle -= 0.4;
+		tank1Angle -= 1;
 	}
 	if (keys[VK_UP])
 	{
-		if (tank1Velocity > 1.5)
-		{
-			tank1Velocity = tank1Velocity;
-		}
-		else
-		{
+		//if (tank1Velocity > 1.5)
+		//{
+			//tank1Velocity = tank1Velocity;
+		//}
+		//else
+		//{
 			tank1Velocity += speed;
-		}
+		//}
 		//tank1Velocity = speed;
 	}
 	if (keys[VK_DOWN])
