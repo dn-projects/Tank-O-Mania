@@ -24,14 +24,16 @@ public:
 	GLuint background;
 	float matrix[16];
 	vector<Asset> mapAssets;
-	vector<OBB> mapOBBs;
+	vector<OBB> mapOffTrackOBBs;
+	vector<Asset> mapBarrierOBBs;
 
 	Track() { }
 
 	void loadTexture();
 
-	void drawTrackOBB(float x,     float y, 
-		             float width, float height);
+	void drawOffTrackOBB();
+
+	void drawTrackBarrierOBB();
 
 	void drawIntermediateTrack();
 

@@ -123,17 +123,17 @@ void Asset::setOBB1Points(Point bottomLeft, Point topLeft, Point topRight, Point
 	////glGetFloatv(GL_MODELVIEW_MATRIX, matrix);
 	//glPopMatrix();
 
-	OBB1.vertOriginal[0].x = bottomLeft.x;
-	OBB1.vertOriginal[0].y = bottomLeft.y;
+	OBB1.vert[0].x = bottomLeft.x;
+	OBB1.vert[0].y = bottomLeft.y;
 
-	OBB1.vertOriginal[1].x = topLeft.x;
-	OBB1.vertOriginal[1].y = topLeft.y;
+	OBB1.vert[1].x = topLeft.x;
+	OBB1.vert[1].y = topLeft.y;
 
-	OBB1.vertOriginal[2].x = topRight.x;
-	OBB1.vertOriginal[2].y = topRight.y;
+	OBB1.vert[2].x = topRight.x;
+	OBB1.vert[2].y = topRight.y;
 
-	OBB1.vertOriginal[3].x = bottomRight.x;
-	OBB1.vertOriginal[3].y = bottomRight.y;
+	OBB1.vert[3].x = bottomRight.x;
+	OBB1.vert[3].y = bottomRight.y;
 }
 
 void Asset::setOBB2Points(Point bottomLeft, Point topLeft, Point topRight, Point bottomRight)
@@ -149,17 +149,17 @@ void Asset::setOBB2Points(Point bottomLeft, Point topLeft, Point topRight, Point
 	//glGetFloatv(GL_MODELVIEW_MATRIX, matrix);
 	//glPopMatrix();
 
-	OBB2.vertOriginal[0].x = bottomLeft.x;
-	OBB2.vertOriginal[0].y = bottomLeft.y;
+	OBB2.vert[0].x = bottomLeft.x;
+	OBB2.vert[0].y = bottomLeft.y;
 
-	OBB2.vertOriginal[1].x = topLeft.x;
-	OBB1.vertOriginal[1].y = topLeft.y;
+	OBB2.vert[1].x = topLeft.x;
+	OBB1.vert[1].y = topLeft.y;
 
-	OBB2.vertOriginal[2].x = topRight.x;
-	OBB2.vertOriginal[2].y = topRight.y;
+	OBB2.vert[2].x = topRight.x;
+	OBB2.vert[2].y = topRight.y;
 
-	OBB2.vertOriginal[3].x = bottomRight.x;
-	OBB2.vertOriginal[3].y = bottomRight.y;
+	OBB2.vert[3].x = bottomRight.x;
+	OBB2.vert[3].y = bottomRight.y;
 }
 
 void Asset::setOBB3Points(Point bottomLeft, Point topLeft, Point topRight, Point bottomRight)
@@ -175,15 +175,15 @@ void Asset::setOBB3Points(Point bottomLeft, Point topLeft, Point topRight, Point
 	//glGetFloatv(GL_MODELVIEW_MATRIX, matrix);
 	//glPopMatrix();
 
-	OBB3.vertOriginal[0].x = bottomLeft.x;
-	OBB3.vertOriginal[0].y = bottomLeft.y;
+	OBB3.vert[0].x = bottomLeft.x;
+	OBB3.vert[0].y = bottomLeft.y;
 
-	OBB3.vertOriginal[1].x = topLeft.x;
-	OBB3.vertOriginal[1].y = topLeft.y;
+	OBB3.vert[1].x = topLeft.x;
+	OBB3.vert[1].y = topLeft.y;
 
-	OBB3.vertOriginal[2].x = topRight.x;
-	OBB3.vertOriginal[2].y = topRight.y;
+	OBB3.vert[2].x = topRight.x;
+	OBB3.vert[2].y = topRight.y;
 
-	OBB3.vertOriginal[3].x = bottomRight.x;
-	OBB3.vertOriginal[3].y = bottomRight.y;
+	OBB3.vert[3].x = bottomRight.x;
+	OBB3.vert[3].y = bottomRight.y;
 }

@@ -76,33 +76,132 @@ void Track::drawMapAssets()
 	}
 }
 
-void Track::drawTrackOBB(float x,
-	float y,
-	float width,
-	float height)
+void Track::drawOffTrackOBB()
 {
-	glPushMatrix();
-	glColor3f(1, 1, 1);
-	glBegin(GL_LINE_STRIP);
-	glVertex2f(x, y);
-	glVertex2f(x, y + height);
-	glVertex2f(x + width, y + height);
-	glVertex2f(x + width, y);
-	glEnd();
-	glGetFloatv(GL_MODELVIEW_MATRIX, matrix);
-	glPopMatrix();
+	OBB obb1 = OBB();
+	obb1.vert[0].x = -1040;
+	obb1.vert[0].y = -1168;
+	obb1.vert[1].x = -1040;
+	obb1.vert[1].y = 1168;
+	obb1.vert[2].x = -112;
+	obb1.vert[2].y = 1168;
+	obb1.vert[3].x = -112;
+	obb1.vert[3].y = -1168;
+	mapOffTrackOBBs.push_back(obb1);
 
-	trackOBB.vertOriginal[0].x = x; 
-	trackOBB.vertOriginal[0].y = y;
+	OBB obb2 = OBB();
+	obb2.vert[0].x = -112;
+	obb2.vert[0].y = -1168;
+	obb2.vert[1].x = -112;
+	obb2.vert[1].y = -482;
+	obb2.vert[2].x = 1265;
+	obb2.vert[2].y = -482;
+	obb2.vert[3].x = 1265;
+	obb2.vert[3].y = -1168;
+	mapOffTrackOBBs.push_back(obb2);
 
-	trackOBB.vertOriginal[1].x = x;
-	trackOBB.vertOriginal[1].y = y + height;
+	OBB obb3 = OBB();
+	obb3.vert[0].x = 1265;
+	obb3.vert[0].y = -1168;
+	obb3.vert[1].x = 1265;
+	obb3.vert[1].y = 910;
+	obb3.vert[2].x = 1420;
+	obb3.vert[2].y = 910;
+	obb3.vert[3].x = 1420;
+	obb3.vert[3].y = -1168;
+	mapOffTrackOBBs.push_back(obb3);
 
-	trackOBB.vertOriginal[2].x = x + width;
-	trackOBB.vertOriginal[2].y = y + height;
+	OBB obb4 = OBB();
+	obb4.vert[0].x = -1920;
+	obb4.vert[0].y = -1920;
+	obb4.vert[1].x = -1920;
+	obb4.vert[1].y = 2048;
+	obb4.vert[2].x = -1392;
+	obb4.vert[2].y = 2048;
+	obb4.vert[3].x = -1392;
+	obb4.vert[3].y = -1920;
+	mapOffTrackOBBs.push_back(obb4);
 
-	trackOBB.vertOriginal[3].x = x + width;
-	trackOBB.vertOriginal[3].y = y;
+	OBB obb5 = OBB();
+	obb5.vert[0].x = -1920;
+	obb5.vert[0].y = -1920;
+	obb5.vert[1].x = -1920;
+	obb5.vert[1].y = -1520;
+	obb5.vert[2].x = 1920;
+	obb5.vert[2].y = -1520;
+	obb5.vert[3].x = 1920;
+	obb5.vert[3].y = -1920;
+	mapOffTrackOBBs.push_back(obb5);
+
+	OBB obb6 = OBB();
+	obb6.vert[0].x = -1920;
+	obb6.vert[0].y = 1520;
+	obb6.vert[1].x = -1920;
+	obb6.vert[1].y = 2048;
+	obb6.vert[2].x = 1920;
+	obb6.vert[2].y = 2048;
+	obb6.vert[3].x = 1920;
+	obb6.vert[3].y = 1520;
+	mapOffTrackOBBs.push_back(obb6);
+
+	OBB obb7 = OBB();
+	obb7.vert[0].x = 1772;
+	obb7.vert[0].y = -1920;
+	obb7.vert[1].x = 1772;
+	obb7.vert[1].y = 2048;
+	obb7.vert[2].x = 1920;
+	obb7.vert[2].y = 2048;
+	obb7.vert[3].x = 1920;
+	obb7.vert[3].y = -1920;
+	mapOffTrackOBBs.push_back(obb7);
+
+	OBB obb8 = OBB();
+	obb8.vert[0].x = 240;
+	obb8.vert[0].y = -130;
+	obb8.vert[1].x = 240;
+	obb8.vert[1].y = 1520;
+	obb8.vert[2].x = 913;
+	obb8.vert[2].y = 1520;
+	obb8.vert[3].x = 913;
+	obb8.vert[3].y = -130;
+	mapOffTrackOBBs.push_back(obb8);
+
+	OBB obb9 = OBB();
+	obb9.vert[0].x = 913;
+	obb9.vert[0].y = 1264;
+	obb9.vert[1].x = 913;
+	obb9.vert[1].y = 1520;
+	obb9.vert[2].x = 1920;
+	obb9.vert[2].y = 1520;
+	obb9.vert[3].x = 1920;
+	obb9.vert[3].y = 1264;
+	mapOffTrackOBBs.push_back(obb9);
+}
+
+void Track::drawTrackBarrierOBB()
+{
+	char png[] = "PNG/Assets/fenceRed.png";
+
+	//Asset asset1 = Asset();
+	//asset1.x = -200;
+	//asset1.y = 0;
+	//asset1.width = 16;
+	//asset1.height = 48;
+	//asset1.texture = loadTrackPNG(png);
+	//asset1.setOBB1Points({-200,0}, { -200,48 }, { -184,48 }, { -184, 0 });
+	//mapBarrierOBBs.push_back(asset1);
+
+	for (float i = 0; i < 1100; i += 48)
+	{
+		Asset asset = Asset();
+		asset.x = -200;
+		asset.y = i;
+		asset.width = 16;
+		asset.height = 48;
+		asset.texture = loadTrackPNG(png);
+		asset.setOBB1Points({ -200,i }, { -200,i + 48 }, { -184,i + 48 }, { -184, i });
+		mapBarrierOBBs.push_back(asset);
+	}
 }
 
 void Track::drawIntermediateTrack()

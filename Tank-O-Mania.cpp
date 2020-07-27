@@ -12,27 +12,35 @@ const float PI = 3.1415926535897932384626433832795f;
 POINT p;
 int	mouse_x = 0, mouse_y = 0;
 bool LeftPressed = false;
-int screenWidth = 480, screenHeight = 480;
+int screenWidth = 700, screenHeight = 700;
 bool keys[256];
+GLint gameState = 0;
+bool F1 = false;
+bool F2 = false;
+bool menu = false;
+
+/***** gamePlaySpeed method variables *****/
+__int64 previousTime = 0;
+bool beginGame = false;
+double gameSpeed = 0.000003;  // change to change speed of game
+
+double deltaTime;
+
 
 Track track = Track();
 UserTank userTank = UserTank();
+Asset picture = Asset();
 
 std::vector<Point> pointsForAi;
 
 float pointTicker = 0.0;
 
-float speed = 1.0f; // for testing
-//float speed = 0.0005f;                                    // speed used as variable for tank1 speed
+float speed = 0.06f;                                    // speed used as variable for tank1 speed
 font_data our_font;                                 // font used to print message on display
 float timer;                                        // timer used as game timer to calculate maths with time
 
-float tank1XMovement = 0;                       // used to track transformation for tank X movement
-float tank1YMovement = 0;	                        // used to track transformation for tank Y movement  
-float tank1Angle = 0.0;
-float tank1Velocity = 0;
 
-//float tank1Matrix[16];
+
 
 float squareXTransform = 0;
 float squareYTransform = 0; // transform square x and y by arrrow key transformation
@@ -71,13 +79,14 @@ void changeLineColor();
 void circleCollison();
 void printFunctions();
 
-void drawUserTank();
+void gamePlaySpeed();
+void runGame(double deltaTime);
 
 void doMath();
 
 
 void printCursor();
-void moveCamera();
+void moveProjection();
 bool outsideObject(Point P, Point V[], int n);
 
 /**************************** OPENGL FUNCTION PROTOTYPES ****************************/
@@ -86,7 +95,7 @@ void reshape(int width, int height);//called when the window is resized
 void init();				//called in winmain when the program starts.
 void processKeys();			//called in winmain to process keyboard controls
 
-
+GLuint menuTexture = 0;
 
 GLuint loadPNG(char* name)
 {
@@ -126,7 +135,12 @@ void init()
 
 	our_font.init("arialbd.TTF", 22);     //Build the freetype font
 	
+	char png[] = "Tank-O-Mania_logo.png";
+	menuTexture = loadPNG(png);
+
 	track.loadTexture();
+	track.drawOffTrackOBB();
+	track.drawTrackBarrierOBB();
 	userTank.loadTexture();
 
 	glMatrixMode(GL_MODELVIEW);
@@ -134,157 +148,93 @@ void init()
 	
 }
 
-int oldTimeSinceStart = 0;
-
-
-
-
-
 /*************    START OF OPENGL FUNCTIONS   ****************/
 void display()
 {	
-	//int timeSinceStart = glutGet(GLUT_ELAPSED_TIME);
-	//int deltaTime = timeSinceStart - oldTimeSinceStart;
-	//oldTimeSinceStart = timeSinceStart;
-
 	glClear(GL_COLOR_BUFFER_BIT);
-
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	//Vertex v[] = { {100 + i,100}, {100 + i,1100}, {600 + i,1600}, {900 + i, 1900}, {1100 + i,1100}, {1100 + i,100}, {100 + i,100} };
-	//Point v[] = { {-100, -900}, {-100, 500}, {100, 500}, {100, -900} };
-	//Point p = {tank1XMovement, tank1YMovement};
-	//int n = sizeof(v) / sizeof(v[0]);
-	//if (!outsideObject(p, v, n))
-	//{
-		//speed = 1.5f;
-		//print(our_font, 20, 150, "Inside");
-	//}
-	//else
-	//{
-		//speed = 1.5f;
-		//print(our_font, 20, 150, "Outside");
-	//}
-
-
-
-	//if (userTank.tankOBB.SAT2D(track.trackOBB))
-	//{
-	//	print(our_font, 20, 95, "COllision!");
-
-	//	tank1Angle = tank1Angle + 180;
-	//	for(int i = 0; i < 200 ; i++)
-	//	{
-	//		tank1XMovement += tank1Velocity * cosf((90 + tank1Angle) * (PI / 180.0f));
-	//		tank1YMovement += tank1Velocity * sinf((90 + tank1Angle) * (PI / 180.0f));
-	//	} 
-	//	//tank1Angle = tank1Angle + 180;
-	//}	
-
-	
-
+	switch (gameState)
+	{
+		// draw menu here at case 0 ??
+		case 0:
+			// draw menu here
+			/*picture.width = 1000;
+			picture.height = 1000;
+			picture.x = 0;
+			picture.y = 0;
+			picture.texture = menuTexture;
+			picture.drawAsset();*/
+			print(our_font, 300, 350, "Game Loaded!");
+			break;
+		case 1:
+			track.drawMapAssets();
+			userTank.drawTank();
+			for (OBB obb : track.mapOffTrackOBBs)
+			{
+				//obb.drawOBB();
+				if (obb.SAT2D(userTank.tankOBB))
+				{
+					//print(our_font, 20, 95, "Collision!");
+					userTank.handleOffTrack();
+					//userTank.handleBarrierCollision();
+				}
+			}
+			for (Asset asset : track.mapBarrierOBBs)
+			{
+				asset.drawAsset();
+				//asset.OBB1.drawOBB();
+				if (asset.OBB1.SAT2D(userTank.tankOBB))
+				{
+					print(our_font, 20, 95, "Collision!");
+					//userTank.handleOffTrack();
+					userTank.handleBarrierCollision();
+				}
+			}
+			break;
+		case 2:
+			track.drawIntermediateTrack();
+			break;
+		case 3:
+			track.drawHardTrack();
+			break;
+	}
 	glFlush();
-	/**************************** methods ****************************/
-	
-	
-	printFunctions();
-	//doMath();
-	track.drawMapAssets();
-	drawUserTank();
-    //moveCamera();
+}
 
-	// changed speed, removed limiter, changed angle
+void runGame(double deltaTime)
+{
+	switch (gameState)
+	{
+		case 1:
+			moveProjection();
+			userTank.handleKeys(deltaTime);
+			userTank.moveTank();
+			printFunctions();
+			break;
+		case 2:
+			break;
+		case 3:
+			break;
+	}
+}
 
-	glPushMatrix();
-	glColor3f(0, 0, 1);
-	glPointSize(5.0);
-	glBegin(GL_QUADS);
-	glVertex2f(-1040, -1168);
-	glVertex2f(-1040, 1168);
-	glVertex2f(-112, 1168);
-	glVertex2f(-112, -1168);
-	glEnd();
-	glPopMatrix();
+void gamePlaySpeed()
+{
+	LARGE_INTEGER time;
+	QueryPerformanceCounter(&time);
+	__int64 currentTime = time.QuadPart;
 
-	glPushMatrix();
-	glColor3f(0, 1, 0);
-	glPointSize(5.0);
-	glBegin(GL_QUADS);
-	glVertex2f(-112, -1168);
-	glVertex2f(-112, -482);
-	glVertex2f(1265, -482);
-	glVertex2f(1265, -1168);
-	glEnd();
-	glPopMatrix();
+	__int64 ticksElapsed = currentTime - previousTime;
+	deltaTime = double(ticksElapsed) * gameSpeed;
 
-	glPushMatrix();
-	glColor3f(1, 0, 0);
-	glPointSize(5.0);
-	glBegin(GL_QUADS);
-	glVertex2f(1265, -1168);	
-	glVertex2f(1265, 910);	
-	glVertex2f(1420, 910);	
-	glVertex2f(1420, -1168);	
-	glEnd();
-	glPopMatrix();
+	if (beginGame)
+	{
+		runGame(deltaTime);
+	}
 
-	glPushMatrix();
-	glColor3f(0, 0, 1);
-	glPointSize(5.0);
-	glBegin(GL_QUADS);
-	glVertex2f(-1920, -1920);
-	glVertex2f(-1920, 2048);
-	glVertex2f(-1392, 2048);
-	glVertex2f(-1392, -1920);
-
-	glPushMatrix();
-	glColor3f(0, 1, 0);
-	glPointSize(5.0);
-	glBegin(GL_QUADS);
-	glVertex2f(-1920, -1920);
-	glVertex2f(-1920, -1520);
-	glVertex2f(1920, -1520);
-	glVertex2f(1920, -1920);
-
-	glPushMatrix();
-	glColor3f(1, 0, 0);
-	glPointSize(5.0);
-	glBegin(GL_QUADS);
-	glVertex2f(-1920, 1520);
-	glVertex2f(-1920, 2048);
-	glVertex2f(1920, 2048);
-	glVertex2f(1920, 1520);
-
-	glPushMatrix();
-	glColor3f(0, 0, 1);
-	glPointSize(5.0);
-	glBegin(GL_QUADS);
-	glVertex2f(1772, -1920);
-	glVertex2f(1772, 2048);
-	glVertex2f(1920, 2048);
-	glVertex2f(1920, -1920);
-
-	glPushMatrix();
-	glColor3f(1, 1, 1);
-	glPointSize(5.0);
-	glBegin(GL_QUADS);
-	glVertex2f(240, -130);
-	glVertex2f(240, 1520);
-	glVertex2f(913, 1520);
-	glVertex2f(913, -130);
-
-	glPushMatrix();
-	glColor3f(0, 1, 0);
-	glPointSize(5.0);
-	glBegin(GL_QUADS);
-	glVertex2f(913, 1264);
-	glVertex2f(913, 1520);
-	glVertex2f(1920, 1520);
-	glVertex2f(1920, 1264);
-
-	glEnd();
-	glPopMatrix();
+	previousTime = currentTime;
 }
 
 void doMath()
@@ -335,19 +285,6 @@ void doMath()
 	
 }
 
-void drawUserTank()
-{	
-	tank1XMovement += tank1Velocity * cosf((90 + tank1Angle) * (PI / 180.0f));
-	tank1YMovement += tank1Velocity * sinf((90 + tank1Angle) * (PI / 180.0f));
-	
-	userTank.x = tank1XMovement;
-	userTank.y = tank1YMovement;
-	userTank.direction = tank1Angle;
-	userTank.tankOBB.transformPoints(userTank.matrix);
-	userTank.drawTank();
-	userTank.setOBBPoints();
-}
-
 bool outsideObject(Point P, Point V[], int n)
 {
 	int cn = 0; // the crossing number counter
@@ -366,7 +303,7 @@ bool outsideObject(Point P, Point V[], int n)
 	return (cn % 2 == 0); // true if even (out), and false if odd (in)	
 }
 
-void moveCamera() 
+void moveProjection() 
 {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -380,8 +317,11 @@ void moveCamera()
 				glVertex2f(1,-1);
 			glEnd();
 		glPopMatrix();
-		print(our_font, 5, 10, "Tank speed: %7.2f", tank1Velocity);
-		gluOrtho2D((tank1XMovement - screenWidth / 4), (tank1XMovement + screenWidth / 4), (tank1YMovement - screenHeight / 4), (tank1YMovement + screenHeight / 4));
+		print(our_font, 5, 10, "Tank speed: %7.2f", userTank.v);
+		gluOrtho2D(((userTank.x) - screenWidth / 4), 
+			       ((userTank.x) + screenWidth / 4),
+			       ((userTank.y) - screenHeight / 4), 
+			       ((userTank.y) + screenHeight / 4));
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 }
@@ -395,7 +335,7 @@ void printFunctions()
 
 void circleCollison()
 {
-	float localNum = (((squareXTransform - tank1XMovement) * (squareXTransform - tank1XMovement)) + (squareYTransform - (tank1YMovement)) * (squareYTransform - (tank1YMovement)));
+	float localNum = (((squareXTransform - userTank.x) * (squareXTransform - userTank.x)) + (squareYTransform - (userTank.y)) * (squareYTransform - (userTank.y)));
 
 	if (localNum < ((4 + 4) * (4 + 4)))
 	{
@@ -419,7 +359,7 @@ void changeLineColor()
 	//glEnd();
 	//end of code for drawing a line...
 
-	timer = (((squareXTransform - tank1XMovement) * (squareXTransform - tank1XMovement)) + (squareYTransform - (tank1YMovement + 5.65f)) * (squareYTransform - (tank1YMovement + 5.65f)));
+	timer = (((squareXTransform - userTank.x) * (squareXTransform - userTank.x)) + (squareYTransform - (userTank.y + 5.65f)) * (squareYTransform - (userTank.y + 5.65f)));
 
 	if (timer < 30 || timer < -30)
 	{
@@ -463,34 +403,39 @@ void reshape(int width, int height)		// Resize the OpenGL window
 
 void processKeys()
 {
-	if (keys[VK_LEFT])
+	// pressing 'p' once pauses game and 
+	// pressing 'p' again continues game
+	if (keys[0x50])
 	{
-		//tank1Angle += 0.4;
-		tank1Angle += 1;
+		/*if (!beginGame)
+		{
+			menu = true;
+			beginGame = false;
+			Sleep(200);
+			gameState = 0;
+		}*/
+		if (!beginGame)
+		{
+			menu = false;
+			beginGame = true;
+			gameState = 1;
+		}
 	}
-	if (keys[VK_RIGHT])
+	if (keys[VK_SPACE])
 	{
-		//tank1Angle -= 0.4;
-		tank1Angle -= 1;
+
+			menu = false;
+			beginGame = true;
+			gameState = 3;
+		
 	}
-	if (keys[VK_UP])
+	if (keys[0x30])
 	{
-		//if (tank1Velocity > 1.5)
-		//{
-			//tank1Velocity = tank1Velocity;
-		//}
-		//else
-		//{
-			tank1Velocity += speed;
-		//}
-		//tank1Velocity = speed;
-	}
-	if (keys[VK_DOWN])
-	{
-		//tank1Velocity -= 0.0001f;
-		//tank1Velocity = 0;
-		float downSpeed = tank1Velocity > 0 ? speed * 6 : speed / 4;
-		tank1Velocity -= downSpeed;
+
+		menu = false;
+		beginGame = true;
+		gameState = 2;
+
 	}
 }
 
@@ -586,9 +531,9 @@ int WINAPI WinMain(HINSTANCE	hInstance,			// Instance
 				done = true;
 
 			processKeys();
-
 			display();					// Draw The Scene
-			SwapBuffers(hDC);				// Swap Buffers (Double Buffering)
+			gamePlaySpeed();
+			SwapBuffers(hDC);			// Swap Buffers (Double Buffering)
 		}
 	}
 
@@ -644,12 +589,14 @@ LRESULT CALLBACK WndProc(HWND	hWnd,			// Handle For This Window
 	case WM_KEYDOWN:							// Is A Key Being Held Down?
 	{
 		keys[wParam] = true;					// If So, Mark It As TRUE
+		userTank.keys[wParam] = true;
 		return 0;								// Jump Back
 	}
 	break;
 	case WM_KEYUP:								// Has A Key Been Released?
 	{
 		keys[wParam] = false;					// If So, Mark It As FALSE
+		userTank.keys[wParam] = false;
 		return 0;								// Jump Back
 	}
 	break;
@@ -741,7 +688,7 @@ bool CreateGLWindow(char* title, int width, int height)
 		dwStyle |							// Defined Window Style
 		WS_CLIPSIBLINGS |					// Required Window Style
 		WS_CLIPCHILDREN,					// Required Window Style
-		0, 0,								// Window Position
+		150, 150,							// Window Position
 		WindowRect.right - WindowRect.left,	// Calculate Window Width
 		WindowRect.bottom - WindowRect.top,	// Calculate Window Height
 		NULL,								// No Parent Window
@@ -859,4 +806,67 @@ void printCursor()
 		print(our_font, 0, 5, "client p.y: %ld", p.y);
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+//if (userTank.tankOBB.SAT2D(track.trackOBB))
+//{
+//	print(our_font, 20, 95, "COllision!");
+
+//	tank1Angle = tank1Angle + 180;
+//	for(int i = 0; i < 200 ; i++)
+//	{
+//		tank1XMovement += tank1Velocity * cosf((90 + tank1Angle) * (PI / 180.0f));
+//		tank1YMovement += tank1Velocity * sinf((90 + tank1Angle) * (PI / 180.0f));
+//	} 
+//	//tank1Angle = tank1Angle + 180;
+//}	
+
+	//Vertex v[] = { {100 + i,100}, {100 + i,1100}, {600 + i,1600}, {900 + i, 1900}, {1100 + i,1100}, {1100 + i,100}, {100 + i,100} };
+	//Point v[] = { {-100, -900}, {-100, 500}, {100, 500}, {100, -900} };
+	//Point p = {tank1XMovement, tank1YMovement};
+	//int n = sizeof(v) / sizeof(v[0]);
+	//if (!outsideObject(p, v, n))
+	//{
+		//speed = 1.5f;
+		//print(our_font, 20, 150, "Inside");
+	//}
+	//else
+	//{
+		//speed = 1.5f;
+		//print(our_font, 20, 150, "Outside");
+	//}
+
+
+
+	//int timeSinceStart = glutGet(GLUT_ELAPSED_TIME);
+	//int deltaTime = timeSinceStart - oldTimeSinceStart;
+	//oldTimeSinceStart = timeSinceStart;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #pragma endregion

@@ -80,6 +80,9 @@ void UserTank::drawTank()
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
+	tankOBB.transformPoints(matrix);
+	setOBBPoints();
+
 }
 
 void UserTank::setOBBPoints()
@@ -95,4 +98,104 @@ void UserTank::setOBBPoints()
 
 	tankOBB.vertOriginal[3].x = 18;
 	tankOBB.vertOriginal[3].y = -26;
+}
+
+void UserTank::moveTank()
+{
+	lastx = x;
+	lasty = y;
+
+	x += v * cosf((90 + direction) * (PI / 180.0f));
+	y += v * sinf((90 + direction) * (PI / 180.0f));
+}
+
+void UserTank::handleKeys(double deltaTime)
+{
+	if (keys[VK_LEFT])
+	{
+		direction += 4 * deltaTime;
+	}
+	if (keys[VK_RIGHT])
+	{
+		direction -= 4 * deltaTime;
+	}
+	if (keys[VK_UP])
+	{
+		if (v > 15)
+		{
+			v = v;
+		}
+		else
+		{
+			v += speed * deltaTime;
+		}
+	}
+	if (keys[VK_DOWN])
+	{
+		//TODO set limit on reverse speed
+		float downSpeed = v > 0 ? speed * 6 : speed / 4;
+		v -= downSpeed * deltaTime;
+	}
+}
+
+void UserTank::handleOffTrack()
+{
+	//v -= 0.6;
+	//if (v < 0.5)
+	//{
+	//	speed = 0.05;
+	//}
+	speed = 0.005f;
+}
+
+void UserTank::handleBarrierCollision()
+{
+	v *= -0.5f;
+	int i = 2;
+
+	if (x < lastx && y < lasty)
+	{
+		x = lastx + i;
+		y = lasty + i;
+		return;
+	}
+	if (y == lasty && x < lastx)
+	{
+		x = lastx + i;
+		return;
+	}
+
+	if (x < lastx && y > lasty)
+	{
+		y = lasty - i;
+		x = lastx + i;
+		return;
+	}
+	if (x > lastx && y > lasty)
+	{
+		y = lasty - i;
+		x = lastx - i;
+		return;
+	}
+	if (y == lasty && x > lastx)
+	{
+		x = lastx - i;
+		return;
+	}
+	if (x > lastx && y < lasty)
+	{
+		x = lastx - i;
+		y = lasty + i;
+		return;
+	}
+	if (x == lastx && y < lasty)
+	{
+		y = lasty + i;
+		return;
+	}
+	if (x == lastx && y > lasty)
+	{
+		y = lasty - i;
+		return;
+	}
 }

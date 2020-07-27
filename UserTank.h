@@ -22,9 +22,13 @@ public:
 	OBB   tankOBB;
 	GLuint userTankBody;
 	GLuint userTankBarrel;
+	bool keys[256];
+	float speed = 0.06f;
 	float x = 0;
 	float y = 0;
 	float v = 0;
+	float lastx = 0;
+	float lasty = 0;
 	float matrix[16];
 	float direction = 0;
 	
@@ -35,4 +39,12 @@ public:
 	void drawTank();
 
 	void setOBBPoints();
+
+	void moveTank();
+
+	void handleKeys(double deltaTime);
+
+	void handleOffTrack();
+
+	void handleBarrierCollision();
 };
