@@ -104,20 +104,20 @@ void ComputerTank::incrementMovement()
 
 void ComputerTank::setMovementPoints()
 {
-	Point p0 = { 170, 0};
+	Point p0 = { 150, 0};
 	movementPoints.push_back(p0);
 
-	Point p1 = { 200, 150 };
+	Point p1 = { 150, 300 };
 	movementPoints.push_back(p1);
 	
-	Point p2 = { 0, 150 };
+	Point p2 = { 500, 500 };
 	movementPoints.push_back(p2);
-
-	Point p3 = { -50, 50 };
+	
+	/*Point p3 = { 80, 50 };
 	movementPoints.push_back(p3);
 
 	Point p4 = { 150,0 };
-	movementPoints.push_back(p4);
+	movementPoints.push_back(p4);*/
 }
 
 void ComputerTank::moveTank()
@@ -130,30 +130,70 @@ void ComputerTank::moveTank()
 
 		pIndex + 1 >= movementPoints.size() ? pIndex = 0 : pIndex = pIndex;
 
-
-
-		
-
+		//direction = 0;
 
 
 
-
+		//// deals with movement
 		x = (movementPoints[pIndex].x + (ticks * (movementPoints[pIndex + 1].x - movementPoints[pIndex].x)));
 		y = (movementPoints[pIndex].y + (ticks * (movementPoints[pIndex + 1].y - movementPoints[pIndex].y)));
 
-		float numerator = (movementPoints[pIndex].x * movementPoints[pIndex + 1].x) + (movementPoints[pIndex].y * movementPoints[pIndex + 1].y);
+		//float numerator = (movementPoints[pIndex].x * movementPoints[pIndex + 1].x) + (movementPoints[pIndex].y * movementPoints[pIndex + 1].y);
 
-		// denominator
-		float uDen = (sqrt(pow(2, movementPoints[pIndex].x) + pow(2, movementPoints[pIndex].y)));
-		float vDen = (sqrt(pow(2, movementPoints[pIndex + 1].x) + pow(2, movementPoints[pIndex + 1].y)));
+		//// denominator
+		//float denominator1 = (sqrt(pow(2, movementPoints[pIndex].x) + pow(2, movementPoints[pIndex].y)));
+		//float denominator2 = (sqrt(pow(2, movementPoints[pIndex + 1].x) + pow(2, movementPoints[pIndex + 1].y)));
 
-		float dot = (movementPoints[pIndex].x * movementPoints[pIndex + 1].x) + (movementPoints[pIndex].y * movementPoints[pIndex + 1].y);
-		float det = (movementPoints[pIndex].x * movementPoints[pIndex + 1].y) - (movementPoints[pIndex].y * movementPoints[pIndex + 1].x);
+		////float dot = (movementPoints[pIndex].x * movementPoints[pIndex + 1].x) + (movementPoints[pIndex].y * movementPoints[pIndex + 1].y);
+		//float det = (movementPoints[pIndex].x * movementPoints[pIndex + 1].y) - (movementPoints[pIndex].y * movementPoints[pIndex + 1].x);
 
-		direction = (atan2(dot, det) * 180) / PI;
-		
-		//direction = acosf(numerator / uDen * vDen);
-		//direction = (direction * 180.0f) / PI;
+		////direction = (atan2(dot, det) * 180) / PI;
+		//
+		//float angle = (acos(numerator / (denominator1 * denominator2)) * (180 / PI));
+
+		//if (det > 0)
+		//{
+		//	direction += angle;
+		//}
+		//else
+		//{
+		//	direction -= angle;
+		//}
+
+
+		direction = 0;
+
+		Point currentPoint;
+		currentPoint.x = x;
+		currentPoint.y = y + 30;
+
+		Point cb;
+		cb.x = currentPoint.x - x;
+		cb.y = currentPoint.y - y;
+
+		Point ca;
+		ca.x = movementPoints[pIndex + 1].x - x;
+		ca.y = movementPoints[pIndex + 1].y - y;
+
+
+
+		float num = (cb.x * ca.x) + (cb.y * ca.y);
+		float sqrt1 = sqrt((cb.x * cb.x) + (cb.y * cb.y));
+		float sqrt2 = sqrt((ca.x * ca.x) + (ca.y * ca.y));
+		float angle = (acos(num / (sqrt1 * sqrt2)) * (180.0 / PI));
+
+		// a = endPoint
+		// b = currentPoint
+		// c = pos
+
+		float det = ((currentPoint.x - x) * (movementPoints[pIndex + 1].y - y)) - ((movementPoints[pIndex + 1].x - x) * (currentPoint.y - y));
+
+		if (det > 0) {
+			direction += angle;
+		}
+		else {
+			direction -= angle;
+		}
 }
 
 void ComputerTank::setOBBPoints()
