@@ -1,4 +1,5 @@
 #include "UserTank.h"
+#include "computerTank.h"
 #include "Track.h"
 #include "Asset.h"
 #include <vector>
@@ -29,6 +30,7 @@ double deltaTime;
 
 Track track = Track();
 UserTank userTank = UserTank();
+ComputerTank computerTank = ComputerTank();
 Asset picture = Asset();
 
 std::vector<Point> pointsForAi;
@@ -142,6 +144,8 @@ void init()
 	track.drawOffTrackOBB();
 	track.drawTrackBarrierOBB();
 	userTank.loadTexture();
+	computerTank.loadTexture();
+	computerTank.setMovementPoints();
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -171,6 +175,9 @@ void display()
 		case 1:
 			track.drawMapAssets();
 			userTank.drawTank();
+			computerTank.drawTank();
+			computerTank.incrementMovement();
+			computerTank.moveTank();
 			for (OBB obb : track.mapOffTrackOBBs)
 			{
 				//obb.drawOBB();
@@ -191,6 +198,11 @@ void display()
 					//userTank.handleOffTrack();
 					userTank.handleBarrierCollision();
 				}
+			}
+			if (userTank.tankOBB.SAT2D(computerTank.obb))
+			{
+				computerTank.handleCollision();
+				userTank.handleBarrierCollision();
 			}
 			break;
 		case 2:

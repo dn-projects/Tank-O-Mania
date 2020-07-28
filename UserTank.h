@@ -24,7 +24,7 @@ public:
 	GLuint userTankBarrel;
 	bool keys[256];
 	float speed = 0.06f;
-	float x = 0;
+	float x = -20;
 	float y = 0;
 	float v = 0;
 	float lastx = 0;

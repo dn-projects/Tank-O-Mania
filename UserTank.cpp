@@ -82,7 +82,6 @@ void UserTank::drawTank()
 	glPopMatrix();
 	tankOBB.transformPoints(matrix);
 	setOBBPoints();
-
 }
 
 void UserTank::setOBBPoints()
