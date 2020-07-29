@@ -178,6 +178,19 @@ void display()
 			computerTank.drawTank();
 			computerTank.incrementMovement();
 			computerTank.moveTank();
+			//for (int i = -10000; i < 10000; i += 100)
+			//{
+			//	for (int j = -10000; j < 10000; j += 100)
+			//	{
+			//		glPushMatrix();
+			//		glColor3f(1, 0, 0);
+			//		glPointSize(2.0);
+			//		glBegin(GL_POINTS);
+			//		glVertex2f(i, j);
+			//		glEnd();
+			//		glPopMatrix();
+			//	}
+			//}
 			for (OBB obb : track.mapOffTrackOBBs)
 			{
 				//obb.drawOBB();

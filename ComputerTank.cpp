@@ -87,7 +87,18 @@ void ComputerTank::drawTank()
 
 void ComputerTank::incrementMovement()
 {
-	ticks += 0.005;
+	Point point1 = { movementPoints[pIndex].x, movementPoints[pIndex].y };
+	Point point2 = { movementPoints[pIndex + 1].x, movementPoints[pIndex + 1].y };
+
+	float vectorX = (point1.x - point2.x);
+	float vectorY = (point1.y - point2.y);
+
+	vectorX = (vectorX * vectorX);
+	vectorY = (vectorY * vectorY);
+
+	float twoVectorDistance = sqrt(vectorX + vectorY);
+
+	ticks += (1.5 / twoVectorDistance);  // change 1.5 to adjust travel speed of computerTank 
 	if (ticks > 1)
 	{
 		ticks = 0;
@@ -107,17 +118,55 @@ void ComputerTank::setMovementPoints()
 	Point p0 = { 150, 0};
 	movementPoints.push_back(p0);
 
-	Point p1 = { 150, 300 };
+	Point p1 = { 150, 1350 };
 	movementPoints.push_back(p1);
-	
-	Point p2 = { 500, 500 };
-	movementPoints.push_back(p2);
-	
-	/*Point p3 = { 80, 50 };
-	movementPoints.push_back(p3);
 
-	Point p4 = { 150,0 };
-	movementPoints.push_back(p4);*/
+	//Point p1 = {150, 1050 };
+	//movementPoints.push_back(p1);
+
+	//Point p2 = {140, 1100 };
+	//movementPoints.push_back(p2);
+	//
+	//Point p3 = {130, 1250 };
+	//movementPoints.push_back(p3);
+	//
+	//Point p4 = {110, 1300 };
+	//movementPoints.push_back(p4);
+	//
+	//Point p5 = {100, 1320 };
+	//movementPoints.push_back(p5);
+	//
+	//Point p6 = {90, 1350 };
+	//movementPoints.push_back(p6);
+	//
+	//Point p8 = { -1250, 1350 };
+	//movementPoints.push_back(p8);
+
+
+
+	Point p2 = { -1250, 1350 };
+	movementPoints.push_back(p2);
+
+	Point p3 = { -1250, -1400 };
+	movementPoints.push_back(p3);
+	
+	Point p4 = { 1600,-1400 };
+	movementPoints.push_back(p4);
+
+	Point p5 = { 1600,1150 };
+	movementPoints.push_back(p5);
+
+	Point p6 = { 1100,1150 };
+	movementPoints.push_back(p6);
+
+	Point p7 = { 1100,-350 };
+	movementPoints.push_back(p7);
+
+	Point p8 = { 150,-350 };
+	movementPoints.push_back(p8);
+
+	Point p9 = { 150, 0};
+	movementPoints.push_back(p9);
 }
 
 void ComputerTank::moveTank()
@@ -130,46 +179,20 @@ void ComputerTank::moveTank()
 
 		pIndex + 1 >= movementPoints.size() ? pIndex = 0 : pIndex = pIndex;
 
-		//direction = 0;
-
-
 
 		//// deals with movement
 		x = (movementPoints[pIndex].x + (ticks * (movementPoints[pIndex + 1].x - movementPoints[pIndex].x)));
 		y = (movementPoints[pIndex].y + (ticks * (movementPoints[pIndex + 1].y - movementPoints[pIndex].y)));
 
-		//float numerator = (movementPoints[pIndex].x * movementPoints[pIndex + 1].x) + (movementPoints[pIndex].y * movementPoints[pIndex + 1].y);
-
-		//// denominator
-		//float denominator1 = (sqrt(pow(2, movementPoints[pIndex].x) + pow(2, movementPoints[pIndex].y)));
-		//float denominator2 = (sqrt(pow(2, movementPoints[pIndex + 1].x) + pow(2, movementPoints[pIndex + 1].y)));
-
-		////float dot = (movementPoints[pIndex].x * movementPoints[pIndex + 1].x) + (movementPoints[pIndex].y * movementPoints[pIndex + 1].y);
-		//float det = (movementPoints[pIndex].x * movementPoints[pIndex + 1].y) - (movementPoints[pIndex].y * movementPoints[pIndex + 1].x);
-
-		////direction = (atan2(dot, det) * 180) / PI;
-		//
-		//float angle = (acos(numerator / (denominator1 * denominator2)) * (180 / PI));
-
-		//if (det > 0)
-		//{
-		//	direction += angle;
-		//}
-		//else
-		//{
-		//	direction -= angle;
-		//}
-
-
 		direction = 0;
 
-		Point currentPoint;
-		currentPoint.x = x;
-		currentPoint.y = y + 30;
+		Point constructionPoint;
+		constructionPoint.x = x;
+		constructionPoint.y = y + 50;
 
 		Point cb;
-		cb.x = currentPoint.x - x;
-		cb.y = currentPoint.y - y;
+		cb.x = constructionPoint.x - x;
+		cb.y = constructionPoint.y - y;
 
 		Point ca;
 		ca.x = movementPoints[pIndex + 1].x - x;
@@ -186,7 +209,7 @@ void ComputerTank::moveTank()
 		// b = currentPoint
 		// c = pos
 
-		float det = ((currentPoint.x - x) * (movementPoints[pIndex + 1].y - y)) - ((movementPoints[pIndex + 1].x - x) * (currentPoint.y - y));
+		float det = ((constructionPoint.x - x) * (movementPoints[pIndex + 1].y - y)) - ((movementPoints[pIndex + 1].x - x) * (constructionPoint.y - y));
 
 		if (det > 0) {
 			direction += angle;

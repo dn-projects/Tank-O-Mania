@@ -66,13 +66,13 @@ void Track::drawMapAssets()
 	for (Asset asset : mapAssets) 
 	{
 		asset.drawAsset();
-		glPushMatrix();
-		glColor3f(1, 1, 1);
-		glPointSize(2.0);
-		glBegin(GL_POINTS);
-		glVertex2f(asset.x, asset.y);
-		glEnd();
-		glPopMatrix();
+		//glPushMatrix();
+		//glColor3f(1, 1, 1);
+		//glPointSize(2.0);
+		//glBegin(GL_POINTS);
+		//glVertex2f(asset.x, asset.y);
+		//glEnd();
+		//glPopMatrix();
 	}
 }
 
