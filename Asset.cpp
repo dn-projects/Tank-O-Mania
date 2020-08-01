@@ -101,9 +101,9 @@ void Asset::drawAsset()
 	glGetFloatv(GL_MODELVIEW_MATRIX, OBB1matrix);
 	glBegin(GL_POLYGON);
 	glTexCoord2f(0, 0); glVertex2f(x, y);
-	glTexCoord2f(0, 1); glVertex2f(x, y + height);
-	glTexCoord2f(1, 1); glVertex2f(x + width, y + height);
-	glTexCoord2f(1, 0); glVertex2f(x + width, y);
+	glTexCoord2f(0, yTexture); glVertex2f(x, y + height);
+	glTexCoord2f(xTexture, yTexture); glVertex2f(x + width, y + height);
+	glTexCoord2f(xTexture, 0); glVertex2f(x + width, y);
 	glEnd();
 	glDisable(GL_BLEND);
 	glDisable(GL_TEXTURE_2D);

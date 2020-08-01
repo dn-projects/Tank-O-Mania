@@ -90,13 +90,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\david\Desktop\Tank-O-Mania\PNG;include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\david\Desktop\Tank-O-Mania\PNG;C:\Users\david\Desktop\Tank-O-Mania\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>lib;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>OpenGL32.lib;glu32.lib;libfreetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\david\Desktop\Tank-O-Mania\lib;C:\Users\david\Desktop\Tank-O-Mania\include;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OpenGL32.lib;glu32.lib;libfreetype.lib;irrKlang.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -182,6 +182,11 @@
     <None Include="..\..\Downloads\labsheet4OpenGL(2) (2)\labsheet4OpenGL\texturemapping\zlib1.dll" />
     <None Include="FreeType-6.dll" />
     <None Include="glew32.dll" />
+    <None Include="ikpFlac.dll" />
+    <None Include="ikpMP3.dll" />
+    <None Include="irrKlang.dll" />
+    <None Include="lib\freetype-6.def" />
+    <None Include="lib\libfreetype-bcc.def" />
     <None Include="Zlib.dll" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -1,8 +1,11 @@
+//#include <includeAudio/irrKlang.h>
 #include "UserTank.h"
 #include "computerTank.h"
 #include "Track.h"
 #include "Asset.h"
 #include <vector>
+
+//using namespace irrklang;
 
 using namespace std;
 
@@ -15,17 +18,17 @@ int	mouse_x = 0, mouse_y = 0;
 bool LeftPressed = false;
 int screenWidth = 700, screenHeight = 700;
 bool keys[256];
-GLint gameState = 0;
 bool F1 = false;
 bool F2 = false;
 bool menu = false;
 
 /***** gamePlaySpeed method variables *****/
 __int64 previousTime = 0;
-bool beginGame = false;
 double gameSpeed = 0.000003;  // change to change speed of game
 
 double deltaTime;
+
+//ISoundEngine* SoundEngine = createIrrKlangDevice();
 
 
 Track track = Track();
@@ -40,6 +43,10 @@ float pointTicker = 0.0;
 float speed = 0.06f;                                    // speed used as variable for tank1 speed
 font_data our_font;                                 // font used to print message on display
 float timer;                                        // timer used as game timer to calculate maths with time
+
+
+enum STATES { MENU, COUNTDOWN, PLAY, PAUSE, END, LEADERBOARD };
+STATES gameState = MENU;
 
 
 
@@ -98,7 +105,6 @@ void init();				//called in winmain when the program starts.
 void processKeys();			//called in winmain to process keyboard controls
 
 GLuint menuTexture = 0;
-GLuint finishPNG;
 
 GLuint loadPNG(char* name)
 {
@@ -142,12 +148,11 @@ void init()
 	char png[] = "Tank-O-Mania_logo.png";
 	menuTexture = loadPNG(png);
 
-	char png4[] = "PNG/Assets/finish.png";
-     finishPNG = loadPNG(png4);
 
 	track.loadTexture();
 	track.drawOffTrackOBB();
 	track.drawTrackBarrierOBB();
+	//track.setCheckPoints();
 	userTank.loadTexture();
 	computerTank.loadTexture();
 	computerTank.setMovementPoints();
@@ -167,7 +172,7 @@ void display()
 	switch (gameState)
 	{
 		// draw menu here at case 0 ??
-		case 0:
+		case MENU:
 			// draw menu here
 			/*picture.width = 1000;
 			picture.height = 1000;
@@ -177,30 +182,12 @@ void display()
 			picture.drawAsset();*/
 			print(our_font, 300, 350, "Game Loaded!");
 			break;
-		case 1:
-
-
-			glPushMatrix();
-			glEnable(GL_TEXTURE_2D);
-			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			glBindTexture(GL_TEXTURE_2D, finishPNG);
-			glBegin(GL_POLYGON);
-			glTexCoord2f(0, 0); glVertex2f(-225, -50);
-			glTexCoord2f(0, 1); glVertex2f(-225, -50 + 10);
-			glTexCoord2f(1, 1); glVertex2f(225 + 560, -50 + 10);
-			glTexCoord2f(1, 0); glVertex2f(225 + 560, -50);
-			glEnd();
-			glDisable(GL_BLEND);
-			glDisable(GL_TEXTURE_2D);
-			glPopMatrix();
-
+		case PLAY:
 			track.drawMapAssets();
+			//track.drawCheckPoints();
 			userTank.drawTank();
 			computerTank.drawTank();
-			computerTank.incrementMovement();
-			computerTank.moveTank();
+
 			//for (int i = -10000; i < 10000; i += 100)
 			//{
 			//	for (int j = -10000; j < 10000; j += 100)
@@ -216,35 +203,38 @@ void display()
 			//}
 			for (OBB obb : track.mapOffTrackOBBs)
 			{
-				//obb.drawOBB();
+				obb.drawOBB();
 				if (obb.SAT2D(userTank.tankOBB))
 				{
-					//print(our_font, 20, 95, "Collision!");
 					userTank.handleOffTrack();
 					//userTank.handleBarrierCollision();
 				}
 			}
 			for (Asset asset : track.mapBarrierOBBs)
 			{
+				asset.OBB1.drawOBB();
 				asset.drawAsset();
-				//asset.OBB1.drawOBB();
 				if (asset.OBB1.SAT2D(userTank.tankOBB))
 				{
+					//SoundEngine->play2D("Tank-O-Mania/bell.wav", true);
 					print(our_font, 20, 95, "Collision!");
 					//userTank.handleOffTrack();
 					userTank.handleBarrierCollision();
 				}
 			}
+			userTank.tankOBB.drawOBB();
+		computerTank.obb.drawOBB();
 			if (userTank.tankOBB.SAT2D(computerTank.obb))
 			{
 				computerTank.handleCollision();
 				userTank.handleBarrierCollision();
 			}
+			
 			break;
-		case 2:
+		case PAUSE:
 			track.drawIntermediateTrack();
 			break;
-		case 3:
+		case LEADERBOARD:
 			track.drawHardTrack();
 			break;
 	}
@@ -255,15 +245,17 @@ void runGame(double deltaTime)
 {
 	switch (gameState)
 	{
-		case 1:
+		case PLAY:
 			moveProjection();
 			userTank.handleKeys(deltaTime);
 			userTank.moveTank();
 			printFunctions();
+			computerTank.incrementMovement();
+			computerTank.moveTank();
 			break;
-		case 2:
+		case PAUSE:
 			break;
-		case 3:
+		case LEADERBOARD:
 			break;
 	}
 }
@@ -277,7 +269,7 @@ void gamePlaySpeed()
 	__int64 ticksElapsed = currentTime - previousTime;
 	deltaTime = double(ticksElapsed) * gameSpeed;
 
-	if (beginGame)
+	if (gameState == PLAY)
 	{
 		runGame(deltaTime);
 	}
@@ -365,11 +357,11 @@ void moveProjection()
 				glVertex2f(1,-1);
 			glEnd();
 		glPopMatrix();
-		print(our_font, 5, 10, "Tank speed: %7.2f", userTank.v);
+		//print(our_font, 5, 10, "Tank speed: %7.2f", userTank.v);
 		gluOrtho2D(((userTank.x) - screenWidth / 4), 
-			       ((userTank.x) + screenWidth / 4),
-			       ((userTank.y) - screenHeight / 4), 
-			       ((userTank.y) + screenHeight / 4));
+			              ((userTank.x) + screenWidth / 4),
+			              ((userTank.y) - screenHeight / 4),
+			              ((userTank.y) + screenHeight / 4));
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 }
@@ -443,7 +435,8 @@ void reshape(int width, int height)		// Resize the OpenGL window
 	glMatrixMode(GL_PROJECTION);						// Select The Projection Matrix
 	glLoadIdentity();									// Reset The Projection Matrix
 
-	gluOrtho2D(-4000, 4000, -4000, 4000);             // View whole map 
+	//gluOrtho2D(-2000, 2000, -2000, 2000);             // View whole map 
+	//gluOrtho2D(-4000, 4000, -4000, 4000);             // View whole map 
 
 	glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
 	glLoadIdentity();									// Reset The Modelview Matrix
@@ -455,35 +448,15 @@ void processKeys()
 	// pressing 'p' again continues game
 	if (keys[0x50])
 	{
-		/*if (!beginGame)
-		{
-			menu = true;
-			beginGame = false;
-			Sleep(200);
-			gameState = 0;
-		}*/
-		if (!beginGame)
-		{
-			menu = false;
-			beginGame = true;
-			gameState = 1;
-		}
+		gameState = PLAY;	
 	}
 	if (keys[VK_SPACE])
 	{
-
-			menu = false;
-			beginGame = true;
-			gameState = 3;
-		
+			gameState = PAUSE;
 	}
 	if (keys[0x30])
 	{
-
-		menu = false;
-		beginGame = true;
-		gameState = 2;
-
+		gameState = LEADERBOARD;
 	}
 }
 

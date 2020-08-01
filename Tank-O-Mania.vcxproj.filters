@@ -102,5 +102,20 @@
     <None Include="..\..\Downloads\labsheet4OpenGL(2) (2)\labsheet4OpenGL\texturemapping\nvImage.dll">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="ikpFlac.dll">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="ikpMP3.dll">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="irrKlang.dll">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lib\freetype-6.def">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lib\libfreetype-bcc.def">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -51,10 +51,10 @@ void UserTank::drawTank()
 	glGetFloatv(GL_MODELVIEW_MATRIX, matrix);
 	glColor3f(1, 1, 1);
 	glBegin(GL_POLYGON);
-	glTexCoord2f(0, 0);	glVertex2f(-30, -30);
-	glTexCoord2f(0, 1);	glVertex2f(-30, 30);
-	glTexCoord2f(1, 1);	glVertex2f(30, 30);
-	glTexCoord2f(1, 0);	glVertex2f(30, -30);
+	glTexCoord2f(0, 0);	glVertex2f(-25, -25);
+	glTexCoord2f(0, 1);	glVertex2f(-25, 25);
+	glTexCoord2f(1, 1);	glVertex2f(25, 25);
+	glTexCoord2f(1, 0);	glVertex2f(25, -25);
 	glEnd();
 	glDisable(GL_BLEND);
 	glDisable(GL_TEXTURE_2D);
@@ -73,10 +73,10 @@ void UserTank::drawTank()
 	glRotatef(direction, 0, 0, 1);
 	glColor3f(1, 1, 1);
 	glBegin(GL_POLYGON);
-	glTexCoord2f(0, 0);	glVertex2f(-30, -30);
-	glTexCoord2f(0, 1);	glVertex2f(-30, 30);
-	glTexCoord2f(1, 1);	glVertex2f(30, 30);
-	glTexCoord2f(1, 0);	glVertex2f(30, -30);
+	glTexCoord2f(0, 0);	glVertex2f(-25, -25);
+	glTexCoord2f(0, 1);	glVertex2f(-25, 25);
+	glTexCoord2f(1, 1);	glVertex2f(25, 25);
+	glTexCoord2f(1, 0);	glVertex2f(25, -25);
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
@@ -86,17 +86,17 @@ void UserTank::drawTank()
 
 void UserTank::setOBBPoints()
 {
-	tankOBB.vertOriginal[0].x = -18;
-	tankOBB.vertOriginal[0].y = -26;
+	tankOBB.vertOriginal[0].x = -25;
+	tankOBB.vertOriginal[0].y = -25;
 	
-	tankOBB.vertOriginal[1].x = -18;
-	tankOBB.vertOriginal[1].y = 26;
+	tankOBB.vertOriginal[1].x = -25;
+	tankOBB.vertOriginal[1].y = 25;
 
-	tankOBB.vertOriginal[2].x = 18;
-	tankOBB.vertOriginal[2].y = 26;
+	tankOBB.vertOriginal[2].x = 25;
+	tankOBB.vertOriginal[2].y = 25;
 
-	tankOBB.vertOriginal[3].x = 18;
-	tankOBB.vertOriginal[3].y = -26;
+	tankOBB.vertOriginal[3].x = 25;
+	tankOBB.vertOriginal[3].y = -25;
 }
 
 void UserTank::moveTank()

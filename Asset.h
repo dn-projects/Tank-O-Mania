@@ -22,6 +22,8 @@ public:
 	OBB OBB2;
 	OBB OBB3;
 	float OBB1matrix[16];
+	float xTexture = 1;
+	float yTexture = 1;
 	float x = 0;
 	float y = 0;
 	float height = 128;

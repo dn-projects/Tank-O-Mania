@@ -52,10 +52,10 @@ void ComputerTank::drawTank()
 	glGetFloatv(GL_MODELVIEW_MATRIX, matrix);
 	glColor3f(1, 1, 1);
 	glBegin(GL_POLYGON);
-	glTexCoord2f(0, 0);	glVertex2f(-30, -30);
-	glTexCoord2f(0, 1);	glVertex2f(-30, 30);
-	glTexCoord2f(1, 1);	glVertex2f(30, 30);
-	glTexCoord2f(1, 0);	glVertex2f(30, -30);
+	glTexCoord2f(0, 0);	glVertex2f(-25, -25);
+	glTexCoord2f(0, 1);	glVertex2f(-25, 25);
+	glTexCoord2f(1, 1);	glVertex2f(25, 25);
+	glTexCoord2f(1, 0);	glVertex2f(25, -25);
 	glEnd();
 	glDisable(GL_BLEND);
 	glDisable(GL_TEXTURE_2D);
@@ -74,10 +74,10 @@ void ComputerTank::drawTank()
 	glRotatef(direction, 0, 0, 1);
 	glColor3f(1, 1, 1);
 	glBegin(GL_POLYGON);
-	glTexCoord2f(0, 0);	glVertex2f(-30, -30);
-	glTexCoord2f(0, 1);	glVertex2f(-30, 30);
-	glTexCoord2f(1, 1);	glVertex2f(30, 30);
-	glTexCoord2f(1, 0);	glVertex2f(30, -30);
+	glTexCoord2f(0, 0);	glVertex2f(-25, -25);
+	glTexCoord2f(0, 1);	glVertex2f(-25, 25);
+	glTexCoord2f(1, 1);	glVertex2f(25, 25);
+	glTexCoord2f(1, 0);	glVertex2f(25, -25);
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
@@ -98,7 +98,7 @@ void ComputerTank::incrementMovement()
 
 	float twoVectorDistance = sqrt(vectorX + vectorY);
 
-	ticks += (1.5 / twoVectorDistance);  // change 1.5 to adjust travel speed of computerTank 
+	ticks += (12 / twoVectorDistance);  // change 1.5 to adjust travel speed of computerTank 
 	if (ticks > 1)
 	{
 		ticks = 0;
@@ -118,52 +118,47 @@ void ComputerTank::setMovementPoints()
 	Point p0 = { 150, 0};
 	movementPoints.push_back(p0);
 
-	Point p1 = { 150, 1350 };
+	Point p1 = { 150, 1250 };
 	movementPoints.push_back(p1);
 
-	//Point p1 = {150, 1050 };
-	//movementPoints.push_back(p1);
+	vector<Point> leftcorner1 = ComputerTank::drawCircleAnticlockwise(30, 1250, 120, 0, 90);
+	std::copy(leftcorner1.begin(), leftcorner1.end(), std::back_inserter(movementPoints));
 
-	//Point p2 = {140, 1100 };
-	//movementPoints.push_back(p2);
-	//
-	//Point p3 = {130, 1250 };
-	//movementPoints.push_back(p3);
-	//
-	//Point p4 = {110, 1300 };
-	//movementPoints.push_back(p4);
-	//
-	//Point p5 = {100, 1320 };
-	//movementPoints.push_back(p5);
-	//
-	//Point p6 = {90, 1350 };
-	//movementPoints.push_back(p6);
-	//
-	//Point p8 = { -1250, 1350 };
-	//movementPoints.push_back(p8);
-
-
-
-	Point p2 = { -1250, 1350 };
+	Point p2 = { -1050, 1300 };
 	movementPoints.push_back(p2);
 
-	Point p3 = { -1250, -1400 };
+	vector<Point> leftcorner2 = ComputerTank::drawCircleAnticlockwise(-1050, 1180, 120, 90, 180);
+	std::copy(leftcorner2.begin(), leftcorner2.end(), std::back_inserter(movementPoints));
+
+	Point p3 = { -1250, -1280 };
 	movementPoints.push_back(p3);
+
+	vector<Point> leftcorner3 = ComputerTank::drawCircleAnticlockwise(-1130, -1280, 120, 180, 270);
+	std::copy(leftcorner3.begin(), leftcorner3.end(), std::back_inserter(movementPoints));
 	
-	Point p4 = { 1600,-1400 };
+	Point p4 = { 1450,-1400 };
 	movementPoints.push_back(p4);
 
-	Point p5 = { 1600,1150 };
+	vector<Point> leftcorner4 = ComputerTank::drawCircleAnticlockwise(1450, -1280, 120, 270, 360);
+	std::copy(leftcorner4.begin(), leftcorner4.end(), std::back_inserter(movementPoints));
+
+	Point p5 = { 1500,900 };
 	movementPoints.push_back(p5);
 
-	Point p6 = { 1100,1150 };
-	movementPoints.push_back(p6);
+	vector<Point> leftcorner5 = ComputerTank::drawCircleAnticlockwise(1350, 900, 150, 0, 180);
+	std::copy(leftcorner5.begin(), leftcorner5.end(), std::back_inserter(movementPoints));
 
-	Point p7 = { 1100,-350 };
+	Point p7 = { 1100,-250 };
 	movementPoints.push_back(p7);
 
-	Point p8 = { 150,-350 };
+	vector<Point> rightcorner1 = ComputerTank::drawCircleClockwise(950, -250, 150, 355, 270);
+	std::copy(rightcorner1.begin(), rightcorner1.end(), std::back_inserter(movementPoints));
+
+	Point p8 = { 300,-300 };
 	movementPoints.push_back(p8);
+
+	vector<Point> rightcorner2 = ComputerTank::drawCircleClockwise(300, -150, 150, 275, 180);
+	std::copy(rightcorner2.begin(), rightcorner2.end(), std::back_inserter(movementPoints));
 
 	Point p9 = { 150, 0};
 	movementPoints.push_back(p9);
