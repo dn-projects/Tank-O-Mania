@@ -98,6 +98,7 @@ void init();				//called in winmain when the program starts.
 void processKeys();			//called in winmain to process keyboard controls
 
 GLuint menuTexture = 0;
+GLuint finishPNG;
 
 GLuint loadPNG(char* name)
 {
@@ -105,6 +106,7 @@ GLuint loadPNG(char* name)
 	nv::Image img;
 
 	GLuint myTextureID;
+
 
 	// Return true on success
 	if (img.loadImageFromFile(name))
@@ -140,6 +142,9 @@ void init()
 	char png[] = "Tank-O-Mania_logo.png";
 	menuTexture = loadPNG(png);
 
+	char png4[] = "PNG/Assets/finish.png";
+     finishPNG = loadPNG(png4);
+
 	track.loadTexture();
 	track.drawOffTrackOBB();
 	track.drawTrackBarrierOBB();
@@ -173,6 +178,24 @@ void display()
 			print(our_font, 300, 350, "Game Loaded!");
 			break;
 		case 1:
+
+
+			glPushMatrix();
+			glEnable(GL_TEXTURE_2D);
+			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			glBindTexture(GL_TEXTURE_2D, finishPNG);
+			glBegin(GL_POLYGON);
+			glTexCoord2f(0, 0); glVertex2f(-225, -50);
+			glTexCoord2f(0, 1); glVertex2f(-225, -50 + 10);
+			glTexCoord2f(1, 1); glVertex2f(225 + 560, -50 + 10);
+			glTexCoord2f(1, 0); glVertex2f(225 + 560, -50);
+			glEnd();
+			glDisable(GL_BLEND);
+			glDisable(GL_TEXTURE_2D);
+			glPopMatrix();
+
 			track.drawMapAssets();
 			userTank.drawTank();
 			computerTank.drawTank();

@@ -180,7 +180,7 @@ void ComputerTank::moveTank()
 		pIndex + 1 >= movementPoints.size() ? pIndex = 0 : pIndex = pIndex;
 
 
-		//// deals with movement
+		// deals with movement
 		x = (movementPoints[pIndex].x + (ticks * (movementPoints[pIndex + 1].x - movementPoints[pIndex].x)));
 		y = (movementPoints[pIndex].y + (ticks * (movementPoints[pIndex + 1].y - movementPoints[pIndex].y)));
 

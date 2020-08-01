@@ -181,6 +181,11 @@ void Track::drawOffTrackOBB()
 void Track::drawTrackBarrierOBB()
 {
 	char png[] = "PNG/Assets/fenceRed.png";
+	char png2[] = "PNG/Assets/fenceYellow.png";
+	char png3[] = "PNG/Assets/crateWood.png";
+	//char png4[] = "PNG/Assets/finish.png";
+
+	//GLuint finishPNG = loadTrackPNG(png4);
 
 	//Asset asset1 = Asset();
 	//asset1.x = -200;
@@ -191,17 +196,280 @@ void Track::drawTrackBarrierOBB()
 	//asset1.setOBB1Points({-200,0}, { -200,48 }, { -184,48 }, { -184, 0 });
 	//mapBarrierOBBs.push_back(asset1);
 
-	for (float i = 0; i < 1100; i += 48)
+	glPushMatrix();
+	glColor3f(1, 1, 1);
+	glPointSize(2.0);
+	glBegin(GL_POINTS);
+	glVertex2f(-928,-1060);
+	glEnd();
+	glPopMatrix();
+
+	// going up
+	for (float i = -580; i < 1100; i += 48)
 	{
 		Asset asset = Asset();
-		asset.x = -200;
+		asset.x = -222;
 		asset.y = i;
 		asset.width = 16;
 		asset.height = 48;
 		asset.texture = loadTrackPNG(png);
-		asset.setOBB1Points({ -200,i }, { -200,i + 48 }, { -184,i + 48 }, { -184, i });
+		asset.setOBB1Points({ -222,i }, { -222,i + 48 }, { -222 + 16,i + 48 }, { -222 + 16, i });
+		mapBarrierOBBs.push_back(asset);
+	}	
+	
+	// going left
+	for (float i = -255; i > -950; i -= 48)
+	{
+		Asset asset = Asset();
+		asset.x = i;
+		asset.y = 1085;
+		asset.width = 48;
+		asset.height = 16;
+		asset.texture = loadTrackPNG(png2);
+		asset.setOBB1Points({ i , 1085 }, { i , 1085 + 16 }, { i+48, 1085 +16}, { i + 48, 1085 });
 		mapBarrierOBBs.push_back(asset);
 	}
+
+	// going down
+	for (float i = 1052; i > -1100; i -= 48) //bottom left corner of shape, either x or y depedning on increment 
+	{
+		Asset asset = Asset();
+		asset.x = -928;               // bottom left corner of shape
+		asset.y = i;                     // bottom left corner of shape
+		asset.width = 16;
+		asset.height = 48;
+		asset.texture = loadTrackPNG(png);
+		asset.setOBB1Points({ -928,i }, { -928,i + 48 }, { -928 + 16,i + 48 }, { -928 + 16, i });  // obb points x, y
+		mapBarrierOBBs.push_back(asset);
+	}
+
+	// going right
+	for (float i = -928; i < 1350; i += 48)
+	{
+		Asset asset = Asset();
+		asset.x = i;
+		asset.y = -1060;
+		asset.width = 48;
+		asset.height = 16;
+		asset.texture = loadTrackPNG(png2);
+		asset.setOBB1Points({ i , -1060 }, { i , -1060 + 16 }, { i + 48, -1060 + 16 }, { i + 48, -1060 });
+		mapBarrierOBBs.push_back(asset);
+	}
+
+	// going up
+	for (float i = -1060; i < 850; i += 48)
+	{
+		Asset asset = Asset();
+		asset.x = 1361;
+		asset.y = i;
+		asset.width = 16;
+		asset.height = 48;
+		asset.texture = loadTrackPNG(png);
+		asset.setOBB1Points({ 1361, i }, { 1361, i + 48 }, { 1361 + 16, i + 48 }, { 1361 + 16, i });
+		mapBarrierOBBs.push_back(asset);
+	}
+
+	// going left (drawing right)
+	for (float i = 1321; i < 1360; i += 48)
+	{
+		Asset asset = Asset();
+		asset.x = i;
+		asset.y = 844;
+		asset.width = 48;
+		asset.height = 16;
+		asset.texture = loadTrackPNG(png2);
+		asset.setOBB1Points({ i , 844 }, { i , 844 + 16 }, { i + 48, 844 + 16 }, { i + 48, 844 });
+		mapBarrierOBBs.push_back(asset);
+	}
+
+	// going down (drawing up)
+	for (float i = -580; i < 850; i += 48)
+	{
+		Asset asset = Asset();
+		asset.x = 1313;
+		asset.y = i;
+		asset.width = 16;
+		asset.height = 48;
+		asset.texture = loadTrackPNG(png);
+		asset.setOBB1Points({ 1313, i }, { 1313, i + 48 }, { 1313 + 16, i + 48 }, { 1313 + 16, i });
+		mapBarrierOBBs.push_back(asset);
+	}
+
+	// going left
+	for (float i = 1280; i > -250; i -= 48)
+	{
+		Asset asset = Asset();
+		asset.x = i;
+		asset.y = -580;
+		asset.width = 48;
+		asset.height = 16;
+		asset.texture = loadTrackPNG(png2);
+		asset.setOBB1Points({ i , -580 }, { i , -580 + 16 }, { i + 48, -580 + 16 }, { i + 48, -580 });
+		mapBarrierOBBs.push_back(asset);
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	// going up
+	for (float i = -50; i < 1600; i += 48)
+	{
+		Asset asset = Asset();
+		asset.x = 330;
+		asset.y = i;
+		asset.width = 16;
+		asset.height = 48;
+		asset.texture = loadTrackPNG(png);
+		asset.setOBB1Points({ 330,i }, { 330,i + 48 }, { 330 + 16,i + 48 }, { 330 + 16, i });
+		mapBarrierOBBs.push_back(asset);
+	}
+
+	// going left
+	for (float i = 298; i > -1550; i -= 48)
+	{
+		Asset asset = Asset();
+		asset.x = i;
+		asset.y = 1613;
+		asset.width = 48;
+		asset.height = 16;
+		asset.texture = loadTrackPNG(png2);
+		asset.setOBB1Points({ i , 1613 }, { i , 1613 + 16 }, { i + 48, 1613 + 16 }, { i + 48, 1613 });
+		mapBarrierOBBs.push_back(asset);
+	}
+
+	// going down
+	for (float i = 1580; i > -1610; i -= 48) //bottom left corner of shape, either x or y depedning on increment 
+	{
+		Asset asset = Asset();
+		asset.x = -1526;               // bottom left corner of shape
+		asset.y = i;                     // bottom left corner of shape
+		asset.width = 16;
+		asset.height = 48;
+		asset.texture = loadTrackPNG(png);
+		asset.setOBB1Points({ -1526,i }, { -1526,i + 48 }, { -1526 + 16,i + 48 }, { -1526 + 16, i });  // obb points x, y
+		mapBarrierOBBs.push_back(asset);
+	}
+
+	// going right
+	for (float i = -1526; i < 1900; i += 48)
+	{
+		Asset asset = Asset();
+		asset.x = i;
+		asset.y = -1588;
+		asset.width = 48;
+		asset.height = 16;
+		asset.texture = loadTrackPNG(png2);
+		asset.setOBB1Points({ i , -1588 }, { i , -1588 + 16 }, { i + 48, -1588 + 16 }, { i + 48, -1588 });
+		mapBarrierOBBs.push_back(asset);
+	}
+
+	// going up
+	for (float i = -1586; i < 1300; i += 48)
+	{
+		Asset asset = Asset();
+		asset.x = 1866;
+		asset.y = i;
+		asset.width = 16;
+		asset.height = 48;
+		asset.texture = loadTrackPNG(png);
+		asset.setOBB1Points({ 1866, i }, { 1866, i + 48 }, { 1866 + 16, i + 48 }, { 1866 + 16, i });
+		mapBarrierOBBs.push_back(asset);
+	}
+
+	// going left
+	for (float i = 1834; i > 800; i -= 48)
+	{
+		Asset asset = Asset();
+		asset.x = i;
+		asset.y = 1327;
+		asset.width = 48;
+		asset.height = 16;
+		asset.texture = loadTrackPNG(png2);
+		asset.setOBB1Points({ i , 1327 }, { i , 1327 + 16 }, { i + 48, 1327 + 16 }, { i + 48, 1327 });
+		mapBarrierOBBs.push_back(asset);
+	}
+
+	// going down
+	for (float i = 1294; i > -80; i -= 48) //bottom left corner of shape, either x or y depedning on increment 
+	{
+		Asset asset = Asset();
+		asset.x = 825;               // bottom left corner of shape
+		asset.y = i;                     // bottom left corner of shape
+		asset.width = 16;
+		asset.height = 48;
+		asset.texture = loadTrackPNG(png);
+		asset.setOBB1Points({ 825,i }, { 825,i + 48 }, { 825 + 16,i + 48 }, { 825 + 16, i });  // obb points x, y
+		mapBarrierOBBs.push_back(asset);
+	}
+
+	// going left
+	for (float i = 792; i > 350; i -= 48)
+	{
+		Asset asset = Asset();
+		asset.x = i;
+		asset.y = -50;
+		asset.width = 48;
+		asset.height = 16;
+		asset.texture = loadTrackPNG(png2);
+		asset.setOBB1Points({ i , -50 }, { i , -50 + 16 }, { i + 48, -50 + 16 }, { i + 48, -50 });
+		mapBarrierOBBs.push_back(asset);
+	}
+	
+	Asset crateRight = Asset();
+	crateRight.x = 325;
+	crateRight.y = -60;
+	crateRight.width = 40;
+	crateRight.height = 40;
+	crateRight.texture = loadTrackPNG(png3);
+	crateRight.setOBB1Points({ 325 , -60 }, { 325 , -60 + 40 }, { 325 + 40, -60 + 40 }, { 325 + 40, -60 });
+	mapBarrierOBBs.push_back(crateRight);
+
+	Asset crateLeft = Asset();
+	crateLeft.x = -235;
+	crateLeft.y = -60;
+	crateLeft.width = 40;
+	crateLeft.height = 40;
+	crateLeft.texture = loadTrackPNG(png3);
+	crateLeft.setOBB1Points({ -235 , -60 }, { -235 , -60 + 40 }, { -235 + 40, -60 + 40 }, { -235 + 40, -60 });
+	mapBarrierOBBs.push_back(crateLeft);
+
+	//Asset finish = Asset();
+	//finish.x = -225;
+	//finish.y = -50;
+	//finish.width = 560;
+	//finish.height = 10;
+	//finish.texture = loadTrackPNG(png4);
+	////finish.setOBB1Points({ 315 , -60 }, { 315 , -60 + 40 }, { 315 + 40, -60 + 40 }, { 315 + 40, -60 });
+	//mapBarrierOBBs.push_back(finish);
+
+	//glPushMatrix();
+	//glEnable(GL_TEXTURE_2D);
+	//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	//glEnable(GL_BLEND);
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glBindTexture(GL_TEXTURE_2D, finishPNG);
+	//glBegin(GL_POLYGON);
+	//glTexCoord2f(0, 0); glVertex2f(-225, -50);
+	//glTexCoord2f(0, 1); glVertex2f(-225, -50 + 10);
+	//glTexCoord2f(1, 1); glVertex2f(225 + 560, -50 + 10);
+	//glTexCoord2f(1, 0); glVertex2f(225 + 560, -50);
+	//glEnd();
+	//glDisable(GL_BLEND);
+	//glDisable(GL_TEXTURE_2D);
+	//glPopMatrix();
+
 }
 
 void Track::drawIntermediateTrack()
