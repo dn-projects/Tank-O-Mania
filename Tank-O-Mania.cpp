@@ -1,15 +1,21 @@
-#include <irrKlang/irrKlang.h>
+#pragma comment(lib, "irrKlang.lib") // link with irrKlang.dll
+//#include <irrKlang/irrKlang.h>
 #include "UserTank.h"
 #include "computerTank.h"
 #include "Track.h"
 #include "Asset.h"
 #include <vector>
+#include <stdio.h>
+#include <irrKlang/irrKlang.h>
 
-using namespace irrklang;
+
 
 using namespace std;
 
 using namespace freetype;
+
+using namespace irrklang;
+
 
 const float PI = 3.1415926535897932384626433832795f;
 
@@ -267,7 +273,7 @@ void playerPosition()
 		if (userTank.tankOBB.SAT2D(track.checkPoints[userTankLastCheckPoint + 1].OBB1)) {
 			userTankLastCheckPoint++;
 			userTankCheckPointTally++;
-			SoundEngine->play2D("explosion.wav", true);
+			SoundEngine->play2D("explosion.wav");
 		}
 		if (userTankLastCheckPoint != 0) {
 			if (userTank.tankOBB.SAT2D(track.checkPoints[userTankLastCheckPoint - 1].OBB1)) {
@@ -318,10 +324,11 @@ void collision()
 		asset.drawAsset();
 		if (asset.OBB1.SAT2D(userTank.tankOBB))
 		{
-			//SoundEngine->play2D("Tank-O-Mania/bell.wav", true);
+			//SoundEngine->play2D("Tank-O-Mania/explosion.wav", true);
 			print(our_font, 20, 95, "Collision!");
 			//userTank.handleOffTrack();
-			//userTank.handleBarrierCollision();
+			userTank.handleBarrierCollision();
+			SoundEngine->play2D("tankBarrier.ogg");
 		}
 	}
 
