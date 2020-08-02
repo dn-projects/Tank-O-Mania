@@ -27,11 +27,11 @@ public:
 	bool keys[256];
 	float speed = 0.06f;
 	float x = 150;
-	float y = 0;
+	float y = 1240;
 	float v = 0;
 	float lastx = 150;
 	float lasty = 0;
-	float matrix[16];
+	float compMatrix[16];
 	float direction = 0;
 	float ticks;
 	float pIndex = 0;
@@ -72,8 +72,6 @@ public:
 
 		return points;
 	}
-
-
 
 	static std::vector<Point> drawCircleAnticlockwise(float x, float y, float radius, float startingAngle, float endAngle)
 	{

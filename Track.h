@@ -26,7 +26,7 @@ public:
 	vector<Asset> mapAssets;
 	vector<OBB> mapOffTrackOBBs;
 	vector<Asset> mapBarrierOBBs;
-	//vector<Asset> checkPoints;
+	vector<Asset> checkPoints;
 
 	Track() { }
 
@@ -42,8 +42,8 @@ public:
 	
 	void drawMapAssets();
 
-	//void drawCheckPoints();
+	void drawCheckPoints();
 
-	//void setCheckPoints();
+	void setCheckPoints();
 };
 

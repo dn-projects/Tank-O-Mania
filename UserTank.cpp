@@ -80,23 +80,24 @@ void UserTank::drawTank()
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
+
 	tankOBB.transformPoints(matrix);
 	setOBBPoints();
 }
 
 void UserTank::setOBBPoints()
 {
-	tankOBB.vertOriginal[0].x = -25;
-	tankOBB.vertOriginal[0].y = -25;
-	
-	tankOBB.vertOriginal[1].x = -25;
-	tankOBB.vertOriginal[1].y = 25;
+	tankOBB.vertOriginal[0].x = -18;
+	tankOBB.vertOriginal[0].y = -26;
 
-	tankOBB.vertOriginal[2].x = 25;
-	tankOBB.vertOriginal[2].y = 25;
+	tankOBB.vertOriginal[1].x = -18;
+	tankOBB.vertOriginal[1].y = 26;
 
-	tankOBB.vertOriginal[3].x = 25;
-	tankOBB.vertOriginal[3].y = -25;
+	tankOBB.vertOriginal[2].x = 18;
+	tankOBB.vertOriginal[2].y = 26;
+
+	tankOBB.vertOriginal[3].x = 18;
+	tankOBB.vertOriginal[3].y = -26;
 }
 
 void UserTank::moveTank()

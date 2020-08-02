@@ -93,7 +93,7 @@ void runGame(double deltaTime);
 
 void doMath();
 
-
+void collision();
 void printCursor();
 void moveProjection();
 bool outsideObject(Point P, Point V[], int n);
@@ -184,9 +184,9 @@ void display()
 			break;
 		case PLAY:
 			track.drawMapAssets();
+			
 			//track.drawCheckPoints();
-			userTank.drawTank();
-			computerTank.drawTank();
+
 
 			//for (int i = -10000; i < 10000; i += 100)
 			//{
@@ -201,34 +201,7 @@ void display()
 			//		glPopMatrix();
 			//	}
 			//}
-			for (OBB obb : track.mapOffTrackOBBs)
-			{
-				obb.drawOBB();
-				if (obb.SAT2D(userTank.tankOBB))
-				{
-					userTank.handleOffTrack();
-					//userTank.handleBarrierCollision();
-				}
-			}
-			for (Asset asset : track.mapBarrierOBBs)
-			{
-				asset.OBB1.drawOBB();
-				asset.drawAsset();
-				if (asset.OBB1.SAT2D(userTank.tankOBB))
-				{
-					//SoundEngine->play2D("Tank-O-Mania/bell.wav", true);
-					print(our_font, 20, 95, "Collision!");
-					//userTank.handleOffTrack();
-					userTank.handleBarrierCollision();
-				}
-			}
-			userTank.tankOBB.drawOBB();
-		computerTank.obb.drawOBB();
-			if (userTank.tankOBB.SAT2D(computerTank.obb))
-			{
-				computerTank.handleCollision();
-				userTank.handleBarrierCollision();
-			}
+
 			
 			break;
 		case PAUSE:
@@ -246,12 +219,16 @@ void runGame(double deltaTime)
 	switch (gameState)
 	{
 		case PLAY:
-			moveProjection();
+			moveProjection();		userTank.drawTank();
 			userTank.handleKeys(deltaTime);
 			userTank.moveTank();
+	
 			printFunctions();
+			computerTank.drawTank();
 			computerTank.incrementMovement();
 			computerTank.moveTank();
+			
+			collision();
 			break;
 		case PAUSE:
 			break;
@@ -260,6 +237,42 @@ void runGame(double deltaTime)
 	}
 }
 
+
+void collision() {
+	//Grass detection
+	for (OBB obb : track.mapOffTrackOBBs)
+	{
+		obb.drawOBB();
+		if (obb.SAT2D(userTank.tankOBB))
+		{
+			//userTank.handleOffTrack();
+			userTank.handleBarrierCollision();
+		}
+	}
+
+	//Barrier detection
+	for (Asset asset : track.mapBarrierOBBs)
+	{
+		asset.OBB1.drawOBB();
+		asset.drawAsset();
+		if (asset.OBB1.SAT2D(userTank.tankOBB))
+		{
+			//SoundEngine->play2D("Tank-O-Mania/bell.wav", true);
+			print(our_font, 20, 95, "Collision!");
+			//userTank.handleOffTrack();
+			userTank.handleBarrierCollision();
+		}
+	}
+
+	//User tank and computer tank detection
+	userTank.tankOBB.drawOBB();
+	computerTank.obb.drawOBB();
+	if (userTank.tankOBB.SAT2D(computerTank.obb))
+	{
+		//computerTank.handleCollision();
+		userTank.handleBarrierCollision();
+	}
+}
 void gamePlaySpeed()
 {
 	LARGE_INTEGER time;

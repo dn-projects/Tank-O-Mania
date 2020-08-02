@@ -35,6 +35,8 @@ void ComputerTank::loadTexture()
 
 	TankBody = loadComputerTankPNG(TankBodyPNG);
 	TankBarrel = loadComputerTankPNG(TankBarrelPNG);
+
+	setOBBPoints();
 }
 
 void ComputerTank::drawTank()
@@ -49,7 +51,7 @@ void ComputerTank::drawTank()
 	glBindTexture(GL_TEXTURE_2D, TankBody);
 	glTranslatef(x, y, 0.0);
 	glRotatef(direction, 0, 0, 1);
-	glGetFloatv(GL_MODELVIEW_MATRIX, matrix);
+    glGetFloatv(GL_MODELVIEW_MATRIX, compMatrix);
 	glColor3f(1, 1, 1);
 	glBegin(GL_POLYGON);
 	glTexCoord2f(0, 0);	glVertex2f(-25, -25);
@@ -60,7 +62,7 @@ void ComputerTank::drawTank()
 	glDisable(GL_BLEND);
 	glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
-
+	
 	// glPushMatrix - draws the tank barrel and applies 
 	//movement to barrel
 	glPushMatrix();
@@ -81,8 +83,10 @@ void ComputerTank::drawTank()
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
-	obb.transformPoints(matrix);
-	setOBBPoints();
+
+   
+    obb.transformPoints(compMatrix);
+	
 }
 
 void ComputerTank::incrementMovement()
@@ -98,7 +102,7 @@ void ComputerTank::incrementMovement()
 
 	float twoVectorDistance = sqrt(vectorX + vectorY);
 
-	ticks += (12 / twoVectorDistance);  // change 1.5 to adjust travel speed of computerTank 
+	ticks += (6 / twoVectorDistance);  // change 1.5 to adjust travel speed of computerTank 
 	if (ticks > 1)
 	{
 		ticks = 0;
@@ -118,37 +122,37 @@ void ComputerTank::setMovementPoints()
 	Point p0 = { 150, 0};
 	movementPoints.push_back(p0);
 
-	Point p1 = { 150, 1250 };
+	Point p1 = { 150, 1240 };
 	movementPoints.push_back(p1);
 
 	vector<Point> leftcorner1 = ComputerTank::drawCircleAnticlockwise(30, 1250, 120, 0, 90);
 	std::copy(leftcorner1.begin(), leftcorner1.end(), std::back_inserter(movementPoints));
 
-	Point p2 = { -1050, 1300 };
+	Point p2 = { -1040, 1300 };
 	movementPoints.push_back(p2);
 
 	vector<Point> leftcorner2 = ComputerTank::drawCircleAnticlockwise(-1050, 1180, 120, 90, 180);
 	std::copy(leftcorner2.begin(), leftcorner2.end(), std::back_inserter(movementPoints));
 
-	Point p3 = { -1250, -1280 };
+	Point p3 = { -1250, -1270 };
 	movementPoints.push_back(p3);
 
 	vector<Point> leftcorner3 = ComputerTank::drawCircleAnticlockwise(-1130, -1280, 120, 180, 270);
 	std::copy(leftcorner3.begin(), leftcorner3.end(), std::back_inserter(movementPoints));
 	
-	Point p4 = { 1450,-1400 };
+	Point p4 = { 1440,-1400 };
 	movementPoints.push_back(p4);
 
 	vector<Point> leftcorner4 = ComputerTank::drawCircleAnticlockwise(1450, -1280, 120, 270, 360);
 	std::copy(leftcorner4.begin(), leftcorner4.end(), std::back_inserter(movementPoints));
 
-	Point p5 = { 1500,900 };
+	Point p5 = { 1500,890 };
 	movementPoints.push_back(p5);
 
 	vector<Point> leftcorner5 = ComputerTank::drawCircleAnticlockwise(1350, 900, 150, 0, 180);
 	std::copy(leftcorner5.begin(), leftcorner5.end(), std::back_inserter(movementPoints));
 
-	Point p7 = { 1100,-250 };
+	Point p7 = { 1100,-240 };
 	movementPoints.push_back(p7);
 
 	vector<Point> rightcorner1 = ComputerTank::drawCircleClockwise(950, -250, 150, 355, 270);
@@ -157,7 +161,7 @@ void ComputerTank::setMovementPoints()
 	Point p8 = { 300,-300 };
 	movementPoints.push_back(p8);
 
-	vector<Point> rightcorner2 = ComputerTank::drawCircleClockwise(300, -150, 150, 275, 180);
+	vector<Point> rightcorner2 = ComputerTank::drawCircleClockwise(280, -150, 150, 275, 180);
 	std::copy(rightcorner2.begin(), rightcorner2.end(), std::back_inserter(movementPoints));
 
 	Point p9 = { 150, 0};
@@ -166,6 +170,8 @@ void ComputerTank::setMovementPoints()
 
 void ComputerTank::moveTank()
 {
+	
+
 		// dealing with collision A - stop this function on collision and run Sleep() 
 	    // then check if still colliding and then continue function if not collision
 
@@ -212,6 +218,8 @@ void ComputerTank::moveTank()
 		else {
 			direction -= angle;
 		}
+
+
 }
 
 void ComputerTank::setOBBPoints()
@@ -227,7 +235,6 @@ void ComputerTank::setOBBPoints()
 
 	obb.vertOriginal[3].x = 18;
 	obb.vertOriginal[3].y = -26;
-	obb.transformPoints(matrix);
 }
 
 void ComputerTank::handleCollision()

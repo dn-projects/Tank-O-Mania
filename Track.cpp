@@ -494,22 +494,22 @@ void Track::drawHardTrack()
 	glPopMatrix();
 }
 
-//void Track::drawCheckPoints()
-//{
-//	for (Asset asset : checkPoints)
-//	{
-//		asset.drawAsset();
-//	}
-//}
-//
-//void Track::setCheckPoints()
-//{
-//	Asset cp1 = Asset();
-//	cp1.x = -225;
-//	cp1.y = -45;
-//	cp1.width = 560;
-//	cp1.height = 10;
-//	cp1.xTexture = 5;
-//	cp1.setOBB1Points({ 10000 , 10000 }, { 10000 , 10000 }, { 10000 , 10000 }, { 10000 , 10000 });
-//	checkPoints.push_back(cp1);
-//}
+void Track::drawCheckPoints()
+{
+	for (Asset asset : checkPoints)
+	{
+		asset.drawAsset();
+	}
+}
+
+void Track::setCheckPoints()
+{
+	Asset cp1 = Asset();
+	cp1.x = -225;
+	cp1.y = -45;
+	cp1.width = 560;
+	cp1.height = 10;
+	cp1.xTexture = 5;
+	cp1.setOBB1Points({ 10000 , 10000 }, { 10000 , 10000 }, { 10000 , 10000 }, { 10000 , 10000 });
+	checkPoints.push_back(cp1);
+}
