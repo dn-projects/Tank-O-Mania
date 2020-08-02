@@ -1,11 +1,11 @@
-//#include <includeAudio/irrKlang.h>
+#include <irrKlang/irrKlang.h>
 #include "UserTank.h"
 #include "computerTank.h"
 #include "Track.h"
 #include "Asset.h"
 #include <vector>
 
-//using namespace irrklang;
+using namespace irrklang;
 
 using namespace std;
 
@@ -36,7 +36,7 @@ double gameSpeed = 0.000003;  // change to change speed of game
 
 double deltaTime;
 
-//ISoundEngine* SoundEngine = createIrrKlangDevice();
+ISoundEngine * SoundEngine = createIrrKlangDevice();
 
 
 Track track = Track();
@@ -267,6 +267,7 @@ void playerPosition()
 		if (userTank.tankOBB.SAT2D(track.checkPoints[userTankLastCheckPoint + 1].OBB1)) {
 			userTankLastCheckPoint++;
 			userTankCheckPointTally++;
+			SoundEngine->play2D("explosion.wav", true);
 		}
 		if (userTankLastCheckPoint != 0) {
 			if (userTank.tankOBB.SAT2D(track.checkPoints[userTankLastCheckPoint - 1].OBB1)) {
