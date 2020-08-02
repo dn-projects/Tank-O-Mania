@@ -22,6 +22,9 @@ public:
 	OBB OBB2;
 	OBB OBB3;
 	float OBB1matrix[16];
+	float xTrans = 0;
+	float yTrans = 0;
+	float rotation = 0;
 	float xTexture = 1;
 	float yTexture = 1;
 	float x = 0;

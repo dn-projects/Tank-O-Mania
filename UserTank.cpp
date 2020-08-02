@@ -87,17 +87,17 @@ void UserTank::drawTank()
 
 void UserTank::setOBBPoints()
 {
-	tankOBB.vertOriginal[0].x = -18;
-	tankOBB.vertOriginal[0].y = -26;
+	tankOBB.vertOriginal[0].x = -16;
+	tankOBB.vertOriginal[0].y = -22;
 
-	tankOBB.vertOriginal[1].x = -18;
-	tankOBB.vertOriginal[1].y = 26;
+	tankOBB.vertOriginal[1].x = -16;
+	tankOBB.vertOriginal[1].y = 24;
 
-	tankOBB.vertOriginal[2].x = 18;
-	tankOBB.vertOriginal[2].y = 26;
+	tankOBB.vertOriginal[2].x = 16;
+	tankOBB.vertOriginal[2].y = 24;
 
-	tankOBB.vertOriginal[3].x = 18;
-	tankOBB.vertOriginal[3].y = -26;
+	tankOBB.vertOriginal[3].x = 16;
+	tankOBB.vertOriginal[3].y = -22;
 }
 
 void UserTank::moveTank()

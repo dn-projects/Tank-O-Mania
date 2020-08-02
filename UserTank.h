@@ -25,12 +25,13 @@ public:
 	bool keys[256];
 	float speed = 0.06f;
 	float x = -20;
-	float y = 0;
+	float y = -70;
 	float v = 0;
 	float lastx = 0;
 	float lasty = 0;
 	float matrix[16];
 	float direction = 0;
+	float checkPointsPassed = 0;
 	
 	UserTank() { }
 

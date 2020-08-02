@@ -224,17 +224,17 @@ void ComputerTank::moveTank()
 
 void ComputerTank::setOBBPoints()
 {
-	obb.vertOriginal[0].x = -18;
-	obb.vertOriginal[0].y = -26;
+	obb.vertOriginal[0].x = -16;
+	obb.vertOriginal[0].y = -20;
 
-	obb.vertOriginal[1].x = -18;
-	obb.vertOriginal[1].y = 26;
+	obb.vertOriginal[1].x = -16;
+	obb.vertOriginal[1].y = 24;
 
-	obb.vertOriginal[2].x = 18;
-	obb.vertOriginal[2].y = 26;
+	obb.vertOriginal[2].x = 16;
+	obb.vertOriginal[2].y = 24;
 
-	obb.vertOriginal[3].x = 18;
-	obb.vertOriginal[3].y = -26;
+	obb.vertOriginal[3].x = 16;
+	obb.vertOriginal[3].y = -20;
 }
 
 void ComputerTank::handleCollision()

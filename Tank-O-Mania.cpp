@@ -93,6 +93,8 @@ void runGame(double deltaTime);
 
 void doMath();
 
+void playerPosition();
+
 void collision();
 void printCursor();
 void moveProjection();
@@ -152,7 +154,7 @@ void init()
 	track.loadTexture();
 	track.drawOffTrackOBB();
 	track.drawTrackBarrierOBB();
-	//track.setCheckPoints();
+	track.setCheckPoints();
 	userTank.loadTexture();
 	computerTank.loadTexture();
 	computerTank.setMovementPoints();
@@ -185,7 +187,7 @@ void display()
 		case PLAY:
 			track.drawMapAssets();
 			
-			//track.drawCheckPoints();
+			track.drawCheckPoints();
 
 
 			//for (int i = -10000; i < 10000; i += 100)
@@ -219,15 +221,16 @@ void runGame(double deltaTime)
 	switch (gameState)
 	{
 		case PLAY:
-			moveProjection();		userTank.drawTank();
+			moveProjection();	
+			userTank.drawTank();
 			userTank.handleKeys(deltaTime);
 			userTank.moveTank();
-	
+			
 			printFunctions();
 			computerTank.drawTank();
 			computerTank.incrementMovement();
 			computerTank.moveTank();
-			
+			playerPosition();
 			collision();
 			break;
 		case PAUSE:
@@ -237,30 +240,44 @@ void runGame(double deltaTime)
 	}
 }
 
+void playerPosition()
+{
+	for (int i = 0; i < track.checkPoints.size(); i++)
+	{
+		if (userTank.tankOBB.SAT2D(track.checkPoints[i].OBB1))
+		{	
+			track.checkPoints[i].OBB1.drawOBB();
+			userTank.checkPointsPassed++;
+		}
+	}
+	print(our_font, 300, 350, "Check point - %7.2f", userTank.checkPointsPassed);
+}
 
-void collision() {
+
+void collision() 
+{
 	//Grass detection
 	for (OBB obb : track.mapOffTrackOBBs)
 	{
-		obb.drawOBB();
+		//obb.drawOBB();
 		if (obb.SAT2D(userTank.tankOBB))
 		{
 			//userTank.handleOffTrack();
-			userTank.handleBarrierCollision();
+			//userTank.handleBarrierCollision();
 		}
 	}
 
 	//Barrier detection
 	for (Asset asset : track.mapBarrierOBBs)
 	{
-		asset.OBB1.drawOBB();
+		//asset.OBB1.drawOBB();
 		asset.drawAsset();
 		if (asset.OBB1.SAT2D(userTank.tankOBB))
 		{
 			//SoundEngine->play2D("Tank-O-Mania/bell.wav", true);
 			print(our_font, 20, 95, "Collision!");
 			//userTank.handleOffTrack();
-			userTank.handleBarrierCollision();
+			//userTank.handleBarrierCollision();
 		}
 	}
 
@@ -270,7 +287,7 @@ void collision() {
 	if (userTank.tankOBB.SAT2D(computerTank.obb))
 	{
 		//computerTank.handleCollision();
-		userTank.handleBarrierCollision();
+		//userTank.handleBarrierCollision();
 	}
 }
 void gamePlaySpeed()
@@ -448,7 +465,7 @@ void reshape(int width, int height)		// Resize the OpenGL window
 	glMatrixMode(GL_PROJECTION);						// Select The Projection Matrix
 	glLoadIdentity();									// Reset The Projection Matrix
 
-	//gluOrtho2D(-2000, 2000, -2000, 2000);             // View whole map 
+	gluOrtho2D(-2000, 2000, -2000, 2000);             // View whole map 
 	//gluOrtho2D(-4000, 4000, -4000, 4000);             // View whole map 
 
 	glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix

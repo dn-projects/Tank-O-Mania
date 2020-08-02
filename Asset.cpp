@@ -99,6 +99,8 @@ void Asset::drawAsset()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glGetFloatv(GL_MODELVIEW_MATRIX, OBB1matrix);
+	glTranslatef(xTrans,yTrans,0);
+	glRotatef(rotation,0,0,1);
 	glBegin(GL_POLYGON);
 	glTexCoord2f(0, 0); glVertex2f(x, y);
 	glTexCoord2f(0, yTexture); glVertex2f(x, y + height);
@@ -108,21 +110,12 @@ void Asset::drawAsset()
 	glDisable(GL_BLEND);
 	glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
+	
+	OBB1.transformPoints(OBB1matrix);
 }
 
 void Asset::setOBB1Points(Point bottomLeft, Point topLeft, Point topRight, Point bottomRight)
 {
-	//glPushMatrix();
-	//glColor3f(1, 1, 1);
-	//glBegin(GL_QUADS);
-	//glVertex2f(bottomLeft.x, bottomLeft.y);
-	//glVertex2f(topLeft.x, topLeft.y);
-	//glVertex2f(topRight.x,  topRight.y);
-	//glVertex2f(bottomRight.x, bottomRight.y);
-	//glEnd();
-	////glGetFloatv(GL_MODELVIEW_MATRIX, matrix);
-	//glPopMatrix();
-
 	OBB1.vert[0].x = bottomLeft.x;
 	OBB1.vert[0].y = bottomLeft.y;
 
