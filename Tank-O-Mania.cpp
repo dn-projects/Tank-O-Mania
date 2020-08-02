@@ -1,5 +1,4 @@
-#pragma comment(lib, "irrKlang.lib") // link with irrKlang.dll
-//#include <irrKlang/irrKlang.h>
+#pragma comment(lib, "irrKlang.lib")
 #include "UserTank.h"
 #include "computerTank.h"
 #include "Track.h"
@@ -7,8 +6,6 @@
 #include <vector>
 #include <stdio.h>
 #include <irrKlang/irrKlang.h>
-
-
 
 using namespace std;
 
@@ -19,16 +16,39 @@ using namespace irrklang;
 
 const float PI = 3.1415926535897932384626433832795f;
 
-POINT p;
-int	mouse_x = 0, mouse_y = 0;
+POINT p;   
+int 	mouse_x = 0, mouse_y = 0;   
 bool LeftPressed = false;
 int screenWidth = 700, screenHeight = 700;
 bool keys[256];
-bool F1 = false;
-bool F2 = false;
-bool menu = false;
+float timeKeeper = 0;
+bool done = false;
 
-/***** Checkpoint and position variables *****/
+/// A fairly straight forward function that pushes
+/// a projection matrix that will make object world 
+/// coordinates identical to window coordinates.
+static void pushScreenCoordinateMatrix() {
+	glPushAttrib(GL_TRANSFORM_BIT);
+	GLint	viewport[4];
+	glGetIntegerv(GL_VIEWPORT, viewport);
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+	gluOrtho2D(viewport[0], viewport[2], viewport[1], viewport[3]);
+	glPopAttrib();
+}
+
+/// Pops the projection matrix without changing the current
+/// MatrixMode.
+static void pop_projection_matrix() {
+	glPushAttrib(GL_TRANSFORM_BIT);
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+	glPopAttrib();
+}
+
+#pragma region Checkpoint and position variables
+
 int userTankLastCheckPoint = 0;
 int userTankCheckPointTally = 0;
 int userTankLapNumber = 1;
@@ -36,91 +56,100 @@ int compTankLastCheckPoint = 0;
 int compTankCheckPointTally = 0;
 int compTankLapNumber = 1;
 
-/***** gamePlaySpeed method variables *****/
-__int64 previousTime = 0;
-double gameSpeed = 0.000003;  // change to change speed of game
+#pragma endregion
 
+#pragma region gamePlaySpeed method variables 
+
+__int64 previousTime = 0;
+double gameSpeed = 0.000003;
 double deltaTime;
+
+#pragma endregion
+
+#pragma region irrKlang sound variables 
 
 ISoundEngine * SoundEngine = createIrrKlangDevice();
 
+#pragma endregion
+
+#pragma region game objects  
 
 Track track = Track();
 UserTank userTank = UserTank();
 ComputerTank computerTank = ComputerTank();
-Asset picture = Asset();
+Asset mainMenu = Asset();
+Asset plane1 = Asset();
+Asset plane1Shadow = Asset();
+UserTank greenMenuTank = UserTank();
+ComputerTank beigeMenuTank1 = ComputerTank();
+ComputerTank beigeMenuTank2 = ComputerTank();
+Asset mouse = Asset();
+Asset playButton = Asset();
+Asset controlsButton = Asset();
+Asset quitButton = Asset();
 
-std::vector<Point> pointsForAi;
+#pragma endregion
 
-float pointTicker = 0.0;
+#pragma region tank-o-mania local textures  
 
-float speed = 0.06f;                                    // speed used as variable for tank1 speed
-font_data our_font;                                 // font used to print message on display
-float timer;                                        // timer used as game timer to calculate maths with time
+GLuint menuTexture = 0;
+GLuint planeTexture = 0;
+GLuint planeShadowTexture = 0;
+GLuint button1 = 0;
 
+#pragma endregion
 
-enum STATES { MENU, COUNTDOWN, PLAY, PAUSE, END, LEADERBOARD };
-STATES gameState = MENU;
+#pragma region Font variables  
 
+font_data gameFont;  
 
+#pragma endregion
 
+#pragma region Game state variables  
 
-float squareXTransform = 0;
-float squareYTransform = 0; // transform square x and y by arrrow key transformation
+enum GAME_STATE
+{ 
+	MAINMENU, 
+	PLAY, 
+	PAUSE, 
+	CONTROLS, 
+	QUIT, 
+};
 
+GAME_STATE gameState = MAINMENU;
 
-/**************************** variables for spining points ****************************/
-float squareX = 4;
-float squareY = 4;
+bool playHover = false;
+bool controlsHover = false;
+bool quitHover = false;
 
+#pragma endregion
 
-/**************************** variables for AABB ****************************/
-float squareMinX = 0;
-float squareMaxX = 0;
-float squareMinY = 0;
-float squareMaxY = 0;
+#pragma region function declarations  
 
-
-float squareNewX1 = 0;
-float squareNewY1 = 0;
-float squareNewX2 = 0;
-float squareNewY2 = 0;
-float squareNewX3 = 0;
-float squareNewY3 = 0;
-float squareNewX4 = 0;
-float squareNewY4 = 0;
-
-/**************************** variables for colors ****************************/
-float red = 0.0;
-float green = 0.0;
-float blue = 0.0;
-
-
-/**************************** function declarations ****************************/
-void drawCircle(float x, float y, float radius, float angle); //prototype the draw function
-void changeLineColor();
-void circleCollison();
 void printFunctions();
-
 void gamePlaySpeed();
 void runGame(double deltaTime);
-
-void doMath();
-
 void playerPosition();
-
 void collision();
 void printCursor();
 void moveProjection();
 bool outsideObject(Point P, Point V[], int n);
+void initialiseMenuSprites();
 
-/**************************** OPENGL FUNCTION PROTOTYPES ****************************/
+#pragma endregion
+
+#pragma region OPENGL FUNCTION PROTOTYPES 
+
 void display();				//draws everything to the screen
 void reshape(int width, int height);//called when the window is resized
 void init();				//called in winmain when the program starts.
 void processKeys();			//called in winmain to process keyboard controls
 
-GLuint menuTexture = 0;
+#pragma endregion
+
+
+
+
 
 GLuint loadPNG(char* name)
 {
@@ -155,16 +184,24 @@ void init()
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	glClearColor(0.0, 0.0, 0.0, 0.0);     // glClear(GL_COLOR_BUFFER_BIT) in 
-	                                      // the display function will clear 
-	                                      // the buffer to this colour.
+	glClearColor(0.0, 0.0, 0.0, 0.0);  
 
-	our_font.init("arialbd.TTF", 22);     //Build the freetype font
+	gameFont.init("tankFont.ttf", 22);
 	
-	char png[] = "Tank-O-Mania_logo.png";
-	menuTexture = loadPNG(png);
+	char grassPNG[] = "PNG/Assets/towerDefense_tile231.png";
+	menuTexture = loadPNG(grassPNG);
+	
+	char plane1PNG[] = "PNG/Assets/towerDefense_tile271.png";
+	planeTexture = loadPNG(plane1PNG);
 
+	char plane1ShadowPNG[] = "PNG/Assets/towerDefense_tile294.png";
+	planeShadowTexture = loadPNG(plane1ShadowPNG);
 
+	char button1PNG[] = "PNG/Assets/towerDefense_tile060.png";
+	button1 = loadPNG(button1PNG);
+
+	mouse.height = 1;
+	mouse.width = 1;
 	track.loadTexture();
 	track.drawOffTrackOBB();
 	track.drawTrackBarrierOBB();
@@ -172,6 +209,7 @@ void init()
 	userTank.loadTexture();
 	computerTank.loadTexture();
 	computerTank.setMovementPoints();
+	initialiseMenuSprites();
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -185,25 +223,34 @@ void display()
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
+	moveProjection();
+
 	switch (gameState)
 	{
-		// draw menu here at case 0 ??
-		case MENU:
-			// draw menu here
-			/*picture.width = 1000;
-			picture.height = 1000;
-			picture.x = 0;
-			picture.y = 0;
-			picture.texture = menuTexture;
-			picture.drawAsset();*/
-			print(our_font, 300, 350, "Game Loaded!");
+		case MAINMENU:
+
+				pushScreenCoordinateMatrix();
+				playButton.drawAsset();
+				controlsButton.drawAsset();
+				quitButton.drawAsset();
+				mainMenu.drawAsset();
+				plane1.drawAsset();
+				plane1Shadow.drawAsset();
+				greenMenuTank.drawTank();
+				beigeMenuTank1.drawTank();
+				beigeMenuTank2.drawTank();
+
+				print(gameFont, 88, 500, "Tank-O-Mania");
+
+				playHover? print(gameFont, 360, 350, "Play") : print(gameFont, 350, 340, "Play");
+				controlsHover? print(gameFont, 270, 280, "Controls") : print(gameFont, 260, 270, "Controls");
+				quitHover? print(gameFont, 360, 210, "Quit") : print(gameFont, 350, 200, "Quit");
+
+				pop_projection_matrix();
+
 			break;
 		case PLAY:
 			track.drawMapAssets();
-			
-			
-
-
 			//for (int i = -10000; i < 10000; i += 100)
 			//{
 			//	for (int j = -10000; j < 10000; j += 100)
@@ -223,8 +270,10 @@ void display()
 		case PAUSE:
 			track.drawIntermediateTrack();
 			break;
-		case LEADERBOARD:
-			track.drawHardTrack();
+		case CONTROLS:
+			break;
+		case QUIT:
+			done = true;
 			break;
 	}
 	glFlush();
@@ -232,10 +281,63 @@ void display()
 
 void runGame(double deltaTime)
 {
+
+	mouse.x = mouse_x;
+	mouse.y = mouse_y;
+	
+	mouse.setOBB1Points ({mouse.x, mouse.y},{mouse.x, mouse.y + 2},{mouse.x + 2, mouse.y + 2},{mouse.x + 2,mouse.y} );
+	mouse.OBB1.transformPoints(mouse.OBB1matrix);
+	mouse.drawAsset();
+
+	playHover = false;
+	controlsHover = false;
+	quitHover = false;
+
+	if (mouse.OBB1.SAT2D(playButton.OBB1))
+	{
+		playHover = true;
+		SoundEngine->play2D("back_001.ogg");
+		SoundEngine->play2D.drop;
+	}
+	if (mouse.OBB1.SAT2D(controlsButton.OBB1))
+	{
+		controlsHover = true;
+		SoundEngine->play2D("back_001.ogg");
+	}
+	if (mouse.OBB1.SAT2D(quitButton.OBB1))
+	{
+		quitHover = true;
+		SoundEngine->play2D("back_001.ogg");
+	}
+
 	switch (gameState)
 	{
+		case MAINMENU:
+		
+		timeKeeper++;
+
+		plane1.x += 0.15;
+		plane1Shadow .x += 0.15;
+		greenMenuTank.x -= 0.08;
+		beigeMenuTank1.x -= 0.08;
+		beigeMenuTank2.x -= 0.08;
+
+		if (timeKeeper > 11750)
+		{
+			greenMenuTank.x = 750;
+			beigeMenuTank1.x = 840;
+			beigeMenuTank2.x = 900;
+			
+			plane1.x = -80;
+			plane1Shadow.x = -145;
+
+			timeKeeper = 0;
+		}
+
+
+			break;
 		case PLAY:
-			//moveProjection();	
+
 			userTank.drawTank();
 			userTank.handleKeys(deltaTime);
 			userTank.moveTank();
@@ -246,10 +348,15 @@ void runGame(double deltaTime)
 			computerTank.moveTank();
 			playerPosition();
 			collision();
+
 			break;
+
 		case PAUSE:
 			break;
-		case LEADERBOARD:
+		case CONTROLS:
+			break;
+		case QUIT:
+			done = true;
 			break;
 	}
 }
@@ -273,7 +380,7 @@ void playerPosition()
 		if (userTank.tankOBB.SAT2D(track.checkPoints[userTankLastCheckPoint + 1].OBB1)) {
 			userTankLastCheckPoint++;
 			userTankCheckPointTally++;
-			SoundEngine->play2D("explosion.wav");
+			//SoundEngine->play2D("explosion.wav");
 		}
 		if (userTankLastCheckPoint != 0) {
 			if (userTank.tankOBB.SAT2D(track.checkPoints[userTankLastCheckPoint - 1].OBB1)) {
@@ -296,13 +403,71 @@ void playerPosition()
 				}
 			}
 		}
-		print(our_font, 300, 350, "User Check point - %d", userTankCheckPointTally);
-		print(our_font, 300, 300, "Comp check point - %d", compTankCheckPointTally);
-		print(our_font, 300, 250, "Lap number - %d", userTankLapNumber);
-		print(our_font, 300, 200, "Last check point - %d", userTankLastCheckPoint);
+		print(gameFont, 300, 350, "User Check point - %d", userTankCheckPointTally);
+		print(gameFont, 300, 300, "Comp check point - %d", compTankCheckPointTally);
+		print(gameFont, 300, 250, "Lap number - %d", userTankLapNumber);
+		print(gameFont, 300, 200, "Last check point - %d", userTankLastCheckPoint);
 	}
 }
 
+void initialiseMenuSprites()
+{
+	greenMenuTank.loadTexture();
+	beigeMenuTank1.loadTexture();
+	beigeMenuTank2.loadTexture();
+
+	greenMenuTank.x = 750;
+	greenMenuTank.y = 100;
+	greenMenuTank.direction = 90;
+	
+	beigeMenuTank1.x = 840;
+	beigeMenuTank1.y = 135;
+	beigeMenuTank1.direction = 90;
+
+	beigeMenuTank2.x = 900;
+	beigeMenuTank2.y = 65;
+	beigeMenuTank2.direction = 90;
+
+	plane1.x = -80;
+	plane1.y = 100;
+	plane1.rotation = 45;
+	plane1.texture = planeTexture;
+
+	plane1Shadow.x = -145;
+	plane1Shadow.y = 25;
+	plane1Shadow.rotation = 45;
+	plane1Shadow.texture = planeShadowTexture;
+
+	playButton.x = 350;
+	playButton.y = 340;
+	playButton.height = 52;
+	playButton.width = 170;
+	playButton.setOBB1Points({350,340},{350,402},{520,402},{520,350});
+	playButton.texture = button1;
+
+	controlsButton.x = 260;
+	controlsButton.y = 270;
+	controlsButton.height = 52;
+	controlsButton.width = 345;
+	controlsButton.setOBB1Points( {260,270},{260,322},{605,322},{605,270} );
+	controlsButton.texture = button1;	
+	
+	quitButton.x = 350;
+	quitButton.y = 200;
+	quitButton.height = 52;
+	quitButton.width = 170;
+	quitButton.setOBB1Points( {350,200},{350,252},{520,252},{520,200} );
+	quitButton.texture = button1;
+
+
+	mainMenu.width = 1000;
+	mainMenu.height = 1000;
+	mainMenu.x = 0;
+	mainMenu.y = 0;
+	mainMenu.texture = menuTexture;
+	mainMenu.xTexture = 6;
+	mainMenu.yTexture = 6;
+}
 
 void collision() 
 {
@@ -325,7 +490,7 @@ void collision()
 		if (asset.OBB1.SAT2D(userTank.tankOBB))
 		{
 			//SoundEngine->play2D("Tank-O-Mania/explosion.wav", true);
-			print(our_font, 20, 95, "Collision!");
+			print(gameFont, 20, 95, "Collision!");
 			//userTank.handleOffTrack();
 			userTank.handleBarrierCollision();
 			SoundEngine->play2D("tankBarrier.ogg");
@@ -341,6 +506,7 @@ void collision()
 		//userTank.handleBarrierCollision();
 	}
 }
+
 void gamePlaySpeed()
 {
 	LARGE_INTEGER time;
@@ -350,60 +516,11 @@ void gamePlaySpeed()
 	__int64 ticksElapsed = currentTime - previousTime;
 	deltaTime = double(ticksElapsed) * gameSpeed;
 
-	if (gameState == PLAY)
-	{
-		runGame(deltaTime);
-	}
+
+	runGame(deltaTime);
+
 
 	previousTime = currentTime;
-}
-
-void doMath()
-{
-	float i = 0;
-	float px;
-	float py;
-
-	do
-	{
-		float x1 = 0.0;
-		float y1 = 0.0;
-
-		float x2 = -80.0;
-		float y2 = 100.0;
-
-		//float x3 = 0.0;
-		//float y3 = 20;
-
-
-		float x2i = pointsForAi[i].x * pointTicker;
-		float y2i = pointsForAi[i].y * pointTicker;
-
-		px = x1 + x2i;
-		py = y1 + y2i;
-
-		// re write angle to be x3 - x2 etc (look at post it notes)
-		//float angle = (0 * 550)-(-400 * 1000);
-
-		print(our_font, 5, 100, "px %7.2f", px);
-		print(our_font, 5, 70, "py %7.2f", py);
-		//print(our_font, 5, 40, "rotation %7.2f", angle);
-
-
-		glPushMatrix();
-		glColor3f(1, 1, 1);
-		//glRotatef(angle, 0, 0, 1);
-		glTranslatef(px, py, 0);
-		glBegin(GL_TRIANGLES);
-		glVertex2f(-10, -10);
-		glVertex2f(0, 20);
-		glVertex2f(10, -10);
-		glEnd();
-		glPopMatrix();
-
-		pointTicker += 0.0005;
-	} while (pointsForAi[i].x >= px && pointsForAi[i].y >= py);
-	
 }
 
 bool outsideObject(Point P, Point V[], int n)
@@ -428,21 +545,21 @@ void moveProjection()
 {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-		glPushMatrix();
-		glColor3f(1,1,1);
-		glLineWidth(100);
-			glBegin(GL_LINE_LOOP);
-				glVertex2f(-1,-1);
-				glVertex2f(-1, 1);
-				glVertex2f(1,1);
-				glVertex2f(1,-1);
-			glEnd();
-		glPopMatrix();
+	//	glPushMatrix();
+	//	glColor3f(0,1,0);
+	//	glLineWidth(100);
+	//		glBegin(GL_LINE_STRIP);
+	//			glVertex2f(-1,-1);
+	//			glVertex2f(-1, 1);
+	//			glVertex2f(1,1);
+	//			glVertex2f(1,-1);
+	//		glEnd();
+	//	glPopMatrix();
 		//print(our_font, 5, 10, "Tank speed: %7.2f", userTank.v);
-		gluOrtho2D(((userTank.x) - screenWidth / 4), 
-			              ((userTank.x) + screenWidth / 4),
-			              ((userTank.y) - screenHeight / 4),
-			              ((userTank.y) + screenHeight / 4));
+		gluOrtho2D(((userTank.x) - screenWidth / 3), 
+			              ((userTank.x) + screenWidth / 3),
+			              ((userTank.y) - screenHeight / 3),
+			              ((userTank.y) + screenHeight / 3));
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 }
@@ -452,58 +569,6 @@ void printFunctions()
 	//print(our_font, 20, 65, "tank1YMovement: %7.2f", tank1YMovement);
 	//print(our_font, 20, 35, "squareMaxX: %7.2f", squareMaxX);
 	//print(our_font, 20, 5,  "speed: %7.2f", speed);
-}
-
-void circleCollison()
-{
-	float localNum = (((squareXTransform - userTank.x) * (squareXTransform - userTank.x)) + (squareYTransform - (userTank.y)) * (squareYTransform - (userTank.y)));
-
-	if (localNum < ((4 + 4) * (4 + 4)))
-	{
-		red = 1.0;
-		green = 0.0;
-	}
-	else
-	{
-		green = 1.0;
-		red = 0.0;
-	}
-}
-
-void changeLineColor()
-{
-	//draw a line between the two points here!
-	//glBegin(GL_LINES);
-	//	glColor3f(red, green, blue);		
-	//	glVertex2f(squareX, squareY);
-	//	glVertex2f(Xtri,Ytri + 5.65);
-	//glEnd();
-	//end of code for drawing a line...
-
-	timer = (((squareXTransform - userTank.x) * (squareXTransform - userTank.x)) + (squareYTransform - (userTank.y + 5.65f)) * (squareYTransform - (userTank.y + 5.65f)));
-
-	if (timer < 30 || timer < -30)
-	{
-		green = 0.0;
-		red = 1.0;
-	}
-	else
-	{
-		red = 0.0;
-		green = 1.0;
-	}
-}
-
-void drawCircle(float x, float y, float radius, float angle)
-{
-	glBegin(GL_LINE_LOOP);
-	for (float i = 0; i < angle; i += 5)
-	{
-		float xcoord = x + radius * cosf(i * (PI / 180.0f));
-		float ycoord = y + radius * sinf(i * (PI / 180.0f));
-		glVertex2f(xcoord, ycoord);
-	}
-	glEnd();
 }
 
 void reshape(int width, int height)		// Resize the OpenGL window
@@ -516,8 +581,9 @@ void reshape(int width, int height)		// Resize the OpenGL window
 	glMatrixMode(GL_PROJECTION);						// Select The Projection Matrix
 	glLoadIdentity();									// Reset The Projection Matrix
 
-	gluOrtho2D(-2000, 2000, -2000, 2000);             // View whole map 
-	//gluOrtho2D(-4000, 4000, -4000, 4000);             // View whole map 
+	//gluOrtho2D(-1, 1, -1, 1);
+	//gluOrtho2D(-200, 200, -200, 200);             // View whole map 
+	gluOrtho2D(-4000, 4000, -4000, 4000);             // View whole map 
 
 	glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
 	glLoadIdentity();									// Reset The Modelview Matrix
@@ -534,10 +600,6 @@ void processKeys()
 	if (keys[VK_SPACE])
 	{
 			gameState = PAUSE;
-	}
-	if (keys[0x30])
-	{
-		gameState = LEADERBOARD;
 	}
 }
 
@@ -599,7 +661,6 @@ int WINAPI WinMain(HINSTANCE	hInstance,			// Instance
 	int			nCmdShow)			// Window Show State
 {
 	MSG		msg;									// Windows Message Structure
-	bool	done = false;								// Bool Variable To Exit Loop
 
 	char title[] = "Tank-O-Mania";
 
@@ -673,6 +734,19 @@ LRESULT CALLBACK WndProc(HWND	hWnd,			// Handle For This Window
 		mouse_x = LOWORD(lParam);
 		mouse_y = screenHeight - HIWORD(lParam);
 		LeftPressed = true;
+
+		if (playHover)
+		{
+			gameState = PLAY;
+		}
+		else if (controlsHover)
+		{
+			gameState = CONTROLS;
+		}
+		else if (quitHover)
+		{
+			gameState = QUIT;
+		}
 	}
 	break;
 
@@ -779,7 +853,7 @@ bool CreateGLWindow(char* title, int width, int height)
 	}
 
 	dwExStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;			// Window Extended Style
-	dwStyle = WS_OVERLAPPEDWINDOW;							// Windows Style
+	dwStyle = WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;							// Windows Style
 
 	AdjustWindowRectEx(&WindowRect, dwStyle, FALSE, dwExStyle);		// Adjust Window To True Requested Size
 
@@ -893,9 +967,9 @@ void printCursor()
 		glPopMatrix();*/
 
 		//cursor position now in p.x and p.y
-		print(our_font, 0, 95, "p.x: %ld", p.x);
-		print(our_font, 0, 125, "p.y: %ld", p.y);
-		print(our_font, 0, 65, "angle: %f", (atan2(p.y, p.x) * 180 / PI));
+		print(gameFont, 0, 95, "p.x: %ld", p.x);
+		print(gameFont, 0, 125, "p.y: %ld", p.y);
+		print(gameFont, 0, 65, "angle: %f", (atan2(p.y, p.x) * 180 / PI));
 
 		//userTank.point.x = p.x;
 		//userTank.point.y = p.y;
@@ -904,8 +978,8 @@ void printCursor()
 	if (ScreenToClient(hWnd, &p))
 	{
 		//cursor position now in p.x and p.y
-		print(our_font, 0, 35, "client p.x: %ld", p.x);
-		print(our_font, 0, 5, "client p.y: %ld", p.y);
+		print(gameFont, 0, 35, "client p.x: %ld", p.x);
+		print(gameFont, 0, 5, "client p.y: %ld", p.y);
 	}
 }
 
@@ -962,9 +1036,9 @@ void printCursor()
 
 
 
+// timer = (((squareXTransform - userTank.x) * (squareXTransform - userTank.x)) + (squareYTransform - (userTank.y + 5.65f)) * (squareYTransform - (userTank.y + 5.65f)));
 
-
-
+// float localNum = (((squareXTransform - userTank.x) * (squareXTransform - userTank.x)) + (squareYTransform - (userTank.y)) * (squareYTransform - (userTank.y)));
 
 
 

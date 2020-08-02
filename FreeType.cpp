@@ -161,7 +161,7 @@ void font_data::init(const char * fname, unsigned int h) {
 	//in terms of 1/64ths of pixels.  Thus, to make a font
 	//h pixels high, we need to request a size of h*64.
 	//(h << 6 is just a prettier way of writting h*64)
-	FT_Set_Char_Size( face, h << 6, h << 6, 96, 96);
+	FT_Set_Char_Size( face, h << 7, h << 7, 96, 96);
 
 	//Here we ask opengl to allocate resources for
 	//all the textures and displays lists which we
@@ -218,7 +218,7 @@ void print(const font_data &ft_font, float x, float y, const char *fmt, ...)  {
 	pushScreenCoordinateMatrix();					
 	
 	GLuint font=ft_font.list_base;
-	float h=ft_font.h/.63f;						//We make the height about 1.5* that of
+	float h=10.0f;						//We make the height about 1.5* that of
 	
 	char		text[256];								// Holds Our String
 	va_list		ap;										// Pointer To List Of Arguments
