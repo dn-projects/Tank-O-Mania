@@ -102,7 +102,7 @@ void ComputerTank::incrementMovement()
 
 	float twoVectorDistance = sqrt(vectorX + vectorY);
 
-	ticks += (6 / twoVectorDistance);  // change 1.5 to adjust travel speed of computerTank 
+	ticks += (12 / twoVectorDistance);  // change 1.5 to adjust travel speed of computerTank 
 	if (ticks > 1)
 	{
 		ticks = 0;

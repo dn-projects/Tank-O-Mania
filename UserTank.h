@@ -23,7 +23,7 @@ public:
 	GLuint userTankBody;
 	GLuint userTankBarrel;
 	bool keys[256];
-	float speed = 0.06f;
+	float speed = 0.1f;
 	float x = -20;
 	float y = -70;
 	float v = 0;

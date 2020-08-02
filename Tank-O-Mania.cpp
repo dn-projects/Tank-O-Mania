@@ -22,6 +22,14 @@ bool F1 = false;
 bool F2 = false;
 bool menu = false;
 
+/***** Checkpoint and position variables *****/
+int userTankLastCheckPoint = 0;
+int userTankCheckPointTally = 0;
+int userTankLapNumber = 1;
+int compTankLastCheckPoint = 0;
+int compTankCheckPointTally = 0;
+int compTankLapNumber = 1;
+
 /***** gamePlaySpeed method variables *****/
 __int64 previousTime = 0;
 double gameSpeed = 0.000003;  // change to change speed of game
@@ -187,7 +195,7 @@ void display()
 		case PLAY:
 			track.drawMapAssets();
 			
-			track.drawCheckPoints();
+			
 
 
 			//for (int i = -10000; i < 10000; i += 100)
@@ -221,11 +229,11 @@ void runGame(double deltaTime)
 	switch (gameState)
 	{
 		case PLAY:
-			moveProjection();	
+			//moveProjection();	
 			userTank.drawTank();
 			userTank.handleKeys(deltaTime);
 			userTank.moveTank();
-			
+			track.drawCheckPoints();
 			printFunctions();
 			computerTank.drawTank();
 			computerTank.incrementMovement();
@@ -242,15 +250,50 @@ void runGame(double deltaTime)
 
 void playerPosition()
 {
-	for (int i = 0; i < track.checkPoints.size(); i++)
+	if (userTankLastCheckPoint == 192)
 	{
-		if (userTank.tankOBB.SAT2D(track.checkPoints[i].OBB1))
-		{	
-			track.checkPoints[i].OBB1.drawOBB();
-			userTank.checkPointsPassed++;
-		}
+		userTankLastCheckPoint = 0;
+		userTankLapNumber++;
 	}
-	print(our_font, 300, 350, "Check point - %7.2f", userTank.checkPointsPassed);
+
+	if (compTankLastCheckPoint == 192)
+	{
+		compTankLastCheckPoint = 0;
+		compTankLapNumber++;
+	}
+
+	if (userTankLastCheckPoint > -1) {
+
+		if (userTank.tankOBB.SAT2D(track.checkPoints[userTankLastCheckPoint + 1].OBB1)) {
+			userTankLastCheckPoint++;
+			userTankCheckPointTally++;
+		}
+		if (userTankLastCheckPoint != 0) {
+			if (userTank.tankOBB.SAT2D(track.checkPoints[userTankLastCheckPoint - 1].OBB1)) {
+				userTankLastCheckPoint--;
+				userTankCheckPointTally--;
+			}
+		}
+
+
+		if (compTankLastCheckPoint > -1) {
+
+			if (computerTank.obb.SAT2D(track.checkPoints[compTankLastCheckPoint + 1].OBB1)) {
+				compTankLastCheckPoint++;
+				compTankCheckPointTally++;
+			}
+			if (compTankLastCheckPoint != 0) {
+				if (computerTank.obb.SAT2D(track.checkPoints[compTankLastCheckPoint - 1].OBB1)) {
+					compTankLastCheckPoint--;
+					compTankCheckPointTally--;
+				}
+			}
+		}
+		print(our_font, 300, 350, "User Check point - %d", userTankCheckPointTally);
+		print(our_font, 300, 300, "Comp check point - %d", compTankCheckPointTally);
+		print(our_font, 300, 250, "Lap number - %d", userTankLapNumber);
+		print(our_font, 300, 200, "Last check point - %d", userTankLastCheckPoint);
+	}
 }
 
 

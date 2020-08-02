@@ -23,6 +23,7 @@ OBB::OBB()
 void OBB::drawOBB()
 {
 	glLineWidth(5.0);
+	glColor3f(1, 0, 0);
 	glBegin(GL_LINE_LOOP);
 	    for(int i=0; i<NUMVERTS; i++)
 			glVertex2f(vert[i].x,vert[i].y);

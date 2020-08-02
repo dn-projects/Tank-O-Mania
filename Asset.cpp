@@ -98,7 +98,6 @@ void Asset::drawAsset()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glBindTexture(GL_TEXTURE_2D, texture);
-	glGetFloatv(GL_MODELVIEW_MATRIX, OBB1matrix);
 	glTranslatef(xTrans,yTrans,0);
 	glRotatef(rotation,0,0,1);
 	glBegin(GL_POLYGON);
@@ -108,25 +107,26 @@ void Asset::drawAsset()
 	glTexCoord2f(xTexture, 0); glVertex2f(x + width, y);
 	glEnd();
 	glDisable(GL_BLEND);
-	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_TEXTURE_2D);	
+	glGetFloatv(GL_MODELVIEW_MATRIX, OBB1matrix);
 	glPopMatrix();
-	
+
 	OBB1.transformPoints(OBB1matrix);
 }
 
 void Asset::setOBB1Points(Point bottomLeft, Point topLeft, Point topRight, Point bottomRight)
 {
-	OBB1.vert[0].x = bottomLeft.x;
-	OBB1.vert[0].y = bottomLeft.y;
+	OBB1.vertOriginal[0].x = bottomLeft.x;
+	OBB1.vertOriginal[0].y = bottomLeft.y;
 
-	OBB1.vert[1].x = topLeft.x;
-	OBB1.vert[1].y = topLeft.y;
+	OBB1.vertOriginal[1].x = topLeft.x;
+	OBB1.vertOriginal[1].y = topLeft.y;
 
-	OBB1.vert[2].x = topRight.x;
-	OBB1.vert[2].y = topRight.y;
+	OBB1.vertOriginal[2].x = topRight.x;
+	OBB1.vertOriginal[2].y = topRight.y;
 
-	OBB1.vert[3].x = bottomRight.x;
-	OBB1.vert[3].y = bottomRight.y;
+	OBB1.vertOriginal[3].x = bottomRight.x;
+	OBB1.vertOriginal[3].y = bottomRight.y;
 }
 
 void Asset::setOBB2Points(Point bottomLeft, Point topLeft, Point topRight, Point bottomRight)
