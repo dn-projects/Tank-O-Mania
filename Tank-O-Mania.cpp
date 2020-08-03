@@ -950,7 +950,10 @@ void collision()
 	for (Asset asset : track.mapBarrierOBBs)
 	{
 		asset.drawAsset();
-		//userTank.handleBarrierCollision();
+		if (userTank.tankOBB.SAT2D(asset.OBB1))
+		{
+			userTank.handleBarrierCollision();
+		}
 	}
 
 	if (userTank.tankOBB.SAT2D(computerTank1.obb))
@@ -1372,7 +1375,7 @@ bool CreateGLWindow(char* title, int width, int height)
 		dwStyle |							// Defined Window Style
 		WS_CLIPSIBLINGS |					// Required Window Style
 		WS_CLIPCHILDREN,					// Required Window Style
-		150, 150,							// Window Position
+		280, 20,							// Window Position
 		WindowRect.right - WindowRect.left,	// Calculate Window Width
 		WindowRect.bottom - WindowRect.top,	// Calculate Window Height
 		NULL,								// No Parent Window
