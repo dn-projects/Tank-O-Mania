@@ -5,7 +5,11 @@
 #include "Asset.h"
 #include <vector>
 #include <stdio.h>
+#include <chrono>
 #include <irrKlang/irrKlang.h>
+
+
+using namespace chrono;
 
 using namespace std;
 
@@ -44,6 +48,12 @@ static void pop_projection_matrix() {
 	glPopMatrix();
 	glPopAttrib();
 }
+
+
+int timeElapsed = 0;
+time_point<steady_clock> startTime;
+time_point<steady_clock> endTime;
+
 
 #pragma region Checkpoint and position variables
 
@@ -107,6 +117,7 @@ Asset mouse = Asset();
 Asset playButton = Asset();
 Asset controlsButton = Asset();
 Asset quitButton = Asset();
+Asset backButton = Asset();
 
 #pragma endregion
 
@@ -121,7 +132,8 @@ GLuint button1 = 0;
 
 #pragma region Font variables  
 
-font_data gameFont;  
+font_data gameFont1;  
+font_data gameFont2;  
 
 #pragma endregion
 
@@ -130,6 +142,7 @@ font_data gameFont;
 enum GAME_STATE
 { 
 	MAINMENU, 
+	PREPLAY,
 	PLAY, 
 	PAUSE, 
 	CONTROLS, 
@@ -142,12 +155,12 @@ GAME_STATE gameState = MAINMENU;
 bool playHover = false;
 bool controlsHover = false;
 bool quitHover = false;
+bool backHover = false;
 
 #pragma endregion
 
 #pragma region function declarations  
 
-void printFunctions();
 void gamePlaySpeed();
 void runGame(double deltaTime);
 void playerPosition();
@@ -156,6 +169,8 @@ void moveProjection();
 bool outsideObject(Point P, Point V[], int n);
 void initialiseMenuSprites();
 void playSound();
+void initialiseControlsSprites();
+void beginGameCountDown();
 
 #pragma endregion
 
@@ -209,7 +224,8 @@ void init()
 
 	SoundEngine->play2D("Battle-Conflict.mp3", true);
 
-	gameFont.init("tankFont.ttf", 22);
+	gameFont1.init("tankFont.ttf", 22);
+	gameFont2.init("tankFont.ttf", 9);
 	
 	char grassPNG[] = "PNG/Assets/towerDefense_tile231.png";
 	menuTexture = loadPNG(grassPNG);
@@ -257,6 +273,7 @@ void init()
 	computerTank4.speed = 10;
 	
 	initialiseMenuSprites();
+	initialiseControlsSprites();
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -288,45 +305,73 @@ void display()
 				beigeMenuTank1.drawTank();
 				beigeMenuTank2.drawTank();
 
-				print(gameFont, 88, 500, "Tank-O-Mania");
+				print(gameFont1, 88, 500, "Tank-O-Mania");
 
-				playHover? print(gameFont, 360, 350, "Play") : print(gameFont, 350, 340, "Play");
-				controlsHover? print(gameFont, 270, 280, "Controls") : print(gameFont, 260, 270, "Controls");
-				quitHover? print(gameFont, 360, 210, "Quit") : print(gameFont, 350, 200, "Quit");
+				playHover? print(gameFont1, 360, 350, "Play") : print(gameFont1, 350, 340, "Play");
+				controlsHover? print(gameFont1, 270, 280, "Controls") : print(gameFont1, 260, 270, "Controls");
+				quitHover? print(gameFont1, 360, 210, "Quit") : print(gameFont1, 350, 200, "Quit");
 
 				pop_projection_matrix();
 
 			break;
+		case PREPLAY:
+			beginGameCountDown();
+			track.drawMapAssets();
+			break;
 		case PLAY:
 			SoundEngine->stopAllSounds();
-
-
-
 			track.drawMapAssets();
 			break;
 		case PAUSE:
 			SoundEngine->stopAllSounds();
-
-
-
 			track.drawIntermediateTrack();
 			break;
 		case CONTROLS:
-			SoundEngine->stopAllSounds();
+			pushScreenCoordinateMatrix();
+			mainMenu.drawAsset();
+			backButton.drawAsset();
+			
+			print(gameFont1, 88, 500, "Tank-O-Mania");
 
+			print(gameFont2, 105, 390, "Press RIGHT arrow to turn right");
+			print(gameFont2, 115, 350, "Press DOWN arrow to decelrate");
+			print(gameFont2, 125, 310, "Press LEFT arrow to turn left");
+			print(gameFont2, 135, 270, "Press UP arrow to acelerate");
+			print(gameFont2, 145, 230, "Press SPACE arrow to pause");
 
+			backHover ? print(gameFont1, 460, 80, "Back") : print(gameFont1, 450, 70, "Back");
+
+			pop_projection_matrix();
 
 			break;
 		case QUIT:
 			SoundEngine->stopAllSounds();
-
-
-
-
 			done = true;
 			break;
 	}
 	glFlush();
+}
+
+void beginGameCountDown()
+{
+	endTime = steady_clock::now();
+
+	duration<double, ratio<1, 1>> secondsGone = endTime - startTime;
+	timeElapsed = 4 - secondsGone.count();
+
+	if (timeElapsed == -1)
+	{
+		startTime = steady_clock::now();
+		gameState = PLAY;
+	}
+	else if (timeElapsed == 0)
+	{
+		print(gameFont1, 300, 400, "GO!");
+	}
+	else 
+	{
+		print(gameFont1, 332, 400, "%d", timeElapsed);
+	}
 }
 
 void playSound()
@@ -348,6 +393,7 @@ void runGame(double deltaTime)
 	playHover = false;
 	controlsHover = false;
 	quitHover = false;
+	backHover = false;
 
 	if (mouse.OBB1.SAT2D(playButton.OBB1))
 	{
@@ -360,6 +406,10 @@ void runGame(double deltaTime)
 	if (mouse.OBB1.SAT2D(quitButton.OBB1))
 	{
 		quitHover = true;
+	}
+	if (mouse.OBB1.SAT2D(backButton.OBB1))
+	{
+		backHover = true;
 	}
 
 	switch (gameState)
@@ -388,13 +438,36 @@ void runGame(double deltaTime)
 
 
 			break;
+		case PREPLAY:
+			beginGameCountDown();
+			userTank.drawTank();
+
+			userTank.moveTank();
+			//track.drawCheckPoints();
+			computerTank1.drawTank();
+
+			computerTank1.moveTank();
+
+			computerTank2.drawTank();
+
+			computerTank2.moveTank();
+
+			computerTank3.drawTank();
+
+			computerTank3.moveTank();
+
+			computerTank4.drawTank();
+
+			computerTank4.moveTank();
+
+			playerPosition();
+			collision();
+			break;
 		case PLAY:
 
 			userTank.drawTank();
 			userTank.handleKeys(deltaTime);
 			userTank.moveTank();
-			//track.drawCheckPoints();
-			printFunctions();
 			computerTank1.drawTank();
 			computerTank1.incrementMovement();
 			computerTank1.moveTank();
@@ -415,7 +488,6 @@ void runGame(double deltaTime)
 			collision();
 
 			break;
-
 		case PAUSE:
 			break;
 		case CONTROLS:
@@ -551,6 +623,16 @@ void initialiseMenuSprites()
 	mainMenu.yTexture = 6;
 }
 
+void initialiseControlsSprites()
+{
+	backButton.x = 450;
+	backButton.y = 70;
+	backButton.height = 52;
+	backButton.width = 170;
+	backButton.setOBB1Points({ 450,70 }, { 450,122 }, { 850,122 }, { 850,70 });
+	backButton.texture = menuTexture;
+}
+
 void collision() 
 {
 	//Grass detection
@@ -572,7 +654,7 @@ void collision()
 		asset.drawAsset();
 		if (asset.OBB1.SAT2D(userTank.tankOBB))
 		{
-			print(gameFont, 20, 95, "Collision!");
+			print(gameFont1, 20, 95, "Collision!");
 			//userTank.handleOffTrack();
 			//userTank.handleBarrierCollision();
 
@@ -637,13 +719,6 @@ void moveProjection()
 	glLoadIdentity();
 }
 
-void printFunctions()
-{	
-	//print(our_font, 20, 65, "tank1YMovement: %7.2f", tank1YMovement);
-	//print(our_font, 20, 35, "squareMaxX: %7.2f", squareMaxX);
-	//print(our_font, 20, 5,  "speed: %7.2f", speed);
-}
-
 void reshape(int width, int height)		// Resize the OpenGL window
 {
 	screenWidth = width; screenHeight = height;         // to ensure the mouse coordinates match 
@@ -654,7 +729,6 @@ void reshape(int width, int height)		// Resize the OpenGL window
 	glMatrixMode(GL_PROJECTION);						// Select The Projection Matrix
 	glLoadIdentity();									// Reset The Projection Matrix
 
-	//gluOrtho2D(-1, 1, -1, 1);
 	//gluOrtho2D(-200, 200, -200, 200);             // View whole map 
 	gluOrtho2D(-8000, 8000, -8000, 8000);             // View whole map 
 
@@ -664,17 +738,32 @@ void reshape(int width, int height)		// Resize the OpenGL window
 
 void processKeys()
 {
-	// pressing 'p' once pauses game and 
-	// pressing 'p' again continues game
-	if (keys[0x50])
-	{
-		gameState = PLAY;	
-	}
 	if (keys[VK_SPACE])
 	{
-			gameState = PAUSE;
+		gameState = PAUSE;
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -810,7 +899,8 @@ LRESULT CALLBACK WndProc(HWND	hWnd,			// Handle For This Window
 
 		if (playHover)
 		{
-			gameState = PLAY;
+			startTime = steady_clock::now();
+			gameState = PREPLAY;
 		}
 		else if (controlsHover)
 		{
@@ -819,6 +909,18 @@ LRESULT CALLBACK WndProc(HWND	hWnd,			// Handle For This Window
 		else if (quitHover)
 		{
 			gameState = QUIT;
+		}
+		else if (backHover)
+		{
+			gameState = MAINMENU;
+			greenMenuTank.x = 750;
+			beigeMenuTank1.x = 840;
+			beigeMenuTank2.x = 900;
+
+			plane1.x = -80;
+			plane1Shadow.x = -145;
+
+			timeKeeper = 0;
 		}
 	}
 	break;
