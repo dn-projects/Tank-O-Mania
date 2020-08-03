@@ -122,50 +122,29 @@ void ComputerTank::tank1SetPoints()
 	Point p0 = { 150, -70};
 	movementPoints.push_back(p0);
 
-	Point p1 = { 150, 1240 };
-	movementPoints.push_back(p1);
-
-	vector<Point> leftcorner1 = ComputerTank::drawCircleAnticlockwise(10, 1250, 140, 0, 90);
+	vector<Point> leftcorner1 = ComputerTank::drawCircleAnticlockwise(10, 1250, 150, 0, 90);
 	std::copy(leftcorner1.begin(), leftcorner1.end(), std::back_inserter(movementPoints));
 
-	Point p2 = { -1040, 1320 };
-	movementPoints.push_back(p2);
-
-	vector<Point> leftcorner2 = ComputerTank::drawCircleAnticlockwise(-1050, 1180, 140, 90, 180);
+	vector<Point> leftcorner2 = ComputerTank::drawCircleAnticlockwise(-1050, 1200, 100, 90, 180);
 	std::copy(leftcorner2.begin(), leftcorner2.end(), std::back_inserter(movementPoints));
 
-	Point p3 = { -1150, -1270 };
-	movementPoints.push_back(p3);
-
-	vector<Point> leftcorner3 = ComputerTank::drawCircleAnticlockwise(-1130, -1280, 120, 180, 270);
+	vector<Point> leftcorner3 = ComputerTank::drawCircleAnticlockwise(-1200, -1280, 80, 180, 270);
 	std::copy(leftcorner3.begin(), leftcorner3.end(), std::back_inserter(movementPoints));
-	
-	Point p4 = { 1440,-1400 };
-	movementPoints.push_back(p4);
 
-	vector<Point> leftcorner4 = ComputerTank::drawCircleAnticlockwise(1450, -1280, 120, 270, 360);
+	vector<Point> leftcorner4 = ComputerTank::drawCircleAnticlockwise(1450, -1200, 170, 270, 360);
 	std::copy(leftcorner4.begin(), leftcorner4.end(), std::back_inserter(movementPoints));
 
-	Point p5 = { 1500,890 };
-	movementPoints.push_back(p5);
-
-	vector<Point> leftcorner5 = ComputerTank::drawCircleAnticlockwise(1350, 900, 150, 0, 180);
+	vector<Point> leftcorner5 = ComputerTank::drawCircleAnticlockwise(1400, 950, 170, 0, 180);
 	std::copy(leftcorner5.begin(), leftcorner5.end(), std::back_inserter(movementPoints));
 
-	Point p7 = { 1100,-240 };
-	movementPoints.push_back(p7);
-
-	vector<Point> rightcorner1 = ComputerTank::drawCircleClockwise(950, -250, 150, 355, 270);
+	vector<Point> rightcorner1 = ComputerTank::drawCircleClockwise(900, -250, 200, 355, 270);
 	std::copy(rightcorner1.begin(), rightcorner1.end(), std::back_inserter(movementPoints));
 
-	Point p8 = { 300,-300 };
-	movementPoints.push_back(p8);
-
-	vector<Point> rightcorner2 = ComputerTank::drawCircleClockwise(280, -150, 150, 275, 180);
+	vector<Point> rightcorner2 = ComputerTank::drawCircleClockwise(280, -150, 120, 275, 200);
 	std::copy(rightcorner2.begin(), rightcorner2.end(), std::back_inserter(movementPoints));
 
-	Point p9 = { 150, -70};
-	movementPoints.push_back(p9);
+	Point p1 = { 150, -70 };
+	movementPoints.push_back(p1);
 }
 
 void ComputerTank::tank2SetPoints()
@@ -173,50 +152,29 @@ void ComputerTank::tank2SetPoints()
 	Point p0 = { 10, -70 };
 	movementPoints.push_back(p0);
 
-	Point p1 = { 10, 1240 };
-	movementPoints.push_back(p1);
-
-	vector<Point> leftcorner1 = ComputerTank::drawCircleAnticlockwise(-110, 1250, 120, 0, 90);
+	vector<Point> leftcorner1 = ComputerTank::drawCircleAnticlockwise(10, 1250, 60, 0, 90);
 	std::copy(leftcorner1.begin(), leftcorner1.end(), std::back_inserter(movementPoints));
 
-	Point p2 = { -1040, 1320 };
-	movementPoints.push_back(p2);
-
-	vector<Point> leftcorner2 = ComputerTank::drawCircleAnticlockwise(-1050, 1200, 120, 90, 180);
+	vector<Point> leftcorner2 = ComputerTank::drawCircleAnticlockwise(-1050, 1200, 112, 90, 180);
 	std::copy(leftcorner2.begin(), leftcorner2.end(), std::back_inserter(movementPoints));
 
-	Point p3 = { -1250, -1270 };
-	movementPoints.push_back(p3);
-
-	vector<Point> leftcorner3 = ComputerTank::drawCircleAnticlockwise(-1130, -1280, 120, 180, 270);
+	vector<Point> leftcorner3 = ComputerTank::drawCircleAnticlockwise(-1050, -1280, 180, 180, 270);
 	std::copy(leftcorner3.begin(), leftcorner3.end(), std::back_inserter(movementPoints));
-
-	Point p4 = { 1440,-1400 };
-	movementPoints.push_back(p4);
 
 	vector<Point> leftcorner4 = ComputerTank::drawCircleAnticlockwise(1450, -1280, 120, 270, 360);
 	std::copy(leftcorner4.begin(), leftcorner4.end(), std::back_inserter(movementPoints));
 
-	Point p5 = { 1500,890 };
-	movementPoints.push_back(p5);
-
-	vector<Point> leftcorner5 = ComputerTank::drawCircleAnticlockwise(1350, 900, 150, 0, 180);
+	vector<Point> leftcorner5 = ComputerTank::drawCircleAnticlockwise(1350, 900, 250, 0, 180);
 	std::copy(leftcorner5.begin(), leftcorner5.end(), std::back_inserter(movementPoints));
 
-	Point p7 = { 1100,-240 };
-	movementPoints.push_back(p7);
-
-	vector<Point> rightcorner1 = ComputerTank::drawCircleClockwise(950, -250, 150, 355, 270);
+	vector<Point> rightcorner1 = ComputerTank::drawCircleClockwise(950, -220, 150, 355, 270);
 	std::copy(rightcorner1.begin(), rightcorner1.end(), std::back_inserter(movementPoints));
 
-	Point p8 = { 300,-300 };
-	movementPoints.push_back(p8);
-
-	vector<Point> rightcorner2 = ComputerTank::drawCircleClockwise(280, -150, 150, 275, 180);
+	vector<Point> rightcorner2 = ComputerTank::drawCircleClockwise(280, -150, 150, 275, 200);
 	std::copy(rightcorner2.begin(), rightcorner2.end(), std::back_inserter(movementPoints));
 
-	Point p9 = { 10, -70 };
-	movementPoints.push_back(p9);
+	Point p1 = { 10, -70 };
+	movementPoints.push_back(p1);
 }
 
 void ComputerTank::tank3SetPoints()
@@ -224,50 +182,29 @@ void ComputerTank::tank3SetPoints()
 	Point p0 = { 45, -135 };
 	movementPoints.push_back(p0);
 
-	Point p1 = { 45, 1240 };
-	movementPoints.push_back(p1);
-
 	vector<Point> leftcorner1 = ComputerTank::drawCircleAnticlockwise(-75, 1250, 120, 0, 90);
 	std::copy(leftcorner1.begin(), leftcorner1.end(), std::back_inserter(movementPoints));
 
-	Point p2 = { -1040, 1270 };
-	movementPoints.push_back(p2);
-
-	vector<Point> leftcorner2 = ComputerTank::drawCircleAnticlockwise(-1050, 1150, 120, 90, 180);
+	vector<Point> leftcorner2 = ComputerTank::drawCircleAnticlockwise(-1050, 1100, 120, 90, 180);
 	std::copy(leftcorner2.begin(), leftcorner2.end(), std::back_inserter(movementPoints));
 
-	Point p3 = { -1250, -1270 };
-	movementPoints.push_back(p3);
-
-	vector<Point> leftcorner3 = ComputerTank::drawCircleAnticlockwise(-1130, -1280, 120, 180, 270);
+	vector<Point> leftcorner3 = ComputerTank::drawCircleAnticlockwise(-1100, -1280, 120, 180, 270);
 	std::copy(leftcorner3.begin(), leftcorner3.end(), std::back_inserter(movementPoints));
 
-	Point p4 = { 1440,-1400 };
-	movementPoints.push_back(p4);
-
-	vector<Point> leftcorner4 = ComputerTank::drawCircleAnticlockwise(1450, -1280, 120, 270, 360);
+	vector<Point> leftcorner4 = ComputerTank::drawCircleAnticlockwise(1450, -1200, 120, 270, 360);
 	std::copy(leftcorner4.begin(), leftcorner4.end(), std::back_inserter(movementPoints));
 
-	Point p5 = { 1500,890 };
-	movementPoints.push_back(p5);
-
-	vector<Point> leftcorner5 = ComputerTank::drawCircleAnticlockwise(1350, 900, 150, 0, 180);
+	vector<Point> leftcorner5 = ComputerTank::drawCircleAnticlockwise(1250, 900, 300, 0, 180);
 	std::copy(leftcorner5.begin(), leftcorner5.end(), std::back_inserter(movementPoints));
 
-	Point p7 = { 1100,-240 };
-	movementPoints.push_back(p7);
-
-	vector<Point> rightcorner1 = ComputerTank::drawCircleClockwise(950, -250, 150, 355, 270);
+	vector<Point> rightcorner1 = ComputerTank::drawCircleClockwise(1000, -150, 150, 355, 270);
 	std::copy(rightcorner1.begin(), rightcorner1.end(), std::back_inserter(movementPoints));
 
-	Point p8 = { 300,-300 };
-	movementPoints.push_back(p8);
-
-	vector<Point> rightcorner2 = ComputerTank::drawCircleClockwise(280, -150, 150, 275, 180);
+	vector<Point> rightcorner2 = ComputerTank::drawCircleClockwise(280, -150, 150, 275, 200);
 	std::copy(rightcorner2.begin(), rightcorner2.end(), std::back_inserter(movementPoints));
 
-	Point p9 = { 45, -100 };
-	movementPoints.push_back(p9);
+	Point p1 = { 45, -135 };
+	movementPoints.push_back(p1);
 }
 
 void ComputerTank::tank4SetPoints()
@@ -275,50 +212,29 @@ void ComputerTank::tank4SetPoints()
 	Point p0 = { 105, -135 };
 	movementPoints.push_back(p0);
 
-	Point p1 = { 105, 1240 };
-	movementPoints.push_back(p1);
-
 	vector<Point> leftcorner1 = ComputerTank::drawCircleAnticlockwise(-15, 1250, 120, 0, 90);
 	std::copy(leftcorner1.begin(), leftcorner1.end(), std::back_inserter(movementPoints));
 
-	Point p2 = { -1040, 1360 };
-	movementPoints.push_back(p2);
-
-	vector<Point> leftcorner2 = ComputerTank::drawCircleAnticlockwise(-1050, 1240, 120, 90, 180);
+	vector<Point> leftcorner2 = ComputerTank::drawCircleAnticlockwise(-1050, 1200, 70, 90, 180);
 	std::copy(leftcorner2.begin(), leftcorner2.end(), std::back_inserter(movementPoints));
 
-	Point p3 = { -1250, -1270 };
-	movementPoints.push_back(p3);
-
-	vector<Point> leftcorner3 = ComputerTank::drawCircleAnticlockwise(-1130, -1280, 120, 180, 270);
+	vector<Point> leftcorner3 = ComputerTank::drawCircleAnticlockwise(-1300, -1280, 20, 180, 270);
 	std::copy(leftcorner3.begin(), leftcorner3.end(), std::back_inserter(movementPoints));
 
-	Point p4 = { 1440,-1400 };
-	movementPoints.push_back(p4);
-
-	vector<Point> leftcorner4 = ComputerTank::drawCircleAnticlockwise(1450, -1280, 120, 270, 360);
+	vector<Point> leftcorner4 = ComputerTank::drawCircleAnticlockwise(1450, -1400, 50, 270, 360);
 	std::copy(leftcorner4.begin(), leftcorner4.end(), std::back_inserter(movementPoints));
 
-	Point p5 = { 1500,890 };
-	movementPoints.push_back(p5);
-
-	vector<Point> leftcorner5 = ComputerTank::drawCircleAnticlockwise(1350, 900, 150, 0, 180);
+	vector<Point> leftcorner5 = ComputerTank::drawCircleAnticlockwise(1350, 880, 130, 0, 180);
 	std::copy(leftcorner5.begin(), leftcorner5.end(), std::back_inserter(movementPoints));
 
-	Point p7 = { 1100,-240 };
-	movementPoints.push_back(p7);
-
-	vector<Point> rightcorner1 = ComputerTank::drawCircleClockwise(950, -250, 150, 355, 270);
+	vector<Point> rightcorner1 = ComputerTank::drawCircleClockwise(890, -150, 180, 355, 270);
 	std::copy(rightcorner1.begin(), rightcorner1.end(), std::back_inserter(movementPoints));
 
-	Point p8 = { 300,-300 };
-	movementPoints.push_back(p8);
-
-	vector<Point> rightcorner2 = ComputerTank::drawCircleClockwise(280, -150, 150, 275, 180);
+	vector<Point> rightcorner2 = ComputerTank::drawCircleClockwise(280, -150, 150, 275, 200);
 	std::copy(rightcorner2.begin(), rightcorner2.end(), std::back_inserter(movementPoints));
 
-	Point p9 = { 105, -100 };
-	movementPoints.push_back(p9);
+	Point p1 = { 105, -135 };
+	movementPoints.push_back(p1);
 }
 
 void ComputerTank::moveTank()

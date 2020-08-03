@@ -136,8 +136,8 @@ enum GAME_STATE
 	QUIT, 
 };
 
-//GAME_STATE gameState = MAINMENU;
-GAME_STATE gameState = PLAY;
+GAME_STATE gameState = MAINMENU;
+//GAME_STATE gameState = PLAY;
 
 bool playHover = false;
 bool controlsHover = false;
@@ -242,19 +242,19 @@ void init()
 
 	computerTank1.loadTexture();
 	computerTank1.tank1SetPoints();
-	computerTank1.speed = 8;
+	computerTank1.speed = 10;
 
 	computerTank2.loadTexture();
 	computerTank2.tank2SetPoints();
-	computerTank2.speed = 8;
+	computerTank2.speed = 10;
 
 	computerTank3.loadTexture();
 	computerTank3.tank3SetPoints();
-	computerTank3.speed = 8;
+	computerTank3.speed = 10;
 
 	computerTank4.loadTexture();
 	computerTank4.tank4SetPoints();
-	computerTank4.speed = 8;
+	computerTank4.speed = 10;
 	
 	initialiseMenuSprites();
 
@@ -393,7 +393,7 @@ void runGame(double deltaTime)
 			userTank.drawTank();
 			userTank.handleKeys(deltaTime);
 			userTank.moveTank();
-			track.drawCheckPoints();
+			//track.drawCheckPoints();
 			printFunctions();
 			computerTank1.drawTank();
 			computerTank1.incrementMovement();
@@ -477,13 +477,13 @@ void playerPosition()
 
 		if (userTankCheckPointTally > compTank1CheckPointTally)
 		{
-			print(gameFont, 300, 250, "1st");
-			print(gameFont, 300, 200, "V - %7.2f", userTank.v);
+			//print(gameFont, 300, 250, "1st");
+			//print(gameFont, 300, 200, "V - %7.2f", userTank.v);
 		}
 		else
 		{
-			print(gameFont, 300, 250, "2nd");
-			print(gameFont, 300, 200, "V - %7.2f", userTank.v);
+			//print(gameFont, 300, 250, "2nd");
+			//print(gameFont, 300, 200, "V - %7.2f", userTank.v);
 		}
 		//print(gameFont, 300, 350, "User Check point - %d", userTankCheckPointTally);
 		//print(gameFont, 300, 300, "Comp check point - %d", compTankCheckPointTally);
@@ -583,8 +583,8 @@ void collision()
 
 
 	//User tank and computer tank detection
-	userTank.tankOBB.drawOBB();
-	computerTank1.obb.drawOBB();
+	//userTank.tankOBB.drawOBB();
+	//computerTank1.obb.drawOBB();
 	if (userTank.tankOBB.SAT2D(computerTank1.obb))
 	{
 
@@ -629,10 +629,10 @@ void moveProjection()
 {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-		gluOrtho2D(((userTank.x) - screenWidth / 2), 
-			              ((userTank.x) + screenWidth / 2),
-			              ((userTank.y) - screenHeight / 2),
-			              ((userTank.y) + screenHeight / 2));
+		gluOrtho2D(((userTank.x) - screenWidth / 1.5), 
+			              ((userTank.x) + screenWidth / 1.5),
+			              ((userTank.y) - screenHeight / 1.5),
+			              ((userTank.y) + screenHeight / 1.5));
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 }
@@ -1017,76 +1017,4 @@ bool CreateGLWindow(char* title, int width, int height)
 
 	return true;									// Success
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//if (userTank.tankOBB.SAT2D(track.trackOBB))
-//{
-//	print(our_font, 20, 95, "COllision!");
-
-//	tank1Angle = tank1Angle + 180;
-//	for(int i = 0; i < 200 ; i++)
-//	{
-//		tank1XMovement += tank1Velocity * cosf((90 + tank1Angle) * (PI / 180.0f));
-//		tank1YMovement += tank1Velocity * sinf((90 + tank1Angle) * (PI / 180.0f));
-//	} 
-//	//tank1Angle = tank1Angle + 180;
-//}	
-
-	//Vertex v[] = { {100 + i,100}, {100 + i,1100}, {600 + i,1600}, {900 + i, 1900}, {1100 + i,1100}, {1100 + i,100}, {100 + i,100} };
-	//Point v[] = { {-100, -900}, {-100, 500}, {100, 500}, {100, -900} };
-	//Point p = {tank1XMovement, tank1YMovement};
-	//int n = sizeof(v) / sizeof(v[0]);
-	//if (!outsideObject(p, v, n))
-	//{
-		//speed = 1.5f;
-		//print(our_font, 20, 150, "Inside");
-	//}
-	//else
-	//{
-		//speed = 1.5f;
-		//print(our_font, 20, 150, "Outside");
-	//}
-
-
-
-	//int timeSinceStart = glutGet(GLUT_ELAPSED_TIME);
-	//int deltaTime = timeSinceStart - oldTimeSinceStart;
-	//oldTimeSinceStart = timeSinceStart;
-
-
-
-
-
-
-
-
-// timer = (((squareXTransform - userTank.x) * (squareXTransform - userTank.x)) + (squareYTransform - (userTank.y + 5.65f)) * (squareYTransform - (userTank.y + 5.65f)));
-
-// float localNum = (((squareXTransform - userTank.x) * (squareXTransform - userTank.x)) + (squareYTransform - (userTank.y)) * (squareYTransform - (userTank.y)));
-
-
-			//userTank.direction = userTank.direction + 180;
-			//for (int i = 0; i < 200; i++)
-			//{
-			//	userTank.x += userTank.speed * cosf((90 + userTank.direction) * (PI / 180.0f));
-			//	userTank.y += userTank.speed * sinf((90 + userTank.direction) * (PI / 180.0f));
-			//}
-			////userTank.direction = userTank.direction + 180;
-			////tank1Angle = tank1Angle + 180;
-
-
-
-
 #pragma endregion

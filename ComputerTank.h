@@ -60,39 +60,31 @@ public:
 	void handleCollision();
 
 
-	static std::vector<Point> drawCircleClockwise(float x, float y, float radius, float startingAngle, float endAngle)
+	static vector<Point> drawCircleClockwise(float x, float y, float radius, float startingAngle, float endAngle)
 	{
-		std::vector<Point> points;
+		vector<Point> points;
 
-
-
-		for (float i = startingAngle; i > endAngle; i -= 1)
+		for (float i = startingAngle; i > endAngle; i -= 15)
 		{
 			Point point;
 			point.x = x + radius * cosf(i * (3.1415926535897932384626433832795f / 180.0f));
 			point.y = y + radius * sinf(i * (3.1415926535897932384626433832795f / 180.0f));
 			points.push_back(point);
 		}
-
-
-
 		return points;
 	}
 
-	static std::vector<Point> drawCircleAnticlockwise(float x, float y, float radius, float startingAngle, float endAngle)
+	static vector<Point> drawCircleAnticlockwise(float x, float y, float radius, float startingAngle, float endAngle)
 	{
-		std::vector<Point> points;
+		vector<Point> points;
 
-		for (float i = startingAngle; i < endAngle; i += 1)
+		for (float i = startingAngle; i < endAngle; i += 15)
 		{
 			Point point;
 			point.x = x + radius * cosf(i * (3.1415926535897932384626433832795f / 180.0f));
 			point.y = y + radius * sinf(i * (3.1415926535897932384626433832795f / 180.0f));
 			points.push_back(point);
 		}
-
-
-
 		return points;
 	}
 };

@@ -374,7 +374,7 @@ void Track::drawTrackBarrierOBB()
 	}
 
 	// going right
-	for (float i = -1526; i < 1900; i += 48)
+	for (float i = -1526; i < 1850; i += 48)
 	{
 		Asset asset = Asset();
 		asset.x = i;
