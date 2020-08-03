@@ -116,7 +116,8 @@ enum GAME_STATE
 	QUIT, 
 };
 
-GAME_STATE gameState = MAINMENU;
+//GAME_STATE gameState = MAINMENU;
+GAME_STATE gameState = PLAY;
 
 bool playHover = false;
 bool controlsHover = false;
@@ -135,6 +136,7 @@ void printCursor();
 void moveProjection();
 bool outsideObject(Point P, Point V[], int n);
 void initialiseMenuSprites();
+void playSound();
 
 #pragma endregion
 
@@ -185,6 +187,8 @@ void init()
 	glLoadIdentity();
 
 	glClearColor(0.0, 0.0, 0.0, 0.0);  
+
+	SoundEngine->play2D("Battle-Conflict.mp3", true);
 
 	gameFont.init("tankFont.ttf", 22);
 	
@@ -250,37 +254,46 @@ void display()
 
 			break;
 		case PLAY:
-			track.drawMapAssets();
-			//for (int i = -10000; i < 10000; i += 100)
-			//{
-			//	for (int j = -10000; j < 10000; j += 100)
-			//	{
-			//		glPushMatrix();
-			//		glColor3f(1, 0, 0);
-			//		glPointSize(2.0);
-			//		glBegin(GL_POINTS);
-			//		glVertex2f(i, j);
-			//		glEnd();
-			//		glPopMatrix();
-			//	}
-			//}
+			SoundEngine->stopAllSounds();
 
+
+
+			track.drawMapAssets();
 			
 			break;
 		case PAUSE:
+			SoundEngine->stopAllSounds();
+
+
+
 			track.drawIntermediateTrack();
 			break;
 		case CONTROLS:
+			SoundEngine->stopAllSounds();
+
+
+
 			break;
 		case QUIT:
+			SoundEngine->stopAllSounds();
+
+
+
+
 			done = true;
 			break;
 	}
 	glFlush();
 }
 
+void playSound()
+{
+
+}
+
 void runGame(double deltaTime)
 {
+	playSound();
 
 	mouse.x = mouse_x;
 	mouse.y = mouse_y;
@@ -296,18 +309,14 @@ void runGame(double deltaTime)
 	if (mouse.OBB1.SAT2D(playButton.OBB1))
 	{
 		playHover = true;
-		SoundEngine->play2D("back_001.ogg");
-		SoundEngine->play2D.drop;
 	}
 	if (mouse.OBB1.SAT2D(controlsButton.OBB1))
 	{
 		controlsHover = true;
-		SoundEngine->play2D("back_001.ogg");
 	}
 	if (mouse.OBB1.SAT2D(quitButton.OBB1))
 	{
 		quitHover = true;
-		SoundEngine->play2D("back_001.ogg");
 	}
 
 	switch (gameState)
@@ -375,38 +384,55 @@ void playerPosition()
 		compTankLapNumber++;
 	}
 
-	if (userTankLastCheckPoint > -1) {
+	if (userTankLastCheckPoint > -1) 
+	{
 
-		if (userTank.tankOBB.SAT2D(track.checkPoints[userTankLastCheckPoint + 1].OBB1)) {
+		if (userTank.tankOBB.SAT2D(track.checkPoints[userTankLastCheckPoint + 1].OBB1)) 
+		{
 			userTankLastCheckPoint++;
 			userTankCheckPointTally++;
-			//SoundEngine->play2D("explosion.wav");
 		}
 		if (userTankLastCheckPoint != 0) {
-			if (userTank.tankOBB.SAT2D(track.checkPoints[userTankLastCheckPoint - 1].OBB1)) {
+			if (userTank.tankOBB.SAT2D(track.checkPoints[userTankLastCheckPoint - 1].OBB1)) 
+			{
 				userTankLastCheckPoint--;
 				userTankCheckPointTally--;
 			}
 		}
 
 
-		if (compTankLastCheckPoint > -1) {
+		if (compTankLastCheckPoint > -1) 
+		{
 
-			if (computerTank.obb.SAT2D(track.checkPoints[compTankLastCheckPoint + 1].OBB1)) {
+			if (computerTank.obb.SAT2D(track.checkPoints[compTankLastCheckPoint + 1].OBB1)) 
+			{
 				compTankLastCheckPoint++;
 				compTankCheckPointTally++;
 			}
-			if (compTankLastCheckPoint != 0) {
-				if (computerTank.obb.SAT2D(track.checkPoints[compTankLastCheckPoint - 1].OBB1)) {
+			if (compTankLastCheckPoint != 0) 
+			{
+				if (computerTank.obb.SAT2D(track.checkPoints[compTankLastCheckPoint - 1].OBB1)) 
+				{
 					compTankLastCheckPoint--;
 					compTankCheckPointTally--;
 				}
 			}
 		}
-		print(gameFont, 300, 350, "User Check point - %d", userTankCheckPointTally);
-		print(gameFont, 300, 300, "Comp check point - %d", compTankCheckPointTally);
-		print(gameFont, 300, 250, "Lap number - %d", userTankLapNumber);
-		print(gameFont, 300, 200, "Last check point - %d", userTankLastCheckPoint);
+
+		if (userTankCheckPointTally > compTankCheckPointTally)
+		{
+			print(gameFont, 300, 250, "1st");
+			print(gameFont, 300, 200, "V - %7.2f", userTank.v);
+		}
+		else
+		{
+			print(gameFont, 300, 250, "2nd");
+			print(gameFont, 300, 200, "V - %7.2f", userTank.v);
+		}
+		//print(gameFont, 300, 350, "User Check point - %d", userTankCheckPointTally);
+		//print(gameFont, 300, 300, "Comp check point - %d", compTankCheckPointTally);
+		//print(gameFont, 300, 250, "Lap number - %d", userTankLapNumber);
+		//print(gameFont, 300, 200, "Last check point - %d", userTankLastCheckPoint);
 	}
 }
 
@@ -477,8 +503,7 @@ void collision()
 		//obb.drawOBB();
 		if (obb.SAT2D(userTank.tankOBB))
 		{
-			//userTank.handleOffTrack();
-			//userTank.handleBarrierCollision();
+			userTank.handleOffTrack();
 		}
 	}
 
@@ -489,11 +514,18 @@ void collision()
 		asset.drawAsset();
 		if (asset.OBB1.SAT2D(userTank.tankOBB))
 		{
-			//SoundEngine->play2D("Tank-O-Mania/explosion.wav", true);
 			print(gameFont, 20, 95, "Collision!");
 			//userTank.handleOffTrack();
-			userTank.handleBarrierCollision();
-			SoundEngine->play2D("tankBarrier.ogg");
+			//userTank.handleBarrierCollision();
+
+			//userTank.direction = userTank.direction + 180;
+			//for (int i = 0; i < 200; i++)
+			//{
+			//	userTank.x += userTank.speed * cosf((90 + userTank.direction) * (PI / 180.0f));
+			//	userTank.y += userTank.speed * sinf((90 + userTank.direction) * (PI / 180.0f));
+			//}
+			////userTank.direction = userTank.direction + 180;
+			////tank1Angle = tank1Angle + 180;
 		}
 	}
 
@@ -502,8 +534,7 @@ void collision()
 	computerTank.obb.drawOBB();
 	if (userTank.tankOBB.SAT2D(computerTank.obb))
 	{
-		//computerTank.handleCollision();
-		//userTank.handleBarrierCollision();
+
 	}
 }
 
@@ -545,21 +576,10 @@ void moveProjection()
 {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	//	glPushMatrix();
-	//	glColor3f(0,1,0);
-	//	glLineWidth(100);
-	//		glBegin(GL_LINE_STRIP);
-	//			glVertex2f(-1,-1);
-	//			glVertex2f(-1, 1);
-	//			glVertex2f(1,1);
-	//			glVertex2f(1,-1);
-	//		glEnd();
-	//	glPopMatrix();
-		//print(our_font, 5, 10, "Tank speed: %7.2f", userTank.v);
-		gluOrtho2D(((userTank.x) - screenWidth / 3), 
-			              ((userTank.x) + screenWidth / 3),
-			              ((userTank.y) - screenHeight / 3),
-			              ((userTank.y) + screenHeight / 3));
+		gluOrtho2D(((userTank.x) - screenWidth / 2), 
+			              ((userTank.x) + screenWidth / 2),
+			              ((userTank.y) - screenHeight / 2),
+			              ((userTank.y) + screenHeight / 2));
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 }
