@@ -6,6 +6,7 @@
 #include <vector>
 #include <stdio.h>
 #include <chrono>
+#include <string>
 #include <irrKlang/irrKlang.h>
 
 using namespace chrono;
@@ -19,8 +20,8 @@ using namespace irrklang;
 #pragma region PREPLAY state methods 
 
 int timeElapsed = 0;
-time_point<steady_clock> startTime;
-time_point<steady_clock> endTime;
+time_point<steady_clock> beginCountDown;
+time_point<steady_clock> endCountDown;
 
 #pragma endregion
 
@@ -99,6 +100,7 @@ int screenWidth = 700, screenHeight = 700;
 bool keys[256];
 float timeKeeper = 0;
 bool done = false;
+float positionOfPlayer = 5;
 
 #pragma endregion
 
@@ -115,6 +117,8 @@ GLuint button1 = 0;
 
 font_data gameFont1;  
 font_data gameFont2;  
+font_data gameFont3;  
+font_data gameFont4;  
 
 #pragma endregion
 
@@ -143,7 +147,7 @@ bool backHover = false;
 #pragma region function declarations  
 
 void gamePlaySpeed();
-void runGame(double deltaTime);
+void gameMechanics(double deltaTime);
 void playerPosition();
 void collision();
 void moveProjection();
@@ -180,8 +184,6 @@ void init();				//called in winmain when the program starts.
 void processKeys();			//called in winmain to process keyboard controls
 
 #pragma endregion
-
-
 
 
 
@@ -224,6 +226,8 @@ void init()
 
 	gameFont1.init("tankFont.ttf", 22);
 	gameFont2.init("tankFont.ttf", 9);
+	gameFont3.init("tankFont.ttf", 25);
+	gameFont4.init("tankFont.ttf", 6);
 	
 	char grassPNG[] = "PNG/Assets/towerDefense_tile231.png";
 	menuTexture = loadPNG(grassPNG);
@@ -260,15 +264,15 @@ void init()
 
 	computerTank2.loadTexture();
 	computerTank2.tank2SetPoints();
-	computerTank2.speed = 10;
+	computerTank2.speed = 9;
 
 	computerTank3.loadTexture();
 	computerTank3.tank3SetPoints();
-	computerTank3.speed = 10;
+	computerTank3.speed = 7;
 
 	computerTank4.loadTexture();
 	computerTank4.tank4SetPoints();
-	computerTank4.speed = 10;
+	computerTank4.speed = 6;
 	
 	initialiseMenuSprites();
 	initialiseControlsSprites();
@@ -354,14 +358,14 @@ void display()
 
 void beginGameCountDown()
 {
-	endTime = steady_clock::now();
+	endCountDown = steady_clock::now();
 
-	duration<double, ratio<1, 1>> secondsGone = endTime - startTime;
+	duration<double, ratio<1, 1>> secondsGone = endCountDown - beginCountDown;
 	timeElapsed = 4 - secondsGone.count();
 
 	if (timeElapsed == -1)
 	{
-		startTime = steady_clock::now();
+		beginCountDown = steady_clock::now();
 		gameState = PLAY;
 	}
 	else if (timeElapsed == 0)
@@ -374,7 +378,7 @@ void beginGameCountDown()
 	}
 }
 
-void runGame(double deltaTime)
+void gameMechanics(double deltaTime)
 {
 	mouse.x = mouse_x;
 	mouse.y = mouse_y;
@@ -479,7 +483,8 @@ void runGame(double deltaTime)
 
 			playerPosition();
 			collision();
-
+			print(gameFont4, 20, 615, "Pos");
+			print(gameFont3, 60, 615, "%1.0f", positionOfPlayer);
 			break;
 		case PAUSE:
 			break;
@@ -505,22 +510,41 @@ void playerPosition()
 		compTank1LapNumber++;
 	}
 
-	if (userTankLastCheckPoint > -1) 
+	if (compTank2LastCheckPoint == 192)
+	{
+		compTank2LastCheckPoint = 0;
+		compTank2LapNumber++;
+	}
+
+	if (compTank3LastCheckPoint == 192)
+	{
+		compTank3LastCheckPoint = 0;
+		compTank3LapNumber++;
+	}
+
+	if (compTank4LastCheckPoint == 192)
+	{
+		compTank4LastCheckPoint = 0;
+		compTank4LapNumber++;
+	}
+
+	if (userTankLastCheckPoint > -1)
 	{
 
-		if (userTank.tankOBB.SAT2D(track.checkPoints[userTankLastCheckPoint + 1].OBB1)) 
+		if (userTank.tankOBB.SAT2D(track.checkPoints[userTankLastCheckPoint + 1].OBB1))
 		{
 			userTankLastCheckPoint++;
 			userTankCheckPointTally++;
 		}
-		if (userTankLastCheckPoint != 0) {
-			if (userTank.tankOBB.SAT2D(track.checkPoints[userTankLastCheckPoint - 1].OBB1)) 
+		if (userTankLastCheckPoint != 0)
+		{
+			if (userTank.tankOBB.SAT2D(track.checkPoints[userTankLastCheckPoint - 1].OBB1))
 			{
 				userTankLastCheckPoint--;
 				userTankCheckPointTally--;
 			}
 		}
-
+	}
 
 		if (compTank1LastCheckPoint > -1) 
 		{
@@ -540,21 +564,183 @@ void playerPosition()
 			}
 		}
 
-		if (userTankCheckPointTally > compTank1CheckPointTally)
+		if (compTank2LastCheckPoint > -1)
 		{
-			//print(gameFont, 300, 250, "1st");
-			//print(gameFont, 300, 200, "V - %7.2f", userTank.v);
+
+			if (computerTank2.obb.SAT2D(track.checkPoints[compTank2LastCheckPoint + 1].OBB1))
+			{
+				compTank2LastCheckPoint++;
+				compTank2CheckPointTally++;
+			}
+			if (compTank2LastCheckPoint != 0)
+			{
+				if (computerTank2.obb.SAT2D(track.checkPoints[compTank2LastCheckPoint - 1].OBB1))
+				{
+					compTank2LastCheckPoint--;
+					compTank2CheckPointTally--;
+				}
+			}
 		}
-		else
+
+		if (compTank3LastCheckPoint > -1)
 		{
-			//print(gameFont, 300, 250, "2nd");
-			//print(gameFont, 300, 200, "V - %7.2f", userTank.v);
+
+			if (computerTank3.obb.SAT2D(track.checkPoints[compTank3LastCheckPoint + 1].OBB1))
+			{
+				compTank3LastCheckPoint++;
+				compTank3CheckPointTally++;
+			}
+			if (compTank3LastCheckPoint != 0)
+			{
+				if (computerTank3.obb.SAT2D(track.checkPoints[compTank3LastCheckPoint - 1].OBB1))
+				{
+					compTank3LastCheckPoint--;
+					compTank3CheckPointTally--;
+				}
+			}
+		}
+
+		if (compTank4LastCheckPoint > -1)
+		{
+
+			if (computerTank4.obb.SAT2D(track.checkPoints[compTank4LastCheckPoint + 1].OBB1))
+			{
+				compTank4LastCheckPoint++;
+				compTank4CheckPointTally++;
+			}
+			if (compTank4LastCheckPoint != 0)
+			{
+				if (computerTank4.obb.SAT2D(track.checkPoints[compTank4LastCheckPoint - 1].OBB1))
+				{
+					compTank4LastCheckPoint--;
+					compTank4CheckPointTally--;
+				}
+			}
+		}
+
+		if (userTankCheckPointTally > compTank1CheckPointTally &&
+			userTankCheckPointTally > compTank2CheckPointTally &&
+			userTankCheckPointTally > compTank3CheckPointTally &&
+			userTankCheckPointTally > compTank4CheckPointTally)
+		{
+			positionOfPlayer = 1;
+		}
+		else if (userTankCheckPointTally > compTank1CheckPointTally &&
+			     userTankCheckPointTally > compTank2CheckPointTally &&
+			     userTankCheckPointTally > compTank3CheckPointTally &&
+			     userTankCheckPointTally < compTank4CheckPointTally)
+		{
+			positionOfPlayer = 2;
+		}
+		else if (userTankCheckPointTally > compTank1CheckPointTally &&
+				 userTankCheckPointTally > compTank2CheckPointTally &&
+			  	 userTankCheckPointTally < compTank3CheckPointTally &&
+				 userTankCheckPointTally > compTank4CheckPointTally)
+		{
+			positionOfPlayer = 2;
+		}
+		else if (userTankCheckPointTally > compTank1CheckPointTally &&
+			     userTankCheckPointTally < compTank2CheckPointTally &&
+			     userTankCheckPointTally > compTank3CheckPointTally &&
+			     userTankCheckPointTally > compTank4CheckPointTally)
+		{
+			positionOfPlayer = 2;
+		}
+		else if (userTankCheckPointTally < compTank1CheckPointTally &&
+			     userTankCheckPointTally > compTank2CheckPointTally &&
+		       	 userTankCheckPointTally > compTank3CheckPointTally &&
+			     userTankCheckPointTally > compTank4CheckPointTally)
+		{
+			positionOfPlayer = 2;
+		}
+		else if (userTankCheckPointTally > compTank1CheckPointTally &&
+			userTankCheckPointTally > compTank2CheckPointTally &&
+			userTankCheckPointTally > compTank3CheckPointTally &&
+			userTankCheckPointTally < compTank4CheckPointTally)
+		{
+			positionOfPlayer = 3;
+		}
+		else if (userTankCheckPointTally > compTank1CheckPointTally &&
+			userTankCheckPointTally > compTank2CheckPointTally &&
+			userTankCheckPointTally < compTank3CheckPointTally &&
+			userTankCheckPointTally < compTank4CheckPointTally)
+		{
+			positionOfPlayer = 3;
+		}
+		else if (userTankCheckPointTally > compTank1CheckPointTally &&
+			userTankCheckPointTally < compTank2CheckPointTally &&
+			userTankCheckPointTally > compTank3CheckPointTally &&
+			userTankCheckPointTally < compTank4CheckPointTally)
+		{
+			positionOfPlayer = 3;
+		}
+		else if (userTankCheckPointTally < compTank1CheckPointTally &&
+			userTankCheckPointTally > compTank2CheckPointTally &&
+			userTankCheckPointTally > compTank3CheckPointTally &&
+			userTankCheckPointTally < compTank4CheckPointTally)
+		{
+			positionOfPlayer = 3;
+		}
+		else if (userTankCheckPointTally > compTank1CheckPointTally &&
+			userTankCheckPointTally < compTank2CheckPointTally &&
+			userTankCheckPointTally < compTank3CheckPointTally &&
+			userTankCheckPointTally > compTank4CheckPointTally)
+		{
+			positionOfPlayer = 3;
+		}
+		else if (userTankCheckPointTally < compTank1CheckPointTally &&
+			userTankCheckPointTally > compTank2CheckPointTally &&
+			userTankCheckPointTally < compTank3CheckPointTally &&
+			userTankCheckPointTally > compTank4CheckPointTally)
+		{
+			positionOfPlayer = 3;
+		}
+		else if (userTankCheckPointTally < compTank1CheckPointTally &&
+			userTankCheckPointTally < compTank2CheckPointTally &&
+			userTankCheckPointTally > compTank3CheckPointTally &&
+			userTankCheckPointTally > compTank4CheckPointTally)
+		{
+			positionOfPlayer = 3;
+		}
+		else if (userTankCheckPointTally > compTank1CheckPointTally &&
+			userTankCheckPointTally < compTank2CheckPointTally &&
+			userTankCheckPointTally < compTank3CheckPointTally &&
+			userTankCheckPointTally < compTank4CheckPointTally)
+		{
+			positionOfPlayer = 4;
+		}
+		else if (userTankCheckPointTally < compTank1CheckPointTally &&
+			userTankCheckPointTally > compTank2CheckPointTally &&
+			userTankCheckPointTally < compTank3CheckPointTally &&
+			userTankCheckPointTally < compTank4CheckPointTally)
+		{
+			positionOfPlayer = 4;
+		}
+		else if (userTankCheckPointTally < compTank1CheckPointTally &&
+		userTankCheckPointTally < compTank2CheckPointTally &&
+		userTankCheckPointTally > compTank3CheckPointTally &&
+		userTankCheckPointTally < compTank4CheckPointTally)
+		{
+		positionOfPlayer = 4;
+		}
+		else if (userTankCheckPointTally < compTank1CheckPointTally &&
+		userTankCheckPointTally < compTank2CheckPointTally &&
+		userTankCheckPointTally < compTank3CheckPointTally &&
+		userTankCheckPointTally > compTank4CheckPointTally)
+		{
+		positionOfPlayer = 4;
+		}
+		else if (userTankCheckPointTally < compTank1CheckPointTally &&
+		userTankCheckPointTally < compTank2CheckPointTally &&
+		userTankCheckPointTally < compTank3CheckPointTally &&
+		userTankCheckPointTally < compTank4CheckPointTally)
+		{
+		positionOfPlayer = 5;
 		}
 		//print(gameFont, 300, 350, "User Check point - %d", userTankCheckPointTally);
 		//print(gameFont, 300, 300, "Comp check point - %d", compTankCheckPointTally);
 		//print(gameFont, 300, 250, "Lap number - %d", userTankLapNumber);
 		//print(gameFont, 300, 200, "Last check point - %d", userTankLastCheckPoint);
-	}
 }
 
 void initialiseMenuSprites()
@@ -650,7 +836,6 @@ void collision()
 			print(gameFont1, 20, 95, "Collision!");
 			//userTank.handleOffTrack();
 			//userTank.handleBarrierCollision();
-
 		}
 	}
 
@@ -676,7 +861,7 @@ void gamePlaySpeed()
 	deltaTime = double(ticksElapsed) * gameSpeed;
 
 
-	runGame(deltaTime);
+	gameMechanics(deltaTime);
 
 
 	previousTime = currentTime;
@@ -902,28 +1087,58 @@ LRESULT CALLBACK WndProc(HWND	hWnd,			// Handle For This Window
 
 		if (playHover)
 		{
-			startTime = steady_clock::now();
-			gameState = PREPLAY;
+			if (gameState == PLAY  || gameState == PREPLAY ||
+				gameState == PAUSE || gameState == CONTROLS)
+			{
+				return 0;
+			}
+			else
+			{
+				beginCountDown = steady_clock::now();
+				gameState = PREPLAY;
+			}
 		}
 		else if (controlsHover)
 		{
-			gameState = CONTROLS;
+			if (gameState == PLAY || gameState == PREPLAY ||
+				gameState == PAUSE)
+			{
+				return 0;
+			}
+			else
+			{
+				gameState = CONTROLS;
+			}
 		}
 		else if (quitHover)
 		{
-			gameState = QUIT;
+			if (gameState == PLAY  || gameState == PREPLAY ||
+				gameState == PAUSE || gameState == CONTROLS)
+			{
+				return 0;
+			}
+			else
+			{
+				gameState = QUIT;
+			}
 		}
 		else if (backHover)
 		{
-			gameState = MAINMENU;
-			greenMenuTank.x = 750;
-			beigeMenuTank1.x = 840;
-			beigeMenuTank2.x = 900;
-
-			plane1.x = -80;
-			plane1Shadow.x = -145;
-
-			timeKeeper = 0;
+			if (gameState == PLAY  || gameState == PREPLAY ||
+				gameState == PAUSE || gameState == MAINMENU)
+			{
+				return 0;
+			}
+			else
+			{
+				gameState = MAINMENU;
+				greenMenuTank.x = 750;
+				beigeMenuTank1.x = 840;
+				beigeMenuTank2.x = 900;
+				plane1.x = -80;
+				plane1Shadow.x = -145;
+				timeKeeper = 0;
+			}
 		}
 	}
 	break;
