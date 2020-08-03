@@ -25,9 +25,9 @@ public:
 	GLuint TankBody;
 	GLuint TankBarrel;
 	bool keys[256];
-	float speed = 0.06f;
+	float speed = 4;
 	float x = 150;
-	float y = 1240;
+	float y = 0;
 	float v = 0;
 	float lastx = 150;
 	float lasty = 0;
@@ -45,7 +45,13 @@ public:
 
 	void incrementMovement();
 
-	void setMovementPoints();
+	void tank1SetPoints();
+	
+	void tank2SetPoints();
+	
+	void tank3SetPoints();
+	
+	void tank4SetPoints();
 
 	void moveTank();
 

@@ -13,10 +13,8 @@ using namespace freetype;
 
 using namespace irrklang;
 
-
 const float PI = 3.1415926535897932384626433832795f;
 
-POINT p;   
 int 	mouse_x = 0, mouse_y = 0;   
 bool LeftPressed = false;
 int screenWidth = 700, screenHeight = 700;
@@ -49,12 +47,30 @@ static void pop_projection_matrix() {
 
 #pragma region Checkpoint and position variables
 
+// userTank
 int userTankLastCheckPoint = 0;
 int userTankCheckPointTally = 0;
 int userTankLapNumber = 1;
-int compTankLastCheckPoint = 0;
-int compTankCheckPointTally = 0;
-int compTankLapNumber = 1;
+
+// compTank1
+int compTank1LastCheckPoint = 0;
+int compTank1CheckPointTally = 0;
+int compTank1LapNumber = 1;
+
+// compTank2
+int compTank2LastCheckPoint = 0;
+int compTank2CheckPointTally = 0;
+int compTank2LapNumber = 1;
+
+// compTank3
+int compTank3LastCheckPoint = 0;
+int compTank3CheckPointTally = 0;
+int compTank3LapNumber = 1;
+
+// compTank4
+int compTank4LastCheckPoint = 0;
+int compTank4CheckPointTally = 0;
+int compTank4LapNumber = 1;
 
 #pragma endregion
 
@@ -74,9 +90,13 @@ ISoundEngine * SoundEngine = createIrrKlangDevice();
 
 #pragma region game objects  
 
+Asset background = Asset();
 Track track = Track();
 UserTank userTank = UserTank();
-ComputerTank computerTank = ComputerTank();
+ComputerTank computerTank1 = ComputerTank();
+ComputerTank computerTank2 = ComputerTank();
+ComputerTank computerTank3 = ComputerTank();
+ComputerTank computerTank4 = ComputerTank();
 Asset mainMenu = Asset();
 Asset plane1 = Asset();
 Asset plane1Shadow = Asset();
@@ -132,7 +152,6 @@ void gamePlaySpeed();
 void runGame(double deltaTime);
 void playerPosition();
 void collision();
-void printCursor();
 void moveProjection();
 bool outsideObject(Point P, Point V[], int n);
 void initialiseMenuSprites();
@@ -204,6 +223,15 @@ void init()
 	char button1PNG[] = "PNG/Assets/towerDefense_tile060.png";
 	button1 = loadPNG(button1PNG);
 
+	background.height = 10000;
+	background.width = 10000;
+	background.x = -5000;
+	background.y = -5000;
+	background.texture = menuTexture;
+	background.xTexture = 80;
+	background.yTexture = 80;
+
+
 	mouse.height = 1;
 	mouse.width = 1;
 	track.loadTexture();
@@ -211,8 +239,23 @@ void init()
 	track.drawTrackBarrierOBB();
 	track.setCheckPoints();
 	userTank.loadTexture();
-	computerTank.loadTexture();
-	computerTank.setMovementPoints();
+
+	computerTank1.loadTexture();
+	computerTank1.tank1SetPoints();
+	computerTank1.speed = 8;
+
+	computerTank2.loadTexture();
+	computerTank2.tank2SetPoints();
+	computerTank2.speed = 8;
+
+	computerTank3.loadTexture();
+	computerTank3.tank3SetPoints();
+	computerTank3.speed = 8;
+
+	computerTank4.loadTexture();
+	computerTank4.tank4SetPoints();
+	computerTank4.speed = 8;
+	
 	initialiseMenuSprites();
 
 	glMatrixMode(GL_MODELVIEW);
@@ -227,6 +270,7 @@ void display()
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
+	background.drawAsset();
 	moveProjection();
 
 	switch (gameState)
@@ -259,7 +303,6 @@ void display()
 
 
 			track.drawMapAssets();
-			
 			break;
 		case PAUSE:
 			SoundEngine->stopAllSounds();
@@ -352,9 +395,22 @@ void runGame(double deltaTime)
 			userTank.moveTank();
 			track.drawCheckPoints();
 			printFunctions();
-			computerTank.drawTank();
-			computerTank.incrementMovement();
-			computerTank.moveTank();
+			computerTank1.drawTank();
+			computerTank1.incrementMovement();
+			computerTank1.moveTank();
+
+			computerTank2.drawTank();
+			computerTank2.incrementMovement();
+			computerTank2.moveTank();
+
+			computerTank3.drawTank();
+			computerTank3.incrementMovement();
+			computerTank3.moveTank();
+					
+			computerTank4.drawTank();
+			computerTank4.incrementMovement();
+			computerTank4.moveTank();
+
 			playerPosition();
 			collision();
 
@@ -378,10 +434,10 @@ void playerPosition()
 		userTankLapNumber++;
 	}
 
-	if (compTankLastCheckPoint == 192)
+	if (compTank1LastCheckPoint == 192)
 	{
-		compTankLastCheckPoint = 0;
-		compTankLapNumber++;
+		compTank1LastCheckPoint = 0;
+		compTank1LapNumber++;
 	}
 
 	if (userTankLastCheckPoint > -1) 
@@ -401,25 +457,25 @@ void playerPosition()
 		}
 
 
-		if (compTankLastCheckPoint > -1) 
+		if (compTank1LastCheckPoint > -1) 
 		{
 
-			if (computerTank.obb.SAT2D(track.checkPoints[compTankLastCheckPoint + 1].OBB1)) 
+			if (computerTank1.obb.SAT2D(track.checkPoints[compTank1LastCheckPoint + 1].OBB1)) 
 			{
-				compTankLastCheckPoint++;
-				compTankCheckPointTally++;
+				compTank1LastCheckPoint++;
+				compTank1CheckPointTally++;
 			}
-			if (compTankLastCheckPoint != 0) 
+			if (compTank1LastCheckPoint != 0) 
 			{
-				if (computerTank.obb.SAT2D(track.checkPoints[compTankLastCheckPoint - 1].OBB1)) 
+				if (computerTank1.obb.SAT2D(track.checkPoints[compTank1LastCheckPoint - 1].OBB1)) 
 				{
-					compTankLastCheckPoint--;
-					compTankCheckPointTally--;
+					compTank1LastCheckPoint--;
+					compTank1CheckPointTally--;
 				}
 			}
 		}
 
-		if (userTankCheckPointTally > compTankCheckPointTally)
+		if (userTankCheckPointTally > compTank1CheckPointTally)
 		{
 			print(gameFont, 300, 250, "1st");
 			print(gameFont, 300, 200, "V - %7.2f", userTank.v);
@@ -503,9 +559,11 @@ void collision()
 		//obb.drawOBB();
 		if (obb.SAT2D(userTank.tankOBB))
 		{
-			userTank.handleOffTrack();
+			//userTank.handleOffTrack();
 		}
 	}
+
+
 
 	//Barrier detection
 	for (Asset asset : track.mapBarrierOBBs)
@@ -518,21 +576,16 @@ void collision()
 			//userTank.handleOffTrack();
 			//userTank.handleBarrierCollision();
 
-			//userTank.direction = userTank.direction + 180;
-			//for (int i = 0; i < 200; i++)
-			//{
-			//	userTank.x += userTank.speed * cosf((90 + userTank.direction) * (PI / 180.0f));
-			//	userTank.y += userTank.speed * sinf((90 + userTank.direction) * (PI / 180.0f));
-			//}
-			////userTank.direction = userTank.direction + 180;
-			////tank1Angle = tank1Angle + 180;
 		}
 	}
 
+
+
+
 	//User tank and computer tank detection
 	userTank.tankOBB.drawOBB();
-	computerTank.obb.drawOBB();
-	if (userTank.tankOBB.SAT2D(computerTank.obb))
+	computerTank1.obb.drawOBB();
+	if (userTank.tankOBB.SAT2D(computerTank1.obb))
 	{
 
 	}
@@ -603,7 +656,7 @@ void reshape(int width, int height)		// Resize the OpenGL window
 
 	//gluOrtho2D(-1, 1, -1, 1);
 	//gluOrtho2D(-200, 200, -200, 200);             // View whole map 
-	gluOrtho2D(-4000, 4000, -4000, 4000);             // View whole map 
+	gluOrtho2D(-8000, 8000, -8000, 8000);             // View whole map 
 
 	glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
 	glLoadIdentity();									// Reset The Modelview Matrix
@@ -965,43 +1018,6 @@ bool CreateGLWindow(char* title, int width, int height)
 	return true;									// Success
 }
 
-void printCursor()
-{
-	if (GetClientRect)
-	{
-	
-	}
-
-	//ShowCursor(FALSE);//hides the cursor
-
-	if (GetCursorPos(&p))
-	{
-		/*glPushMatrix();
-		glRotatef((atan2(p.x,p.y) * 180 / PI),0,0,1);
-		glBegin(GL_POLYGON);
-		glVertex2f(0,0);
-		glVertex2f(0,50);
-		glVertex2f(50,50);
-		glVertex2f(50,0);
-		glEnd();
-		glPopMatrix();*/
-
-		//cursor position now in p.x and p.y
-		print(gameFont, 0, 95, "p.x: %ld", p.x);
-		print(gameFont, 0, 125, "p.y: %ld", p.y);
-		print(gameFont, 0, 65, "angle: %f", (atan2(p.y, p.x) * 180 / PI));
-
-		//userTank.point.x = p.x;
-		//userTank.point.y = p.y;
-	}
-
-	if (ScreenToClient(hWnd, &p))
-	{
-		//cursor position now in p.x and p.y
-		print(gameFont, 0, 35, "client p.x: %ld", p.x);
-		print(gameFont, 0, 5, "client p.y: %ld", p.y);
-	}
-}
 
 
 
@@ -1061,6 +1077,14 @@ void printCursor()
 // float localNum = (((squareXTransform - userTank.x) * (squareXTransform - userTank.x)) + (squareYTransform - (userTank.y)) * (squareYTransform - (userTank.y)));
 
 
+			//userTank.direction = userTank.direction + 180;
+			//for (int i = 0; i < 200; i++)
+			//{
+			//	userTank.x += userTank.speed * cosf((90 + userTank.direction) * (PI / 180.0f));
+			//	userTank.y += userTank.speed * sinf((90 + userTank.direction) * (PI / 180.0f));
+			//}
+			////userTank.direction = userTank.direction + 180;
+			////tank1Angle = tank1Angle + 180;
 
 
 
