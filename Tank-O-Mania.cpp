@@ -949,7 +949,8 @@ void collision()
 	//Barrier detection
 	for (Asset asset : track.mapBarrierOBBs)
 	{
-		userTank.handleBarrierCollision();
+		asset.drawAsset();
+		//userTank.handleBarrierCollision();
 	}
 
 	if (userTank.tankOBB.SAT2D(computerTank1.obb))

@@ -138,7 +138,7 @@ void UserTank::handleKeys(double deltaTime)
 	}
 	if (keys[VK_DOWN])
 	{
-		float downSpeed = v > 0 ? speed * 25 : speed / 4;
+		float downSpeed = v > 0 ? speed * 10 : speed / 4;
 		v -= downSpeed * deltaTime;
 	}
 }
