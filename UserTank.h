@@ -23,7 +23,7 @@ public:
 	GLuint userTankBody;
 	GLuint userTankBarrel;
 	bool keys[256];
-	float speed = 0.1f;
+	float speed = 0.06f;
 	float x = 80;
 	float y = -70;
 	float v = 0;
@@ -31,7 +31,6 @@ public:
 	float lasty = 0;
 	float matrix[16];
 	float direction = 0;
-	float checkPointsPassed = 0;
 	
 	UserTank() { }
 

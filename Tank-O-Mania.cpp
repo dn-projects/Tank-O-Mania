@@ -88,6 +88,7 @@ Asset playButton = Asset();
 Asset controlsButton = Asset();
 Asset quitButton = Asset();
 Asset backButton = Asset();
+Asset finishLine = Asset();
 
 #pragma endregion
 
@@ -100,7 +101,7 @@ int screenWidth = 700, screenHeight = 700;
 bool keys[256];
 float timeKeeper = 0;
 bool done = false;
-float positionOfPlayer = 5;
+float positionOfPlayer = 1;
 
 #pragma endregion
 
@@ -110,6 +111,7 @@ GLuint menuTexture = 0;
 GLuint planeTexture = 0;
 GLuint planeShadowTexture = 0;
 GLuint button1 = 0;
+GLuint finish = 0;
 
 #pragma endregion
 
@@ -131,11 +133,13 @@ enum GAME_STATE
 	PLAY, 
 	PAUSE, 
 	CONTROLS, 
+	GAMEOVER,
 	QUIT, 
 };
 
 GAME_STATE gameState = MAINMENU;
 //GAME_STATE gameState = PLAY;
+//GAME_STATE gameState = GAMEOVER;
 
 bool playHover = false;
 bool controlsHover = false;
@@ -150,6 +154,7 @@ void gamePlaySpeed();
 void gameMechanics(double deltaTime);
 void playerPosition();
 void collision();
+void resetGame();
 void moveProjection();
 bool outsideObject(Point P, Point V[], int n);
 void initialiseMenuSprites();
@@ -241,6 +246,9 @@ void init()
 	char button1PNG[] = "PNG/Assets/towerDefense_tile060.png";
 	button1 = loadPNG(button1PNG);
 
+	char finishPNG[] = "PNG/Assets/finish.png";
+	finish = loadPNG(finishPNG);
+
 	background.height = 10000;
 	background.width = 10000;
 	background.x = -5000;
@@ -249,6 +257,12 @@ void init()
 	background.xTexture = 80;
 	background.yTexture = 80;
 
+	finishLine.x = -225;
+	finishLine.y = -48;
+	finishLine.width = 560;
+	finishLine.height = 10;
+	finishLine.xTexture = 5;
+	finishLine.texture = finish;
 
 	mouse.height = 1;
 	mouse.width = 1;
@@ -260,7 +274,7 @@ void init()
 
 	computerTank1.loadTexture();
 	computerTank1.tank1SetPoints();
-	computerTank1.speed = 10;
+	computerTank1.speed = 8;
 
 	computerTank2.loadTexture();
 	computerTank2.tank2SetPoints();
@@ -282,7 +296,6 @@ void init()
 	
 }
 
-/*************    START OF OPENGL FUNCTIONS   ****************/
 void display()
 {	
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -319,10 +332,22 @@ void display()
 		case PREPLAY:
 			beginGameCountDown();
 			track.drawMapAssets();
+			finishLine.drawAsset();
 			break;
 		case PLAY:
 			SoundEngine->stopAllSounds();
 			track.drawMapAssets();
+			finishLine.drawAsset();
+			print(gameFont3, 200, 260, "v - %7.5f", userTank.v);
+			print(gameFont3, 200, 200, "s - %7.5f", userTank.speed);
+			break;
+		case GAMEOVER:
+			SoundEngine->stopAllSounds();
+			mainMenu.drawAsset();
+			print(gameFont1, 170, 500, "GAME OVER");
+			print(gameFont1, 195, 380, "you came");
+			print(gameFont3, 338, 260, "%1.0f", positionOfPlayer);
+			print(gameFont2, 125, 150, "Press enter to return to menu");
 			break;
 		case PAUSE:
 			SoundEngine->stopAllSounds();
@@ -341,7 +366,7 @@ void display()
 			print(gameFont2, 115, 350, "Press DOWN arrow to decelrate");
 			print(gameFont2, 125, 310, "Press LEFT arrow to turn left");
 			print(gameFont2, 135, 270, "Press UP arrow to acelerate");
-			print(gameFont2, 145, 230, "Press SPACE arrow to pause");
+			print(gameFont2, 163, 230, "Press SPACE bar to pause");
 
 			backHover ? print(gameFont1, 460, 80, "Back") : print(gameFont1, 450, 70, "Back");
 
@@ -354,6 +379,85 @@ void display()
 			break;
 	}
 	glFlush();
+}
+
+void resetGame()
+{
+	gameState = MAINMENU;
+	timeKeeper = 0;
+
+	userTankLapNumber = 1;
+	userTankCheckPointTally = 0;
+	userTankLastCheckPoint = 0;
+	userTank.v = 0;
+	userTank.x = 80;
+	userTank.y = -70;
+	userTank.direction = 0;
+	userTank.speed = 0.06f;
+	userTank.lastx = 0;
+	userTank.lasty = 0;
+	positionOfPlayer = 1;
+	
+	compTank1LapNumber = 1;
+	compTank1CheckPointTally = 0;
+	compTank1LastCheckPoint = 0;
+	computerTank1.speed = 8;
+	computerTank1.x = 150;
+	computerTank1.y = 0;
+	computerTank1.v = 0;
+	computerTank1.lastx = 150;
+	computerTank1.lasty = 0;
+	computerTank1.direction = 0;
+	computerTank1.ticks = 0;
+	computerTank1.pIndex = 0;
+	computerTank1.loadTexture();
+	computerTank1.tank1SetPoints();
+	
+
+	compTank2LapNumber = 1;
+	compTank2CheckPointTally = 0;
+	compTank2LastCheckPoint = 0;
+	computerTank2.pIndex = 0;
+	computerTank2.speed = 9;
+	computerTank2.x = 150;
+	computerTank2.y = 0;
+	computerTank2.v = 0;
+	computerTank2.lastx = 150;
+	computerTank2.lasty = 0;
+	computerTank2.direction = 0;
+	computerTank2.ticks = 0;
+	computerTank2.loadTexture();
+	computerTank2.tank2SetPoints();
+
+	compTank3LapNumber = 1;
+	compTank3CheckPointTally = 0;
+	compTank3LastCheckPoint = 0;
+	computerTank3.pIndex = 0;
+	computerTank3.speed = 7;
+	computerTank3.x = 150;
+	computerTank3.y = 0;
+	computerTank3.v = 0;
+	computerTank3.lastx = 150;
+	computerTank3.lasty = 0;
+	computerTank3.direction = 0;
+	computerTank3.ticks = 0;
+	computerTank3.loadTexture();
+	computerTank3.tank3SetPoints();
+
+	compTank4LapNumber = 1;
+	compTank4CheckPointTally = 0;
+	compTank4LastCheckPoint = 0;
+	computerTank4.pIndex = 0;
+	computerTank4.speed = 6;
+	computerTank4.x = 150;
+	computerTank4.y = 0;
+	computerTank4.v = 0;
+	computerTank4.lastx = 150;
+	computerTank4.lasty = 0;
+	computerTank4.direction = 0;
+	computerTank4.ticks = 0;
+	computerTank4.loadTexture();
+	computerTank4.tank4SetPoints();
 }
 
 void beginGameCountDown()
@@ -380,6 +484,11 @@ void beginGameCountDown()
 
 void gameMechanics(double deltaTime)
 {
+	if (userTankLapNumber > 3)
+	{
+		gameState = GAMEOVER;
+	}
+
 	mouse.x = mouse_x;
 	mouse.y = mouse_y;
 	
@@ -438,23 +547,14 @@ void gameMechanics(double deltaTime)
 		case PREPLAY:
 			beginGameCountDown();
 			userTank.drawTank();
-
 			userTank.moveTank();
-			//track.drawCheckPoints();
 			computerTank1.drawTank();
-
 			computerTank1.moveTank();
-
 			computerTank2.drawTank();
-
 			computerTank2.moveTank();
-
 			computerTank3.drawTank();
-
 			computerTank3.moveTank();
-
 			computerTank4.drawTank();
-
 			computerTank4.moveTank();
 
 			playerPosition();
@@ -483,8 +583,12 @@ void gameMechanics(double deltaTime)
 
 			playerPosition();
 			collision();
+			//track.drawCheckPoints();
 			print(gameFont4, 20, 615, "Pos");
 			print(gameFont3, 60, 615, "%1.0f", positionOfPlayer);
+
+			print(gameFont4, 10, 550, "Laps");
+			print(gameFont3, 60, 550, "%d", userTankLapNumber);
 			break;
 		case PAUSE:
 			break;
@@ -498,31 +602,31 @@ void gameMechanics(double deltaTime)
 
 void playerPosition()
 {
-	if (userTankLastCheckPoint == 192)
+	if (userTankLastCheckPoint == 193)
 	{
 		userTankLastCheckPoint = 0;
 		userTankLapNumber++;
 	}
 
-	if (compTank1LastCheckPoint == 192)
+	if (compTank1LastCheckPoint == 193)
 	{
 		compTank1LastCheckPoint = 0;
 		compTank1LapNumber++;
 	}
 
-	if (compTank2LastCheckPoint == 192)
+	if (compTank2LastCheckPoint == 193)
 	{
 		compTank2LastCheckPoint = 0;
 		compTank2LapNumber++;
 	}
 
-	if (compTank3LastCheckPoint == 192)
+	if (compTank3LastCheckPoint == 193)
 	{
 		compTank3LastCheckPoint = 0;
 		compTank3LapNumber++;
 	}
 
-	if (compTank4LastCheckPoint == 192)
+	if (compTank4LastCheckPoint == 193)
 	{
 		compTank4LastCheckPoint = 0;
 		compTank4LapNumber++;
@@ -530,7 +634,6 @@ void playerPosition()
 
 	if (userTankLastCheckPoint > -1)
 	{
-
 		if (userTank.tankOBB.SAT2D(track.checkPoints[userTankLastCheckPoint + 1].OBB1))
 		{
 			userTankLastCheckPoint++;
@@ -546,201 +649,200 @@ void playerPosition()
 		}
 	}
 
-		if (compTank1LastCheckPoint > -1) 
+	if (compTank1LastCheckPoint > -1) 
+	{
+		if (computerTank1.obb.SAT2D(track.checkPoints[compTank1LastCheckPoint + 1].OBB1)) 
 		{
-
-			if (computerTank1.obb.SAT2D(track.checkPoints[compTank1LastCheckPoint + 1].OBB1)) 
+			compTank1LastCheckPoint++;
+			compTank1CheckPointTally++;
+		}
+		if (compTank1LastCheckPoint != 0) 
+		{
+			if (computerTank1.obb.SAT2D(track.checkPoints[compTank1LastCheckPoint - 1].OBB1)) 
 			{
-				compTank1LastCheckPoint++;
-				compTank1CheckPointTally++;
-			}
-			if (compTank1LastCheckPoint != 0) 
-			{
-				if (computerTank1.obb.SAT2D(track.checkPoints[compTank1LastCheckPoint - 1].OBB1)) 
-				{
-					compTank1LastCheckPoint--;
-					compTank1CheckPointTally--;
-				}
+				compTank1LastCheckPoint--;
+				compTank1CheckPointTally--;
 			}
 		}
+	}
 
-		if (compTank2LastCheckPoint > -1)
+	if (compTank2LastCheckPoint > -1)
+	{
+		if (computerTank2.obb.SAT2D(track.checkPoints[compTank2LastCheckPoint + 1].OBB1))
 		{
-
-			if (computerTank2.obb.SAT2D(track.checkPoints[compTank2LastCheckPoint + 1].OBB1))
-			{
-				compTank2LastCheckPoint++;
-				compTank2CheckPointTally++;
-			}
-			if (compTank2LastCheckPoint != 0)
-			{
-				if (computerTank2.obb.SAT2D(track.checkPoints[compTank2LastCheckPoint - 1].OBB1))
-				{
-					compTank2LastCheckPoint--;
-					compTank2CheckPointTally--;
-				}
-			}
+			compTank2LastCheckPoint++;
+			compTank2CheckPointTally++;
 		}
-
-		if (compTank3LastCheckPoint > -1)
+		if (compTank2LastCheckPoint != 0)
 		{
-
-			if (computerTank3.obb.SAT2D(track.checkPoints[compTank3LastCheckPoint + 1].OBB1))
+			if (computerTank2.obb.SAT2D(track.checkPoints[compTank2LastCheckPoint - 1].OBB1))
 			{
-				compTank3LastCheckPoint++;
-				compTank3CheckPointTally++;
-			}
-			if (compTank3LastCheckPoint != 0)
-			{
-				if (computerTank3.obb.SAT2D(track.checkPoints[compTank3LastCheckPoint - 1].OBB1))
-				{
-					compTank3LastCheckPoint--;
-					compTank3CheckPointTally--;
-				}
+				compTank2LastCheckPoint--;
+				compTank2CheckPointTally--;
 			}
 		}
+	}
 
-		if (compTank4LastCheckPoint > -1)
+	if (compTank3LastCheckPoint > -1)
+	{
+		if (computerTank3.obb.SAT2D(track.checkPoints[compTank3LastCheckPoint + 1].OBB1))
 		{
-
-			if (computerTank4.obb.SAT2D(track.checkPoints[compTank4LastCheckPoint + 1].OBB1))
+			compTank3LastCheckPoint++;
+			compTank3CheckPointTally++;
+		}
+		if (compTank3LastCheckPoint != 0)
+		{
+			if (computerTank3.obb.SAT2D(track.checkPoints[compTank3LastCheckPoint - 1].OBB1))
 			{
-				compTank4LastCheckPoint++;
-				compTank4CheckPointTally++;
-			}
-			if (compTank4LastCheckPoint != 0)
-			{
-				if (computerTank4.obb.SAT2D(track.checkPoints[compTank4LastCheckPoint - 1].OBB1))
-				{
-					compTank4LastCheckPoint--;
-					compTank4CheckPointTally--;
-				}
+				compTank3LastCheckPoint--;
+				compTank3CheckPointTally--;
 			}
 		}
+	}
 
-		if (userTankCheckPointTally > compTank1CheckPointTally &&
-			userTankCheckPointTally > compTank2CheckPointTally &&
-			userTankCheckPointTally > compTank3CheckPointTally &&
-			userTankCheckPointTally > compTank4CheckPointTally)
+	if (compTank4LastCheckPoint > -1)
+	{
+		if (computerTank4.obb.SAT2D(track.checkPoints[compTank4LastCheckPoint + 1].OBB1))
 		{
-			positionOfPlayer = 1;
+			compTank4LastCheckPoint++;
+			compTank4CheckPointTally++;
 		}
-		else if (userTankCheckPointTally > compTank1CheckPointTally &&
-			     userTankCheckPointTally > compTank2CheckPointTally &&
-			     userTankCheckPointTally > compTank3CheckPointTally &&
-			     userTankCheckPointTally < compTank4CheckPointTally)
+		if (compTank4LastCheckPoint != 0)
 		{
-			positionOfPlayer = 2;
+			if (computerTank4.obb.SAT2D(track.checkPoints[compTank4LastCheckPoint - 1].OBB1))
+			{
+				compTank4LastCheckPoint--;
+				compTank4CheckPointTally--;
+			}
 		}
-		else if (userTankCheckPointTally > compTank1CheckPointTally &&
-				 userTankCheckPointTally > compTank2CheckPointTally &&
-			  	 userTankCheckPointTally < compTank3CheckPointTally &&
-				 userTankCheckPointTally > compTank4CheckPointTally)
-		{
-			positionOfPlayer = 2;
-		}
-		else if (userTankCheckPointTally > compTank1CheckPointTally &&
-			     userTankCheckPointTally < compTank2CheckPointTally &&
-			     userTankCheckPointTally > compTank3CheckPointTally &&
-			     userTankCheckPointTally > compTank4CheckPointTally)
-		{
-			positionOfPlayer = 2;
-		}
-		else if (userTankCheckPointTally < compTank1CheckPointTally &&
-			     userTankCheckPointTally > compTank2CheckPointTally &&
-		       	 userTankCheckPointTally > compTank3CheckPointTally &&
-			     userTankCheckPointTally > compTank4CheckPointTally)
-		{
-			positionOfPlayer = 2;
-		}
-		else if (userTankCheckPointTally > compTank1CheckPointTally &&
-			userTankCheckPointTally > compTank2CheckPointTally &&
-			userTankCheckPointTally > compTank3CheckPointTally &&
-			userTankCheckPointTally < compTank4CheckPointTally)
-		{
-			positionOfPlayer = 3;
-		}
-		else if (userTankCheckPointTally > compTank1CheckPointTally &&
-			userTankCheckPointTally > compTank2CheckPointTally &&
-			userTankCheckPointTally < compTank3CheckPointTally &&
-			userTankCheckPointTally < compTank4CheckPointTally)
-		{
-			positionOfPlayer = 3;
-		}
-		else if (userTankCheckPointTally > compTank1CheckPointTally &&
-			userTankCheckPointTally < compTank2CheckPointTally &&
-			userTankCheckPointTally > compTank3CheckPointTally &&
-			userTankCheckPointTally < compTank4CheckPointTally)
-		{
-			positionOfPlayer = 3;
-		}
-		else if (userTankCheckPointTally < compTank1CheckPointTally &&
-			userTankCheckPointTally > compTank2CheckPointTally &&
-			userTankCheckPointTally > compTank3CheckPointTally &&
-			userTankCheckPointTally < compTank4CheckPointTally)
-		{
-			positionOfPlayer = 3;
-		}
-		else if (userTankCheckPointTally > compTank1CheckPointTally &&
-			userTankCheckPointTally < compTank2CheckPointTally &&
-			userTankCheckPointTally < compTank3CheckPointTally &&
-			userTankCheckPointTally > compTank4CheckPointTally)
-		{
-			positionOfPlayer = 3;
-		}
-		else if (userTankCheckPointTally < compTank1CheckPointTally &&
-			userTankCheckPointTally > compTank2CheckPointTally &&
-			userTankCheckPointTally < compTank3CheckPointTally &&
-			userTankCheckPointTally > compTank4CheckPointTally)
-		{
-			positionOfPlayer = 3;
-		}
-		else if (userTankCheckPointTally < compTank1CheckPointTally &&
-			userTankCheckPointTally < compTank2CheckPointTally &&
-			userTankCheckPointTally > compTank3CheckPointTally &&
-			userTankCheckPointTally > compTank4CheckPointTally)
-		{
-			positionOfPlayer = 3;
-		}
-		else if (userTankCheckPointTally > compTank1CheckPointTally &&
-			userTankCheckPointTally < compTank2CheckPointTally &&
-			userTankCheckPointTally < compTank3CheckPointTally &&
-			userTankCheckPointTally < compTank4CheckPointTally)
-		{
-			positionOfPlayer = 4;
-		}
-		else if (userTankCheckPointTally < compTank1CheckPointTally &&
-			userTankCheckPointTally > compTank2CheckPointTally &&
-			userTankCheckPointTally < compTank3CheckPointTally &&
-			userTankCheckPointTally < compTank4CheckPointTally)
-		{
-			positionOfPlayer = 4;
-		}
-		else if (userTankCheckPointTally < compTank1CheckPointTally &&
+	}
+
+	if (userTankCheckPointTally > compTank1CheckPointTally &&
+		userTankCheckPointTally > compTank2CheckPointTally &&
+		userTankCheckPointTally > compTank3CheckPointTally &&
+		userTankCheckPointTally > compTank4CheckPointTally)
+	{
+		positionOfPlayer = 1;
+	}
+	else if (userTankCheckPointTally > compTank1CheckPointTally &&
+			    userTankCheckPointTally > compTank2CheckPointTally &&
+			    userTankCheckPointTally > compTank3CheckPointTally &&
+			    userTankCheckPointTally < compTank4CheckPointTally)
+	{
+		positionOfPlayer = 2;
+	}
+	else if (userTankCheckPointTally > compTank1CheckPointTally &&
+				userTankCheckPointTally > compTank2CheckPointTally &&
+			  	userTankCheckPointTally < compTank3CheckPointTally &&
+				userTankCheckPointTally > compTank4CheckPointTally)
+	{
+		positionOfPlayer = 2;
+	}
+	else if (userTankCheckPointTally > compTank1CheckPointTally &&
+			    userTankCheckPointTally < compTank2CheckPointTally &&
+			    userTankCheckPointTally > compTank3CheckPointTally &&
+			    userTankCheckPointTally > compTank4CheckPointTally)
+	{
+		positionOfPlayer = 2;
+	}
+	else if (userTankCheckPointTally < compTank1CheckPointTally &&
+			    userTankCheckPointTally > compTank2CheckPointTally &&
+		       	userTankCheckPointTally > compTank3CheckPointTally &&
+			    userTankCheckPointTally > compTank4CheckPointTally)
+	{
+		positionOfPlayer = 2;
+	}
+	else if (userTankCheckPointTally > compTank1CheckPointTally &&
+		userTankCheckPointTally > compTank2CheckPointTally &&
+		userTankCheckPointTally > compTank3CheckPointTally &&
+		userTankCheckPointTally < compTank4CheckPointTally)
+	{
+		positionOfPlayer = 3;
+	}
+	else if (userTankCheckPointTally > compTank1CheckPointTally &&
+		userTankCheckPointTally > compTank2CheckPointTally &&
+		userTankCheckPointTally < compTank3CheckPointTally &&
+		userTankCheckPointTally < compTank4CheckPointTally)
+	{
+		positionOfPlayer = 3;
+	}
+	else if (userTankCheckPointTally > compTank1CheckPointTally &&
 		userTankCheckPointTally < compTank2CheckPointTally &&
 		userTankCheckPointTally > compTank3CheckPointTally &&
 		userTankCheckPointTally < compTank4CheckPointTally)
-		{
-		positionOfPlayer = 4;
-		}
-		else if (userTankCheckPointTally < compTank1CheckPointTally &&
+	{
+		positionOfPlayer = 3;
+	}
+	else if (userTankCheckPointTally < compTank1CheckPointTally &&
+		userTankCheckPointTally > compTank2CheckPointTally &&
+		userTankCheckPointTally > compTank3CheckPointTally &&
+		userTankCheckPointTally < compTank4CheckPointTally)
+	{
+		positionOfPlayer = 3;
+	}
+	else if (userTankCheckPointTally > compTank1CheckPointTally &&
 		userTankCheckPointTally < compTank2CheckPointTally &&
 		userTankCheckPointTally < compTank3CheckPointTally &&
 		userTankCheckPointTally > compTank4CheckPointTally)
-		{
-		positionOfPlayer = 4;
-		}
-		else if (userTankCheckPointTally < compTank1CheckPointTally &&
+	{
+		positionOfPlayer = 3;
+	}
+	else if (userTankCheckPointTally < compTank1CheckPointTally &&
+		userTankCheckPointTally > compTank2CheckPointTally &&
+		userTankCheckPointTally < compTank3CheckPointTally &&
+		userTankCheckPointTally > compTank4CheckPointTally)
+	{
+		positionOfPlayer = 3;
+	}
+	else if (userTankCheckPointTally < compTank1CheckPointTally &&
+		userTankCheckPointTally < compTank2CheckPointTally &&
+		userTankCheckPointTally > compTank3CheckPointTally &&
+		userTankCheckPointTally > compTank4CheckPointTally)
+	{
+		positionOfPlayer = 3;
+	}
+	else if (userTankCheckPointTally > compTank1CheckPointTally &&
 		userTankCheckPointTally < compTank2CheckPointTally &&
 		userTankCheckPointTally < compTank3CheckPointTally &&
 		userTankCheckPointTally < compTank4CheckPointTally)
-		{
-		positionOfPlayer = 5;
-		}
-		//print(gameFont, 300, 350, "User Check point - %d", userTankCheckPointTally);
-		//print(gameFont, 300, 300, "Comp check point - %d", compTankCheckPointTally);
-		//print(gameFont, 300, 250, "Lap number - %d", userTankLapNumber);
-		//print(gameFont, 300, 200, "Last check point - %d", userTankLastCheckPoint);
+	{
+		positionOfPlayer = 4;
+	}
+	else if (userTankCheckPointTally < compTank1CheckPointTally &&
+		userTankCheckPointTally > compTank2CheckPointTally &&
+		userTankCheckPointTally < compTank3CheckPointTally &&
+		userTankCheckPointTally < compTank4CheckPointTally)
+	{
+		positionOfPlayer = 4;
+	}
+	else if (userTankCheckPointTally < compTank1CheckPointTally &&
+	userTankCheckPointTally < compTank2CheckPointTally &&
+	userTankCheckPointTally > compTank3CheckPointTally &&
+	userTankCheckPointTally < compTank4CheckPointTally)
+	{
+	positionOfPlayer = 4;
+	}
+	else if (userTankCheckPointTally < compTank1CheckPointTally &&
+	userTankCheckPointTally < compTank2CheckPointTally &&
+	userTankCheckPointTally < compTank3CheckPointTally &&
+	userTankCheckPointTally > compTank4CheckPointTally)
+	{
+	positionOfPlayer = 4;
+	}
+	else if (userTankCheckPointTally < compTank1CheckPointTally &&
+	userTankCheckPointTally < compTank2CheckPointTally &&
+	userTankCheckPointTally < compTank3CheckPointTally &&
+	userTankCheckPointTally < compTank4CheckPointTally)
+	{
+	positionOfPlayer = 5;
+	}
+
+
+		//print(gameFont4, 300, 340, "%d", userTankLapNumber);
+		//print(gameFont4, 300, 320, "%d", compTank1LapNumber);
+		//print(gameFont4, 300, 300, "%d", compTank2LapNumber);
+		//print(gameFont4, 300, 280, "%d", compTank3LapNumber);
+		//print(gameFont4, 300, 260, "%d", compTank4LapNumber);
 }
 
 void initialiseMenuSprites()
@@ -817,37 +919,29 @@ void collision()
 	//Grass detection
 	for (OBB obb : track.mapOffTrackOBBs)
 	{
-		//obb.drawOBB();
 		if (obb.SAT2D(userTank.tankOBB))
 		{
-			//userTank.handleOffTrack();
+			userTank.handleOffTrack();
+		}
+		else
+		{
+			userTank.speed = 0.06f;
 		}
 	}
-
-
 
 	//Barrier detection
 	for (Asset asset : track.mapBarrierOBBs)
 	{
-		//asset.OBB1.drawOBB();
 		asset.drawAsset();
 		if (asset.OBB1.SAT2D(userTank.tankOBB))
 		{
-			print(gameFont1, 20, 95, "Collision!");
-			//userTank.handleOffTrack();
-			//userTank.handleBarrierCollision();
+			userTank.handleBarrierCollision();
 		}
 	}
 
-
-
-
-	//User tank and computer tank detection
-	//userTank.tankOBB.drawOBB();
-	//computerTank1.obb.drawOBB();
 	if (userTank.tankOBB.SAT2D(computerTank1.obb))
 	{
-
+		userTank.handleBarrierCollision();
 	}
 }
 
@@ -928,6 +1022,13 @@ void processKeys()
 		if (keys[VK_UP])
 		{
 			gameState = PLAY;
+		}
+	}
+	if(keys[VK_RETURN])
+	{
+		if (gameState == GAMEOVER)
+		{
+			resetGame();
 		}
 	}
 }

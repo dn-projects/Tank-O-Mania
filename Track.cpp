@@ -177,19 +177,6 @@ void Track::drawTrackBarrierOBB()
 	char png[] = "PNG/Assets/fenceRed.png";
 	char png2[] = "PNG/Assets/fenceredH.png";
 	char png3[] = "PNG/Assets/crateWood.png";
-	char png4[] = "PNG/Assets/finish.png";
-
-	GLuint finishPNG = loadTrackPNG(png4);
-
-	Asset finish = Asset();
-	finish.x = -225;
-	finish.y = -45;
-	finish.width = 560;
-	finish.height = 10;
-	finish.xTexture = 5;
-	finish.texture = loadTrackPNG(png4);
-	finish.setOBB1Points({ 10000 , 10000 }, { 10000 , 10000 },{ 10000 , 10000 }, { 10000 , 10000 });
-	mapBarrierOBBs.push_back(finish);
 
 	// going up
 	for (float i = -580; i < 1100; i += 48)
@@ -544,25 +531,6 @@ void Track::setCheckPoints()
 		checkPoints.push_back(asset);
 	}
 
-	//corner
-	/*for (int i = 0; i < 90; i += 10)
-	{
-		Asset asset = Asset();
-		
-		asset.x = -200;
-		asset.y = 0;
-		asset.width = 900;
-		asset.height = 5;
-		asset.rotation = i;
-		asset.xTrans = -200;
-		asset.yTrans = 1100;
-		asset.drawAsset();
-		asset.setOBB1Points({ -200, 1100}, { -200 , 1105 }, { 700  , 1105 }, { 700 , 1100});
-		asset.OBB1.transformPoints(asset.OBB1matrix);
-		
-		checkPoints.push_back(asset);
-	}*/
-
 	// going left
 	for (float i = -200; i > -900; i -= 50)
 	{
@@ -577,24 +545,6 @@ void Track::setCheckPoints()
 		asset.drawAsset();
 		checkPoints.push_back(asset);
 	}
-
-	//corner
-	/*for (int i = 90; i < 180; i += 10)
-	{
-		Asset asset = Asset();
-		
-		asset.x = -200;
-		asset.y = 0;
-		asset.width = 900;
-		asset.height = 5;
-		asset.rotation = i;
-		asset.xTrans = -900;
-		asset.yTrans = 1100;
-		asset.setOBB1Points({ -200 , 0 }, { -200 , 5 }, { 700 , 5 }, { 700 , 0 });
-		asset.OBB1.transformPoints(asset.OBB1matrix);
-		asset.drawAsset();
-		checkPoints.push_back(asset);
-	}*/
 
 	// going down
 	for (float i = 1085; i > -1100; i -= 50)
@@ -612,24 +562,6 @@ void Track::setCheckPoints()
 		checkPoints.push_back(asset);
 	}
 
-	//corner
-	/*for (int i = 180; i < 270; i += 10)
-	{
-		Asset asset = Asset();
-		
-		asset.x = -200;
-		asset.y = 0;
-		asset.width = 900;
-		asset.height = 5;
-		asset.rotation = i;
-		asset.xTrans = -920;
-		asset.yTrans = -1070;
-		asset.setOBB1Points({ -200 , 0 }, { -200 , 5 }, { 700 , 5 }, { 700 , 0 });
-		asset.OBB1.transformPoints(asset.OBB1matrix);
-		asset.drawAsset();
-		checkPoints.push_back(asset);
-	}*/
-
 	// going right
 	for (float i = -900; i < 1400; i += 50)
 	{
@@ -644,23 +576,6 @@ void Track::setCheckPoints()
 		asset.drawAsset();
 		checkPoints.push_back(asset);
 	}
-	//corner
-	//for (int i = 270; i < 360; i += 10)
-	//{
-	//	Asset asset = Asset();
-	//
-	//	asset.x = -200;
-	//	asset.y = 0;
-	//	asset.width = 900;
-	//	asset.height = 5;
-	//	asset.rotation = i;
-	//	asset.xTrans = 1350;
-	//	asset.yTrans = -1050;	
-	//	asset.setOBB1Points({ -200 , 0 }, { -200 , 5 }, { 700 , 5 }, { 700 , 0 });
-	//	asset.OBB1.transformPoints(asset.OBB1matrix);
-	//	asset.drawAsset();
-	//	checkPoints.push_back(asset);
-	//}
 
 	// going up
 	for (float i = -1060; i < 850; i += 50)
@@ -677,46 +592,12 @@ void Track::setCheckPoints()
 		checkPoints.push_back(asset);
 	}
 
-	/*for (int i = 0; i < 90; i += 10)
-	{
-		Asset asset = Asset();
-		
-		asset.x = -200;
-		asset.y = 0;
-		asset.width = 900;
-		asset.height = 5;
-		asset.rotation = i;
-		asset.xTrans = 1361;
-		asset.yTrans = 850;
-		asset.setOBB1Points({ -200 , 0 }, { -200 , 5 }, { 700 , 5 }, { 700 , 0 });
-		asset.OBB1.transformPoints(asset.OBB1matrix);
-		asset.drawAsset();
-		checkPoints.push_back(asset);
-	}
-
-	for (int i = 90; i < 180; i += 10)
-	{
-		Asset asset = Asset();
-		
-		asset.x = -200;
-		asset.y = 0;
-		asset.width = 900;
-		asset.height = 5;
-		asset.rotation = i;
-		asset.xTrans = 1300;
-		asset.yTrans = 850;
-		asset.setOBB1Points({ -200 , 0 }, { -200 , 5 }, { 700 , 5 }, { 700 , 0 });
-		asset.OBB1.transformPoints(asset.OBB1matrix);
-		asset.drawAsset();
-		checkPoints.push_back(asset);
-	}*/
-
 	// going down (drawing up)
-	for (float i = 900; i > -50; i -= 50)
+	for (float i = 850; i > -100; i -= 50)
 	{
 		Asset asset = Asset();
 		
-		asset.x = 820;
+		asset.x = 760;
 		asset.y = i;
 		asset.width = 600;
 		asset.height = 5;
@@ -725,23 +606,6 @@ void Track::setCheckPoints()
 		asset.drawAsset();
 		checkPoints.push_back(asset);
 	}
-
-	/*for (int i = 320; i > 280; i -= 10)
-	{
-		Asset asset = Asset();
-		
-		asset.x = -200;
-		asset.y = 0;
-		asset.width = 900;
-		asset.height = 5;
-		asset.rotation = i;
-		asset.xTrans = 830;
-		asset.yTrans = -20;
-		asset.setOBB1Points({ -200 , 0 }, { -200 , 5 }, { 700 , 5 }, { 700 , 0 });
-		asset.OBB1.transformPoints(asset.OBB1matrix);
-		asset.drawAsset();
-		checkPoints.push_back(asset);
-	}*/
 
 	// going left
 	for (float i = 835; i > 300; i -= 50)
@@ -758,20 +622,14 @@ void Track::setCheckPoints()
 		checkPoints.push_back(asset);
 	}
 
-	//for (int i = 270; i > 180; i -= 5)
-	//{
-	//	Asset asset = Asset();
-	//	
-	//	asset.x = -200;
-	//	asset.y = 0;
-	//	asset.width = 900;
-	//	asset.height = 5;
-	//	asset.rotation = i;
-	//	asset.xTrans = 330;
-	//	asset.yTrans = -30;
-	//	asset.setOBB1Points({ -200 , 0 }, { -200 , 5 }, { 700 , 5 }, { 700 , 0 });
-	//	asset.OBB1.transformPoints(asset.OBB1matrix);
-	//	asset.drawAsset();
-	//	checkPoints.push_back(asset);
-	//}
+	Asset asset = Asset();
+	asset.x = -200;
+	asset.y = -50;
+	asset.width = 600;
+	asset.height = 5;
+	asset.setOBB1Points({ -200,-50 }, { -200,-45 }, { -200 + 600,-45 }, { -200 + 600, -50 });
+	asset.OBB1.transformPoints(asset.OBB1matrix);
+	asset.drawAsset();
+	checkPoints.push_back(asset);
+	
 }

@@ -121,31 +121,38 @@ void UserTank::handleKeys(double deltaTime)
 	}
 	if (keys[VK_UP])
 	{
-		if (v > 15)
+		if (v > 10)
 		{
 			v = v;
 		}
+		else if (v > 5)
+		{
+			speed = 0.004f;
+			v += speed * deltaTime;
+		}
 		else
 		{
+			speed = 0.3f;
 			v += speed * deltaTime;
 		}
 	}
 	if (keys[VK_DOWN])
 	{
-		//TODO set limit on reverse speed
-		float downSpeed = v > 0 ? speed * 6 : speed / 4;
+		float downSpeed = v > 0 ? speed * 25 : speed / 4;
 		v -= downSpeed * deltaTime;
 	}
 }
 
 void UserTank::handleOffTrack()
 {
-	//v -= 0.6;
-	//if (v < 0.5)
-	//{
-	//	speed = 0.05;
-	//}
-	speed = 0.005f;
+	if (1.5 > v)
+	{
+		speed = 0.1f;
+	}
+	else
+	{
+		v -= 0.6f;
+	}
 }
 
 void UserTank::handleBarrierCollision()

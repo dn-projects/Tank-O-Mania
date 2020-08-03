@@ -119,7 +119,7 @@ void ComputerTank::incrementMovement()
 
 void ComputerTank::tank1SetPoints()
 {
-	Point p0 = { 150, -70};
+	Point p0 = { 170, -70};
 	movementPoints.push_back(p0);
 
 	vector<Point> leftcorner1 = ComputerTank::drawCircleAnticlockwise(10, 1250, 150, 0, 90);
@@ -149,7 +149,7 @@ void ComputerTank::tank1SetPoints()
 
 void ComputerTank::tank2SetPoints()
 {
-	Point p0 = { 10, -70 };
+	Point p0 = { -10, -70 };
 	movementPoints.push_back(p0);
 
 	vector<Point> leftcorner1 = ComputerTank::drawCircleAnticlockwise(10, 1250, 60, 0, 90);
@@ -179,7 +179,7 @@ void ComputerTank::tank2SetPoints()
 
 void ComputerTank::tank3SetPoints()
 {
-	Point p0 = { 45, -135 };
+	Point p0 = { 5, -135 };
 	movementPoints.push_back(p0);
 
 	vector<Point> leftcorner1 = ComputerTank::drawCircleAnticlockwise(-75, 1250, 120, 0, 90);
@@ -209,7 +209,7 @@ void ComputerTank::tank3SetPoints()
 
 void ComputerTank::tank4SetPoints()
 {
-	Point p0 = { 105, -135 };
+	Point p0 = { 150, -135 };
 	movementPoints.push_back(p0);
 
 	vector<Point> leftcorner1 = ComputerTank::drawCircleAnticlockwise(-15, 1250, 120, 0, 90);
