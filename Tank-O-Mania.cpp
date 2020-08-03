@@ -227,7 +227,7 @@ void init()
 
 	glClearColor(0.0, 0.0, 0.0, 0.0);  
 
-	SoundEngine->play2D("Battle-Conflict.mp3", true);
+	//SoundEngine->play2D("Battle-Conflict.mp3", true);
 
 	gameFont1.init("tankFont.ttf", 22);
 	gameFont2.init("tankFont.ttf", 9);
@@ -274,18 +274,22 @@ void init()
 
 	computerTank1.loadTexture();
 	computerTank1.tank1SetPoints();
+	computerTank1.setOBBPoints();
 	computerTank1.speed = 8;
 
 	computerTank2.loadTexture();
 	computerTank2.tank2SetPoints();
+	computerTank2.setOBBPoints();
 	computerTank2.speed = 9;
 
 	computerTank3.loadTexture();
 	computerTank3.tank3SetPoints();
+	computerTank3.setOBBPoints();
 	computerTank3.speed = 7;
 
 	computerTank4.loadTexture();
 	computerTank4.tank4SetPoints();
+	computerTank4.setOBBPoints();
 	computerTank4.speed = 6;
 	
 	initialiseMenuSprites();
@@ -333,13 +337,14 @@ void display()
 			beginGameCountDown();
 			track.drawMapAssets();
 			finishLine.drawAsset();
+
 			break;
 		case PLAY:
 			SoundEngine->stopAllSounds();
 			track.drawMapAssets();
 			finishLine.drawAsset();
-			print(gameFont3, 200, 260, "v - %7.5f", userTank.v);
-			print(gameFont3, 200, 200, "s - %7.5f", userTank.speed);
+			//print(gameFont3, 200, 260, "v - %7.5f", userTank.v);
+			//print(gameFont3, 200, 200, "s - %7.5f", userTank.speed);
 			break;
 		case GAMEOVER:
 			SoundEngine->stopAllSounds();
@@ -362,11 +367,13 @@ void display()
 			
 			print(gameFont1, 88, 500, "Tank-O-Mania");
 
-			print(gameFont2, 105, 390, "Press RIGHT arrow to turn right");
-			print(gameFont2, 115, 350, "Press DOWN arrow to decelrate");
-			print(gameFont2, 125, 310, "Press LEFT arrow to turn left");
-			print(gameFont2, 135, 270, "Press UP arrow to acelerate");
-			print(gameFont2, 163, 230, "Press SPACE bar to pause");
+			print(gameFont2, 105, 410, "Press RIGHT arrow to turn right");
+			print(gameFont2, 115, 370, "Press DOWN arrow to decelrate");
+			print(gameFont2, 125, 330, "Press LEFT arrow to turn left");
+			print(gameFont2, 135, 290, "Press UP arrow to acelerate");
+			print(gameFont2, 163, 250, "Press SPACE bar to pause");
+			
+		
 
 			backHover ? print(gameFont1, 460, 80, "Back") : print(gameFont1, 450, 70, "Back");
 
@@ -465,7 +472,7 @@ void beginGameCountDown()
 	endCountDown = steady_clock::now();
 
 	duration<double, ratio<1, 1>> secondsGone = endCountDown - beginCountDown;
-	timeElapsed = 4 - secondsGone.count();
+	timeElapsed = 5 - secondsGone.count();
 
 	if (timeElapsed == -1)
 	{
@@ -550,15 +557,21 @@ void gameMechanics(double deltaTime)
 			userTank.moveTank();
 			computerTank1.drawTank();
 			computerTank1.moveTank();
+
 			computerTank2.drawTank();
 			computerTank2.moveTank();
+
 			computerTank3.drawTank();
 			computerTank3.moveTank();
+
 			computerTank4.drawTank();
 			computerTank4.moveTank();
+			
 
 			playerPosition();
 			collision();
+			print(gameFont4, 50, 550, "Drive your green tank to victory! First tank to complete");
+			print(gameFont4, 190, 520, "3 laps around the track wins.");
 			break;
 		case PLAY:
 
@@ -568,18 +581,22 @@ void gameMechanics(double deltaTime)
 			computerTank1.drawTank();
 			computerTank1.incrementMovement();
 			computerTank1.moveTank();
+			computerTank1.obb.transformPoints(computerTank1.compMatrix);
 
 			computerTank2.drawTank();
 			computerTank2.incrementMovement();
 			computerTank2.moveTank();
+			computerTank2.obb.transformPoints(computerTank2.compMatrix);
 
 			computerTank3.drawTank();
 			computerTank3.incrementMovement();
 			computerTank3.moveTank();
+			computerTank3.obb.transformPoints(computerTank3.compMatrix);
 					
 			computerTank4.drawTank();
 			computerTank4.incrementMovement();
 			computerTank4.moveTank();
+			computerTank4.obb.transformPoints(computerTank4.compMatrix);
 
 			playerPosition();
 			collision();
@@ -932,11 +949,7 @@ void collision()
 	//Barrier detection
 	for (Asset asset : track.mapBarrierOBBs)
 	{
-		asset.drawAsset();
-		if (asset.OBB1.SAT2D(userTank.tankOBB))
-		{
-			userTank.handleBarrierCollision();
-		}
+		userTank.handleBarrierCollision();
 	}
 
 	if (userTank.tankOBB.SAT2D(computerTank1.obb))
