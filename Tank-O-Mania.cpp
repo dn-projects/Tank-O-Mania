@@ -227,7 +227,7 @@ void init()
 
 	glClearColor(0.0, 0.0, 0.0, 0.0);  
 
-	//SoundEngine->play2D("Battle-Conflict.mp3", true);
+	SoundEngine->play2D("Battle-Conflict.mp3", true);
 
 	gameFont1.init("tankFont.ttf", 22);
 	gameFont2.init("tankFont.ttf", 9);
