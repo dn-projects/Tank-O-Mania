@@ -8,7 +8,6 @@
 #include <chrono>
 #include <irrKlang/irrKlang.h>
 
-
 using namespace chrono;
 
 using namespace std;
@@ -17,43 +16,13 @@ using namespace freetype;
 
 using namespace irrklang;
 
-const float PI = 3.1415926535897932384626433832795f;
-
-int 	mouse_x = 0, mouse_y = 0;   
-bool LeftPressed = false;
-int screenWidth = 700, screenHeight = 700;
-bool keys[256];
-float timeKeeper = 0;
-bool done = false;
-
-/// A fairly straight forward function that pushes
-/// a projection matrix that will make object world 
-/// coordinates identical to window coordinates.
-static void pushScreenCoordinateMatrix() {
-	glPushAttrib(GL_TRANSFORM_BIT);
-	GLint	viewport[4];
-	glGetIntegerv(GL_VIEWPORT, viewport);
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	gluOrtho2D(viewport[0], viewport[2], viewport[1], viewport[3]);
-	glPopAttrib();
-}
-
-/// Pops the projection matrix without changing the current
-/// MatrixMode.
-static void pop_projection_matrix() {
-	glPushAttrib(GL_TRANSFORM_BIT);
-	glMatrixMode(GL_PROJECTION);
-	glPopMatrix();
-	glPopAttrib();
-}
-
+#pragma region PREPLAY state methods 
 
 int timeElapsed = 0;
 time_point<steady_clock> startTime;
 time_point<steady_clock> endTime;
 
+#pragma endregion
 
 #pragma region Checkpoint and position variables
 
@@ -121,6 +90,18 @@ Asset backButton = Asset();
 
 #pragma endregion
 
+#pragma region tank-o-mania local variables
+
+const float PI = 3.1415926535897932384626433832795f;
+int mouse_x = 0, mouse_y = 0;   
+bool LeftPressed = false;
+int screenWidth = 700, screenHeight = 700;
+bool keys[256];
+float timeKeeper = 0;
+bool done = false;
+
+#pragma endregion
+
 #pragma region tank-o-mania local textures  
 
 GLuint menuTexture = 0;
@@ -168,9 +149,26 @@ void collision();
 void moveProjection();
 bool outsideObject(Point P, Point V[], int n);
 void initialiseMenuSprites();
-void playSound();
 void initialiseControlsSprites();
 void beginGameCountDown();
+static void pushScreenCoordinateMatrix()
+{
+	glPushAttrib(GL_TRANSFORM_BIT);
+	GLint	viewport[4];
+	glGetIntegerv(GL_VIEWPORT, viewport);
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+	gluOrtho2D(viewport[0], viewport[2], viewport[1], viewport[3]);
+	glPopAttrib();
+}
+static void pop_projection_matrix()
+{
+	glPushAttrib(GL_TRANSFORM_BIT);
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+	glPopAttrib();
+}
 
 #pragma endregion
 
@@ -324,7 +322,9 @@ void display()
 			break;
 		case PAUSE:
 			SoundEngine->stopAllSounds();
-			track.drawIntermediateTrack();
+			mainMenu.drawAsset();
+			print(gameFont1, 225, 500, "PAUSED");
+			print(gameFont2, 140, 230, "Press up arrow to continue");		
 			break;
 		case CONTROLS:
 			pushScreenCoordinateMatrix();
@@ -374,15 +374,8 @@ void beginGameCountDown()
 	}
 }
 
-void playSound()
-{
-
-}
-
 void runGame(double deltaTime)
 {
-	playSound();
-
 	mouse.x = mouse_x;
 	mouse.y = mouse_y;
 	
@@ -738,9 +731,19 @@ void reshape(int width, int height)		// Resize the OpenGL window
 
 void processKeys()
 {
-	if (keys[VK_SPACE])
+	if (keys[VK_SPACE]) 
 	{
-		gameState = PAUSE;
+		if (gameState == PLAY)
+		{
+			gameState = PAUSE;
+		}
+	}
+	if (gameState == PAUSE)
+	{
+		if (keys[VK_UP])
+		{
+			gameState = PLAY;
+		}
 	}
 }
 
